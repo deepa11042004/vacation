@@ -7,7 +7,7 @@ import Badge from "@/UI/Badge";
 
 export default function ActivitiesHeader() {
   return (
-    <section className="w-full bg-white px-6 py-8">
+    <section className="w-full bg-white px-6 pt-30">
       <div className="relative mx-auto h-80 w-full max-w-7xl overflow-hidden rounded-2xl bg-gray-900 shadow-lg sm:h-95 md:h-105">
         {/* ─── Background Landscape Image ─── */}
         <Image

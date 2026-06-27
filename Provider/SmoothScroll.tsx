@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { ReactLenis } from "lenis/react";
+import "lenis/dist/lenis.css";
 
 interface SmoothScrollProps {
   children: ReactNode;

@@ -69,7 +69,7 @@ const MEMBER_GALLERY: MemberCardItem[] = [
 
 export default function MemberHome() {
   return (
-    <section className="w-full bg-white py-20 overflow-hidden font-display">
+    <section className="w-full bg-white py-20 overflow-hidden pt-30">
       {/* ─── 1. Header Copy Block (Aligned to Reference Photo) ─── */}
       <div className="mb-14 flex flex-col items-center text-center px-6">
         <Badge

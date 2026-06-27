@@ -52,7 +52,7 @@ const Badge: React.FC<BadgeProps> = ({
 
   const badgeClasses = [
     "inline-flex items-center rounded-full border",
-    "transition-all duration-300",
+    "transition-all duration-300 pointer-events-none",
     cfg.padding,
     cfg.fontSize,
     cfg.gap,
