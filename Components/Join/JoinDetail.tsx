@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Minus } from "lucide-react";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
 
-// ─── Types and Interfaces
+// Types and Interfaces
 interface PricingCard {
   id: string;
   duration: string;
@@ -28,7 +28,7 @@ interface TierGroup {
   cards: PricingCard[];
 }
 
-// ─── Production Tier Data (Expanded to 4 options per tier group)
+// Tier Data
 const TIER_DATA: Record<string, TierGroup> = {
   ebony: {
     slug: "ebony",
@@ -155,14 +155,38 @@ const TIER_DATA: Record<string, TierGroup> = {
   },
 };
 
+const TIER_ORDER = ["ebony", "ivory", "jade"];
+
+// Ease
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+// Card
+const cardVariants: Variants = {
+  initial: { opacity: 0, y: 14, scale: 0.98 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.4, ease: EASE },
+  },
+};
+
 export default function JoinDetail() {
   const [activeTab, setActiveTab] = useState<string>("ebony");
+  const directionRef = useRef(1);
   const currentTier = TIER_DATA[activeTab];
+
+  const handleTabChange = (slug: string) => {
+    const fromIdx = TIER_ORDER.indexOf(activeTab);
+    const toIdx = TIER_ORDER.indexOf(slug);
+    directionRef.current = toIdx > fromIdx ? 1 : -1;
+    setActiveTab(slug);
+  };
 
   return (
     <section className="w-full bg-white py-20 px-6 lg:py-30 ">
       <div className="mx-auto max-w-7xl">
-        {/* ─── Header Section ─── */}
+        {/* Header Section */}
         <div className="flex flex-col items-center text-center mb-12">
           <Badge
             text="Investment Matrix"
@@ -180,28 +204,34 @@ export default function JoinDetail() {
           </p>
         </div>
 
-        {/* ─── Level Navigation Switcher ─── */}
+        {/* Navigation Switcher */}
         <div className="flex justify-center mb-14">
           <div className="inline-flex rounded-full bg-neutral-100 p-1.5 border border-neutral-200 shadow-xs">
             {Object.values(TIER_DATA).map((tier) => (
               <button
                 key={tier.slug}
-                onClick={() => setActiveTab(tier.slug)}
-                className={`rounded-full px-6 py-2.5 text-xs font-bold tracking-widest transition-all uppercase duration-300 ${
+                onClick={() => handleTabChange(tier.slug)}
+                className={`relative rounded-full px-6 py-2.5 text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
                   activeTab === tier.slug
                     ? "bg-neutral-950 text-white shadow-md"
                     : "text-gray-500 hover:text-gray-900"
                 }`}
               >
+                {activeTab === tier.slug && (
+                  <motion.span
+                    layoutId="tier-pill"
+                    className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
+                    transition={{ duration: 0.35, ease: EASE }}
+                  />
+                )}
                 {tier.name}
               </button>
             ))}
           </div>
         </div>
 
-        {/* ─── Dynamic Content Layout ─── */}
+        {/* Dynamic Content */}
         <div className="relative">
-          {/* Active Info Bar Description */}
           <div className="mb-6 max-w-xl text-left md:pl-1">
             <h3 className="text-xl font-bold uppercase text-neutral-950 tracking-wide flex items-center gap-2">
               <span
@@ -209,96 +239,89 @@ export default function JoinDetail() {
               />
               {currentTier.name} Ownership Options
             </h3>
-            <p className="text-sm text-gray-500 font-medium mt-1">
+            <p className="text-md text-gray-500 font-medium mt-2 ml-4">
               {currentTier.description}
             </p>
           </div>
 
-          {/* ─── Fixed 4-Card Responsive Grid Row (Replaces Carousel) ─── */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 w-full">
-            <AnimatePresence mode="popLayout">
-              {currentTier.cards.map((card, idx) => (
-                <motion.div
-                  key={`${activeTab}-${card.id}`}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{
-                    duration: 0.35,
-                    delay: idx * 0.05,
-                    ease: "easeOut",
-                  }}
-                  className={`relative flex flex-col justify-between p-6 xl:p-8 rounded-3xl border shadow-xs hover:shadow-lg transition-all duration-300 w-full h-67.5 overflow-hidden ${currentTier.cardBgClass}`}
-                >
-                  {/* Pattern Layer via next/image */}
-                  <div
-                    className={`absolute inset-0 pointer-events-none z-0 ${currentTier.linePatternOpacity}`}
+          {/* Cards */}
+          <div className="overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full will-change-transform"
+              >
+                {currentTier.cards.map((card) => (
+                  <motion.div
+                    key={card.id}
+                    variants={cardVariants}
+                    className={`relative flex flex-col justify-between p-6 xl:p-8 rounded-3xl border shadow-xs hover:shadow-lg transition-shadow duration-300 w-full h-67.5 overflow-hidden ${currentTier.cardBgClass}`}
                   >
-                    <Image
-                      fill
-                      src="/Img/pattern.png"
-                      alt=""
-                      className="object-cover"
-                      aria-hidden="true"
-                    />
-                  </div>
-
-                  {/* Top Block Hierarchy */}
-                  <div className="relative z-10 flex justify-between items-start gap-2">
-                    <div>
-                      <h4 className="text-lg font-black tracking-wider uppercase font-sans leading-none">
-                        {currentTier.name}
-                      </h4>
-                      <span
-                        className={`text-[11px] font-semibold tracking-wide block mt-1.5 ${currentTier.mutedTextClass}`}
-                      >
-                        {card.roomType}
-                      </span>
-                    </div>
-                    <span className="text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5 backdrop-blur-xs border border-current/10 whitespace-nowrap">
-                      {card.duration}
-                    </span>
-                  </div>
-
-                  {/* Pricing Midpoint Data Row */}
-                  <div className="relative z-10 grid grid-cols-2 gap-2 border-y border-current/10 py-4 my-2">
-                    <div>
-                      <span
-                        className={`text-[9px] uppercase font-bold tracking-widest block ${currentTier.mutedTextClass}`}
-                      >
-                        EMI Starts at
-                      </span>
-                      <p className="text-lg font-black tracking-tight mt-0.5 whitespace-nowrap">
-                        {card.emiStarts}
-                      </p>
-                    </div>
-                    <div className="border-l border-current/10 pl-3">
-                      <span
-                        className={`text-[9px] uppercase font-bold tracking-widest block ${currentTier.mutedTextClass}`}
-                      >
-                        Total Cost
-                      </span>
-                      <p className="text-lg font-black tracking-tight mt-0.5 whitespace-nowrap">
-                        {card.totalCost}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Lower Interaction Block Row */}
-                  <div className="relative z-10 flex items-center justify-between mt-1 gap-2">
-                    <CtaButton
-                      text="Buy Now"
-                      variant="white"
-                      size="sm"
-                    />
-                    <button
-                      className={`text-[11px] font-bold tracking-wide hover:underline cursor-pointer whitespace-nowrap ${currentTier.mutedTextClass}`}
+                    <div
+                      className={`absolute inset-0 pointer-events-none z-0 ${currentTier.linePatternOpacity}`}
                     >
-                      + Compare
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
+                      <Image
+                        fill
+                        src="/Img/pattern.png"
+                        alt=""
+                        className="object-cover"
+                        aria-hidden="true"
+                      />
+                    </div>
+
+                    <div className="relative z-10 flex justify-between items-start gap-2">
+                      <div>
+                        <h4 className="text-lg font-black tracking-wider uppercase font-sans leading-none">
+                          {currentTier.name}
+                        </h4>
+                        <span
+                          className={`text-[11px] font-semibold tracking-wide block mt-1.5 ${currentTier.mutedTextClass}`}
+                        >
+                          {card.roomType}
+                        </span>
+                      </div>
+                      <span className="text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5 backdrop-blur-xs border border-current/10 whitespace-nowrap">
+                        {card.duration}
+                      </span>
+                    </div>
+
+                    <div className="relative z-10 grid grid-cols-2 gap-2 border-y border-current/10 py-4 my-2">
+                      <div>
+                        <span
+                          className={`text-[9px] uppercase font-bold tracking-widest block ${currentTier.mutedTextClass}`}
+                        >
+                          EMI Starts at
+                        </span>
+                        <p className="text-lg font-black tracking-tight mt-0.5 whitespace-nowrap">
+                          {card.emiStarts}
+                        </p>
+                      </div>
+                      <div className="border-l border-current/10 pl-3">
+                        <span
+                          className={`text-[9px] uppercase font-bold tracking-widest block ${currentTier.mutedTextClass}`}
+                        >
+                          Total Cost
+                        </span>
+                        <p className="text-lg font-black tracking-tight mt-0.5 whitespace-nowrap">
+                          {card.totalCost}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="relative z-10 flex items-center justify-between mt-1 gap-2">
+                      <CtaButton text="Buy Now" variant="white" size="sm" />
+                      <button
+                        className={`text-[11px] font-bold tracking-wide hover:underline cursor-pointer whitespace-nowrap ${currentTier.mutedTextClass}`}
+                      >
+                        + Compare
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
             </AnimatePresence>
           </div>
         </div>
