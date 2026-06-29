@@ -23,7 +23,7 @@ export default function Navbar() {
 
   return (
     /*  Layer 4 — navigation */
-    <nav className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 md:px-12 lg:px-40 py-6">
+    <nav className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 md:px-12 lg:px-40 py-6">
       <Link href="/" className={`text-xl md:text-3xl font-semibold ${isHome ? "text-white" : "text-gray-900"}`}>
         Tourvia.
       </Link>

@@ -1,13 +1,15 @@
 import ActivitiesDetails from "@/Components/Activities/ActivitiesDetails";
 import ActivitiesGrid from "@/Components/Activities/ActivitiesGrid";
-import ActivitiesHeader from "@/Components/Activities/ActivitiesHeader";
+import ActivityHero from "@/Components/Activities/ActivityHero";
+import FAQsec from "@/Components/Home/FAQsec";
 
 function Activities() {
   return (
     <>
-      <ActivitiesHeader />
+      <ActivityHero />
       <ActivitiesDetails />
       <ActivitiesGrid />
+      <FAQsec />
     </>
   );
 }

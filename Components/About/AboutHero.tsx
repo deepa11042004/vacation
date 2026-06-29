@@ -6,7 +6,7 @@ import { Minus } from "lucide-react";
 import CtaButton from "@/UI/CtaButton";
 import Badge from "@/UI/Badge";
 
-export default function Hero() {
+export default function AboutHero() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const foregroundContainer: Variants = {
@@ -39,7 +39,7 @@ export default function Hero() {
         className="absolute inset-0 h-full w-full object-cover"
       >
         <source
-          src="https://pedroneves-duall.github.io/insider-videos/hero.mp4"
+          src="https://framerusercontent.com/assets/FbbDIPpgYoFIpJtJ5r8AWpO7aM.mp4"
           type="video/mp4"
         />
       </motion.video>
@@ -71,15 +71,13 @@ export default function Hero() {
           variants={foregroundItem}
           className="text-4xl md:text-5xl lg:text-7xl font-medium leading-[1.1] text-white"
         >
-          Explore beyond the
-          <br />
-          map With Tourvia
+          Our Story, <br /> Your Journey
         </motion.h1>
 
         <motion.div variants={foregroundItem}>
           <CtaButton
             className="my-5"
-            text="Book Now"
+            text="Explore Packages"
             variant="white"
             size="sm"
           />

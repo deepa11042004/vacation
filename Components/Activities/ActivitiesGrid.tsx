@@ -13,21 +13,21 @@ const ACTIVITY_COLUMNS = [
       id: 1,
       title: "Desert Safari",
       image:
-        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/29306297/pexels-photo-29306297.jpeg",
       aspect: "aspect-[3/4]",
     },
     {
       id: 2,
       title: "Paragliding",
       image:
-        "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/3551078/pexels-photo-3551078.jpeg",
       aspect: "aspect-square",
     },
     {
       id: 3,
       title: "River Rafting",
       image:
-        "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/33732201/pexels-photo-33732201.jpeg",
       aspect: "aspect-[3/4]",
     },
   ],
@@ -36,21 +36,21 @@ const ACTIVITY_COLUMNS = [
       id: 4,
       title: "Scuba Diving",
       image:
-        "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/11060853/pexels-photo-11060853.jpeg",
       aspect: "aspect-[4/5]",
     },
     {
       id: 5,
       title: "Jet Skiing",
       image:
-        "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/18636557/pexels-photo-18636557.jpeg",
       aspect: "aspect-[3/4]",
     },
     {
       id: 6,
       title: "Bungy Jumping",
       image:
-        "https://images.unsplash.com/photo-1483168527879-c66136b56105?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/27471607/pexels-photo-27471607.jpeg",
       aspect: "aspect-square",
     },
   ],
@@ -59,21 +59,21 @@ const ACTIVITY_COLUMNS = [
       id: 7,
       title: "Surfing",
       image:
-        "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/5007332/pexels-photo-5007332.jpeg",
       aspect: "aspect-[4/5]",
     },
     {
       id: 8,
       title: "Skydiving",
       image:
-        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/28544954/pexels-photo-28544954.jpeg",
       aspect: "aspect-[3/4]",
     },
     {
       id: 9,
       title: "Alpine Cable Cars",
       image:
-        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+        "https://images.pexels.com/photos/28202478/pexels-photo-28202478.jpeg",
       aspect: "aspect-[3/4]",
     },
   ],

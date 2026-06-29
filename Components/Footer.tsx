@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import CtaButton from "@/UI/CtaButton";
 
@@ -9,20 +8,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative w-full h-145 sm:h-125 overflow-hidden text-white flex items-end">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          fill
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80"
-          alt="Aerial ocean island scenery background"
-          sizes="100vw"
-          className="object-cover brightness-75"
-        />
-        {/* white fog */}
-        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white via-white/40 to-transparent" />
-      </div>
-
+    <footer className="relative h-screen w-full bg-black overflow-hidden text-white flex items-end">
       {/* Main Content Hub */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-10 flex flex-col justify-between h-full pt-36">
         {/* Top Row: Navigation Links + Centered Call To Action */}
@@ -32,7 +18,7 @@ export default function Footer() {
             <h4 className="text-sm font-bold tracking-wider text-white uppercase">
               Main Page
             </h4>
-            <nav className="flex flex-col gap-2 text-xs font-medium text-neutral-300">
+            <nav className="flex flex-col gap-2 text-sm font-medium text-neutral-300">
               <Link href="/" className="hover:text-white transition-colors">
                 Home
               </Link>
@@ -76,7 +62,7 @@ export default function Footer() {
             <h4 className="text-sm font-bold tracking-wider text-white uppercase">
               Social Media
             </h4>
-            <nav className="flex flex-col gap-2 text-xs font-medium text-neutral-300">
+            <nav className="flex flex-col gap-2 text-sm font-medium text-neutral-300">
               <a
                 href="https://instagram.com"
                 target="_blank"
@@ -114,7 +100,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Row: Legalities & Metadata Lockup */}
-        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-medium text-neutral-300 select-none">
+        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-neutral-300 select-none">
           <p>© {currentYear} Tourvia. All Rights Reserved.</p>
           <div className="flex items-center gap-6">
             <Link
