@@ -19,7 +19,7 @@ export default function LuxuryContactBooking() {
           {/* Location Block */}
           <div className="space-y-3 pt-4">
             <h3 className="text-4xl font-semibold text-black">Location</h3>
-            <p className="text-base font-semibold leading-relaxed opacity-80">
+            <p className="text-base font-medium leading-relaxed text-black">
               7 Basta Lane, Mala Strana <br /> Prague 1, 11800
             </p>
             <div>
@@ -32,7 +32,7 @@ export default function LuxuryContactBooking() {
           {/* Reservations Block */}
           <div className="space-y-3">
             <h3 className="text-4xl font-semibold text-black">Reservations</h3>
-            <p className="text-sm font-semibold leading-relaxed opacity-60 max-w-sm">
+            <p className="text-sm font-medium leading-relaxed text-black max-w-sm">
               Need help booking your stay or managing an existing reservation?
             </p>
             <div>
@@ -43,7 +43,7 @@ export default function LuxuryContactBooking() {
           {/* Contact Block */}
           <div className="space-y-3">
             <h3 className="text-4xl font-semibold text-black">Contact</h3>
-            <p className="text-sm font-semibold leading-relaxed opacity-60 max-w-sm">
+            <p className="text-sm font-medium leading-relaxed text-black max-w-sm">
               For general inquiries or special requests, our team is available
               every day.
             </p>
@@ -61,25 +61,25 @@ export default function LuxuryContactBooking() {
               <h3 className="text-4xl font-semibold text-black">
                 Stay connected with us
               </h3>
-              <p className="text-sm font-semibold opacity-60">
+              <p className="text-sm font-medium leading-relaxed text-black max-w-sm">
                 For general inquiries or special requests, our team is available
                 every day.
               </p>
             </div>
 
-            <div className="border border-black/10 p-8 rounded-sm space-y-6 bg-white">
-              <div className="flex items-center border-b border-black/10 py-3">
-                <span className="text-[10px] uppercase tracking-widest opacity-40 font-semibold w-24">
+            <div className="border border-black/50 p-8 rounded-sm space-y-6 bg-white">
+              <div className="flex items-center border-b border-black/50 py-3">
+                <span className="text-[10px] uppercase tracking-widest opacity-50 font-semibold w-24">
                   Name
                 </span>
                 <input
                   type="text"
-                  defaultValue="George"
+                  defaultValue="joe"
                   className="bg-transparent border-none p-0 outline-none text-sm font-semibold w-full focus:ring-0 text-black"
                 />
               </div>
-              <div className="flex items-center border-b border-black/10 py-3">
-                <span className="text-[10px] uppercase tracking-widest opacity-40 font-semibold w-24">
+              <div className="flex items-center border-b border-black/50 py-3">
+                <span className="text-[10px] uppercase tracking-widest opacity-50 font-semibold w-24">
                   Email
                 </span>
                 <input

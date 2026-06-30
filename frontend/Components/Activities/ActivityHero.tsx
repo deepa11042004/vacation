@@ -33,13 +33,14 @@ export default function ActivityHero() {
         loop
         muted
         playsInline
+        preload="auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
         className="absolute inset-0 h-full w-full object-cover"
       >
         <source
-          src="https://travlla-psi.vercel.app/video/Scuba%20Diving.mp4"
+          src="https://www.pexels.com/download/video/33456625/"
           type="video/mp4"
         />
       </motion.video>

@@ -31,7 +31,7 @@ export default function Stay() {
   const phase3Ref = useRef<HTMLDivElement>(null);
 
   /* Carousel dynamic active state */
-  
+
   const [activeCard, setActiveCard] = useState(0);
 
   const { scrollYProgress: scrollPhase12 } = useScroll({
@@ -61,7 +61,7 @@ export default function Stay() {
   const rightImageOpacity = useTransform(scrollPhase12, [0, 0.4], [1, 0]);
 
   const textStatement =
-    "Cozy interiors, warm tones, and thoughtful details that make every stay feel personal.";
+    "Cozy Interiors, Warm Tones, and Thoughtful Details That Make Every Stay Feel Personal.";
   const words = textStatement.split(" ");
 
   const orbitImages = [
@@ -72,45 +72,38 @@ export default function Stay() {
     "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=400&q=80",
   ];
 
-  
   /* Expanded dataset for the coastal expanding carousel */
-  
+
   const carouselCards = [
     {
-      badge: "NEWS",
-      title: "Tiptoe Simplicity with Honolua Blomfield",
-      time: "5 mins ago",
-      src: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80",
+      badge: "WELLNESS",
+      title: "Rejuvenate Your Senses at The Serenity Spa",
+      src: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
     },
     {
-      badge: "NEWS",
-      title: "Ocean Wave of the Decade Contender",
-      time: "35 mins ago",
-      src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+      badge: "EXCLUSIVE",
+      title: "Your Private Oasis: Infinity Pool & Cabanas",
+      src: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80",
     },
     {
-      badge: "GALLERY",
-      title: "Board Review: John John Florence & Jon Pyzel",
-      time: "Yesterday",
-      src: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=800&q=80",
+      badge: "DINING",
+      title: "A Culinary Journey: Farm-to-Table Fine Dining",
+      src: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
     },
     {
-      badge: "ESCAPE",
-      title: "Hidden Coves and Saltwater Shrines of the Basque Coast",
-      time: "2 days ago",
-      src: "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=800&q=80",
+      badge: "RELAXATION",
+      title: "Unwind in Our Rooftop Lounge & Bar",
+      src: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80",
     },
     {
-      badge: "CULTURE",
-      title: "Morning Rituals: The Art of Unhurried Coastal Brewing",
-      time: "1 week ago",
-      src: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+      badge: "FITNESS",
+      title: "State-of-the-Art Gym & Yoga Studio",
+      src: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
     },
   ];
 
-  
   /* Carousel navigation button handlers */
-  
+
   const handlePrev = () => {
     setActiveCard((prev) => (prev === 0 ? carouselCards.length - 1 : prev - 1));
   };
@@ -127,11 +120,16 @@ export default function Stay() {
         className="min-h-[140vh] w-full flex flex-col justify-start relative pt-16 bg-white"
       >
         <div className="text-center mb-12 px-6">
-          <Badge icon={Minus} text="Boutique Hotel" variant="black" className="mb-3 uppercase tracking-widest" />
+          <Badge
+            icon={Minus}
+            text="Stays"
+            variant="black"
+            className="mb-3 tracking-widest"
+          />
           <h1 className="font-bold text-4xl md:text-6xl tracking-wide max-w-4xl mx-auto leading-tight text-black">
-            A Boutique Escape <br /> In Timeless Streets
+            Beyond the Map, <br /> Into Your Perfect Stay
           </h1>
-          <p className="text-sm tracking-[0.3em] text-black/40 mt-6 flex items-center justify-center gap-2">
+          <p className="text-sm tracking-[0.3em] text-black mt-6 flex items-center justify-center gap-2">
             Scroll to uncover ↓
           </p>
         </div>
@@ -186,8 +184,13 @@ export default function Stay() {
         ref={phase3Ref}
         className="min-h-[50vh] w-full bg-white flex flex-col items-center justify-center"
       >
-        <Badge icon={Minus} text="Boutique Hotel" variant="black" className="mb-6 uppercase tracking-widest" />
-        <h2 className="text-3xl md:text-6xl text-center font-semibold max-w-6xl uppercase leading-relaxed tracking-wide text-black">
+        <Badge
+          icon={Minus}
+          text="Provided Rooms"
+          variant="black"
+          className="mb-6 tracking-widest"
+        />
+        <h2 className="text-3xl md:text-6xl text-center font-semibold max-w-5xl leading-relaxed tracking-wide text-black">
           {words.map((word, idx) => (
             <RevealWord
               key={idx}
@@ -269,7 +272,12 @@ export default function Stay() {
           {/* Header Layout with integrated Left/Right Control Buttons */}
           <div className="flex items-end justify-between mb-12">
             <div>
-              <Badge icon={Minus} text="Journal & Updates" variant="black" className="mb-3 uppercase tracking-widest" />
+              <Badge
+                icon={Minus}
+                text="Journal & Updates"
+                variant="black"
+                className="mb-3 uppercase tracking-widest"
+              />
               <h2 className="font-bold text-3xl md:text-5xl tracking-wide text-black">
                 Stories From The Coast
               </h2>
@@ -313,7 +321,12 @@ export default function Stay() {
 
                   {/* Absolute Badge elements inside cards */}
                   <div className="absolute top-6 left-6 z-20">
-                    <Badge icon={Minus} text={card.badge} variant="white" size="sm" />
+                    <Badge
+                      icon={Minus}
+                      text={card.badge}
+                      variant="white"
+                      size="sm"
+                    />
                   </div>
 
                   {/* Text Overlay Layout */}
@@ -331,19 +344,6 @@ export default function Stay() {
                       >
                         {card.title}
                       </h4>
-                      {isActive && (
-                        <>
-                          <p className="text-[11px] opacity-60 font-mono">
-                            {card.time}
-                          </p>
-                          <div className="pt-2 flex items-center gap-2 text-xs font-semibold tracking-wider opacity-90 hover:opacity-100">
-                            <span className="w-5 h-5 rounded-full border border-white/40 flex items-center justify-center text-sm">
-                              →
-                            </span>
-                            Read more
-                          </div>
-                        </>
-                      )}
                     </motion.div>
                   </div>
                 </motion.div>
@@ -359,7 +359,12 @@ export default function Stay() {
         <div className="absolute w-262.5 h-262.5 md:w-275 md:h-275 border border-gray-300 rounded-full pointer-events-none" />
 
         <div className="text-center space-y-8 max-w-2xl px-6 z-10">
-          <Badge icon={Minus} text="Boutique Experience" variant="black" className="mb-6 uppercase tracking-[0.4em]" />
+          <Badge
+            icon={Minus}
+            text="Boutique Experience"
+            variant="black"
+            className="mb-6 uppercase tracking-[0.4em]"
+          />
           <h2 className="font-semibold text-5xl md:text-7xl tracking-wide leading-tight text-black">
             Enjoy A Cozy <br /> Weekend Stay
           </h2>

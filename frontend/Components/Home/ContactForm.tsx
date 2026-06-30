@@ -144,11 +144,11 @@ export default function ContactForm() {
             <motion.div
               key={field.id}
               variants={rowVariants}
-              className="grid grid-cols-[110px_1fr] md:grid-cols-[130px_1fr] items-baseline gap-4 border-b border-black/10 py-4"
+              className="grid grid-cols-[110px_1fr] md:grid-cols-[130px_1fr] items-baseline gap-4 border-b border-black/50 py-4"
             >
               <label
                 htmlFor={field.id}
-                className="text-[11px] tracking-[0.2em] text-black/40 uppercase"
+                className="text-[11px] tracking-[0.2em] opacity-50 uppercase"
               >
                 {field.label}
               </label>
