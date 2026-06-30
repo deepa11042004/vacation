@@ -1,0 +1,36 @@
+{
+  "name": "vacation-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Travel CRM",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 4000",
+    "build": "next build",
+    "start": "next start -p 4000",
+    "lint": "next lint",
+    "migrate": "sequelize-cli db:migrate",
+    "migrate:undo": "sequelize-cli db:migrate:undo"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "mysql2": "^3.9.7",
+    "next": "15.0.0",
+    "next-swagger-doc": "^0.4.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37.3",
+    "sequelize-typescript": "^2.1.6",
+    "swagger-ui-react": "^5.32.8",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/swagger-ui-react": "^5.18.0",
+    "sequelize-cli": "^6.6.5",
+    "typescript": "^5"
+  }
+}
