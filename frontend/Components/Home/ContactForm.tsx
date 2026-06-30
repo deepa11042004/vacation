@@ -125,7 +125,7 @@ export default function ContactForm() {
       >
         <div className="text-center mb-12">
           <Badge icon={Minus} text="Book Now" variant="black" className="uppercase tracking-[0.5em]" />
-          <h2 className="mt-5 font-serif text-4xl md:text-5xl leading-tight text-black">
+          <h2 className="mt-5 font-semibold text-4xl md:text-5xl leading-tight text-black">
             Your perfect stay
             <br />
             starts right here

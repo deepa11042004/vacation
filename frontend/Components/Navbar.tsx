@@ -23,7 +23,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
-  const useLightStyle = isScrolled || pathname === "/stays" || pathname === "/contact";
+  const useLightStyle = isScrolled || pathname === "/stays" || pathname === "/contact" || pathname === "/join";
 
   useEffect(() => {
     const handleScroll = () => {

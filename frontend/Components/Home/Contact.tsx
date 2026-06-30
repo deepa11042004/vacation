@@ -67,7 +67,7 @@ export default function LuxuryContactBooking() {
               </p>
             </div>
 
-            <div className="border border-black/50 p-8 rounded-sm space-y-6 bg-white">
+            <div className="border border-black/10 p-8 rounded-sm space-y-6 bg-white">
               <div className="flex items-center border-b border-black/50 py-3">
                 <span className="text-[10px] uppercase tracking-widest opacity-50 font-semibold w-24">
                   Name
@@ -97,7 +97,7 @@ export default function LuxuryContactBooking() {
 
           {/* Absolute Title Overlay */}
           <div className="hidden lg:block absolute right-0 top-[18%] translate-x-1/2 z-20 pointer-events-none">
-            <h1 className="text-6xl xl:text-7xl tracking-tight leading-[0.95] uppercase font-semibold text-black bg-white py-4 px-6 select-none">
+            <h1 className="text-6xl xl:text-7xl tracking-tight leading-[0.95] font-semibold text-black bg-white py-4 px-6 select-none">
               Book Your <br /> Experience
             </h1>
           </div>
@@ -106,8 +106,8 @@ export default function LuxuryContactBooking() {
         {/* Right Image */}
         <div className="lg:col-span-6 min-h-[50vh] lg:min-h-screen relative bg-neutral-100 border-l border-black/10 z-10">
           <Image
-            src="https://images.pexels.com/photos/15263559/pexels-photo-15263559.jpeg"
-            alt="Atmospheric architecture at night"
+            src="/Img/contact.webp"
+            alt="floor"
             fill
             className="object-cover object-center"
             priority

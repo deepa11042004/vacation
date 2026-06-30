@@ -190,7 +190,7 @@ export default function Stay() {
           variant="black"
           className="mb-6 tracking-widest"
         />
-        <h2 className="text-3xl md:text-6xl text-center font-semibold max-w-5xl leading-relaxed tracking-wide text-black">
+        <h2 className="text-3xl md:text-6xl text-center font-medium max-w-[80%] leading-relaxed tracking-wide text-black">
           {words.map((word, idx) => (
             <RevealWord
               key={idx}
