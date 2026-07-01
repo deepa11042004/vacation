@@ -2,23 +2,24 @@ import { z } from 'zod';
 import { ClientStatus, Gender } from '../types/client.types';
 
 export const CreateClientSchema = z.object({
+  title: z.string().max(10).optional(),
   first_name: z.string().min(1, 'First name is required').max(50),
-  middle_name: z.string().max(50).optional(),
+  middle_name: z.string().max(50).optional().nullable(),
   last_name: z.string().min(1, 'Last name is required').max(50),
   gender: z.nativeEnum(Gender, {
     errorMap: () => ({ message: 'Invalid gender' }),
   }),
-  date_of_birth: z.coerce.date().optional(),
-  mobile: z.string().min(10).max(15),
-  alternate_mobile: z.string().max(15).optional(),
+  date_of_birth: z.coerce.date().optional().nullable(),
+  mobile: z.string().min(10, 'Mobile must be at least 10 characters').max(15),
+  alternate_mobile: z.string().max(15).optional().nullable(),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters').optional(),
   country_code: z.string().min(1).max(5),
-  profile_photo: z.string().url().optional(),
+  profile_photo: z.string().url('Profile photo must be a valid URL').optional().nullable(),
   status: z.nativeEnum(ClientStatus).optional(),
+  remarks: z.string().optional().nullable(),
+  created_by: z.number().int().optional().nullable(),
 });
 
 export const UpdateClientSchema = CreateClientSchema.partial().extend({
-  email_verified: z.boolean().optional(),
-  mobile_verified: z.boolean().optional(),
+  updated_by: z.number().int().optional().nullable(),
 });

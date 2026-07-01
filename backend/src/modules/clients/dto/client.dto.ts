@@ -1,33 +1,35 @@
 import { ClientStatus, Gender } from '../types/client.types';
 
 export interface CreateClientDTO {
+  title?: string | null;
   first_name: string;
-  middle_name?: string;
+  middle_name?: string | null;
   last_name: string;
   gender: Gender;
-  date_of_birth?: Date;
+  date_of_birth?: Date | null;
   mobile: string;
-  alternate_mobile?: string;
+  alternate_mobile?: string | null;
   email: string;
-  password?: string; // Controller might receive password, service will hash it
   country_code: string;
-  profile_photo?: string;
+  profile_photo?: string | null;
   status?: ClientStatus; // optional, default ACTIVE
+  remarks?: string | null;
+  created_by?: number | null;
 }
 
 export interface UpdateClientDTO {
+  title?: string | null;
   first_name?: string;
-  middle_name?: string;
+  middle_name?: string | null;
   last_name?: string;
   gender?: Gender;
-  date_of_birth?: Date;
+  date_of_birth?: Date | null;
   mobile?: string;
-  alternate_mobile?: string;
+  alternate_mobile?: string | null;
   email?: string;
-  password?: string;
   country_code?: string;
-  profile_photo?: string;
+  profile_photo?: string | null;
   status?: ClientStatus;
-  email_verified?: boolean;
-  mobile_verified?: boolean;
+  remarks?: string | null;
+  updated_by?: number | null;
 }

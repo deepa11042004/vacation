@@ -4,7 +4,7 @@ import {
   Model,
   DataType,
   PrimaryKey,
-  IsUUID,
+  AutoIncrement,
   Default,
   Unique,
   CreatedAt,
@@ -21,15 +21,18 @@ import { ClientStatus, Gender } from '../types/client.types';
   paranoid: true, // Enables soft deletes (deleted_at)
 })
 export class Client extends Model<IClient, Partial<IClient>> implements IClient {
-  @IsUUID(4)
   @PrimaryKey
-  @Default(DataType.UUIDV4)
-  @Column(DataType.UUID)
-  client_id!: string;
+  @AutoIncrement
+  @Column(DataType.INTEGER)
+  client_id!: number;
 
   @Unique
   @Column(DataType.STRING(20))
   client_code!: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(10))
+  title?: string | null;
 
   @AllowNull(false)
   @Column(DataType.STRING(50))
@@ -37,7 +40,7 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
 
   @AllowNull(true)
   @Column(DataType.STRING(50))
-  middle_name?: string;
+  middle_name?: string | null;
 
   @AllowNull(false)
   @Column(DataType.STRING(50))
@@ -49,7 +52,7 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
 
   @AllowNull(true)
   @Column(DataType.DATEONLY)
-  date_of_birth?: Date;
+  date_of_birth?: Date | null;
 
   @Unique
   @AllowNull(false)
@@ -58,16 +61,12 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
 
   @AllowNull(true)
   @Column(DataType.STRING(15))
-  alternate_mobile?: string;
+  alternate_mobile?: string | null;
 
   @Unique
   @AllowNull(false)
   @Column(DataType.STRING(100))
   email!: string;
-
-  @AllowNull(true)
-  @Column(DataType.STRING(255))
-  password?: string;
 
   @AllowNull(false)
   @Column(DataType.STRING(5))
@@ -75,30 +74,24 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
 
   @AllowNull(true)
   @Column(DataType.STRING(255))
-  profile_photo?: string;
+  profile_photo?: string | null;
 
   @Default(ClientStatus.ACTIVE)
   @AllowNull(false)
   @Column(DataType.ENUM(...Object.values(ClientStatus)))
   status!: ClientStatus;
 
-  @Default(false)
-  @AllowNull(false)
-  @Column(DataType.BOOLEAN)
-  email_verified!: boolean;
-
-  @Default(false)
-  @AllowNull(false)
-  @Column(DataType.BOOLEAN)
-  mobile_verified!: boolean;
+  @AllowNull(true)
+  @Column(DataType.TEXT)
+  remarks?: string | null;
 
   @AllowNull(true)
-  @Column(DataType.UUID)
-  created_by?: string;
+  @Column(DataType.INTEGER)
+  created_by?: number | null;
 
   @AllowNull(true)
-  @Column(DataType.UUID)
-  updated_by?: string;
+  @Column(DataType.INTEGER)
+  updated_by?: number | null;
 
   @CreatedAt
   @Column(DataType.DATE)

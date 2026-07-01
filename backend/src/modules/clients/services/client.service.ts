@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt';
 import { ClientRepository } from '../repositories/client.repository';
 import { CreateClientDTO, UpdateClientDTO } from '../dto/client.dto';
 import { ClientFilterOptions } from '../types/client.types';
@@ -26,59 +25,38 @@ export class ClientService {
       throw new AppError(CLIENT_CONSTANTS.ERRORS.MOBILE_EXISTS, 400);
     }
 
-    // 3. Generate client_code
+    // 3. Generate client_code CLI-000001, CLI-000002
     const lastClient = await this.clientRepository.findLastClient();
-    let newCodeNumber = 1;
+    let nextId = 1;
     if (lastClient && lastClient.client_code) {
-      const parts = lastClient.client_code.split('-');
-      if (parts.length === 2) {
-        newCodeNumber = parseInt(parts[1], 10) + 1;
+      const match = lastClient.client_code.match(/\d+/);
+      if (match) {
+        nextId = parseInt(match[0], 10) + 1;
       }
     }
-    const client_code = `CLI-${newCodeNumber.toString().padStart(6, '0')}`;
+    const client_code = `CLI-${nextId.toString().padStart(6, '0')}`;
 
-    // 4. Hash password if provided
-    let password = data.password;
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      password = await bcrypt.hash(password, salt);
-    }
-
-    // 5. Create
+    // 4. Create
     const clientData: Partial<IClient> = {
       ...data,
       client_code,
-      password,
     };
 
     const newClient = await this.clientRepository.create(clientData);
-    
-    // Remove password from returned data
-    const clientResponse = newClient.toJSON();
-    delete clientResponse.password;
-    
-    return clientResponse;
+    return newClient.toJSON();
   }
 
-  async getClientById(client_id: string) {
+  async getClientById(client_id: number) {
     const client = await this.clientRepository.findById(client_id);
     if (!client) {
       throw new AppError(CLIENT_CONSTANTS.ERRORS.NOT_FOUND, 404);
     }
-    const clientResponse = client.toJSON();
-    delete clientResponse.password;
-    return clientResponse;
+    return client.toJSON();
   }
 
   async getAllClients(filters: ClientFilterOptions) {
     const { rows, count } = await this.clientRepository.findAll(filters);
-    
-    // Omit passwords
-    const clients = rows.map((client) => {
-      const clientJson = client.toJSON();
-      delete clientJson.password;
-      return clientJson;
-    });
+    const clients = rows.map((client) => client.toJSON());
 
     return {
       clients,
@@ -88,7 +66,7 @@ export class ClientService {
     };
   }
 
-  async updateClient(client_id: string, data: UpdateClientDTO) {
+  async updateClient(client_id: number, data: UpdateClientDTO) {
     // 1. Verify existence
     const client = await this.clientRepository.findById(client_id);
     if (!client) {
@@ -110,20 +88,11 @@ export class ClientService {
       }
     }
 
-    // 3. Hash password if being updated
-    let password = data.password;
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      password = await bcrypt.hash(password, salt);
-      data.password = password;
-    }
-
     await this.clientRepository.update(client_id, data);
-    
     return this.getClientById(client_id);
   }
 
-  async softDeleteClient(client_id: string) {
+  async softDeleteClient(client_id: number) {
     const client = await this.clientRepository.findById(client_id);
     if (!client) {
       throw new AppError(CLIENT_CONSTANTS.ERRORS.NOT_FOUND, 404);
@@ -133,7 +102,7 @@ export class ClientService {
     return { message: 'Client deleted successfully' };
   }
 
-  async restoreClient(client_id: string) {
+  async restoreClient(client_id: number) {
     const client = await this.clientRepository.findByIdWithDeleted(client_id);
     if (!client) {
       throw new AppError(CLIENT_CONSTANTS.ERRORS.NOT_FOUND, 404);

@@ -5,11 +5,21 @@ import { ResponseUtil } from '../../../shared/utils/response.util';
 import { errorHandler } from '../../../shared/middlewares/error.middleware';
 import { ClientStatus } from '../types/client.types';
 import { connectDB } from '../../../shared/database/sequelize';
+import { CLIENT_CONSTANTS } from '../constants/client.constants';
+import { AppError } from '../../../shared/middlewares/error.middleware';
 
 const clientService = new ClientService();
 
 export class ClientController {
   
+  private static parseId(idStr: string): number {
+    const id = parseInt(idStr, 10);
+    if (isNaN(id) || id <= 0) {
+      throw new AppError(CLIENT_CONSTANTS.ERRORS.INVALID_ID, 400);
+    }
+    return id;
+  }
+
   static async create(req: NextRequest) {
     try {
       await connectDB();
@@ -52,11 +62,10 @@ export class ClientController {
     }
   }
 
-  static async getById(req: NextRequest, id: string) {
+  static async getById(req: NextRequest, idStr: string) {
     try {
       await connectDB();
-      if (!id) throw new Error('Client ID is required');
-
+      const id = this.parseId(idStr);
       const result = await clientService.getClientById(id);
 
       return NextResponse.json(
@@ -68,11 +77,10 @@ export class ClientController {
     }
   }
 
-  static async update(req: NextRequest, id: string) {
+  static async update(req: NextRequest, idStr: string) {
     try {
       await connectDB();
-      if (!id) throw new Error('Client ID is required');
-
+      const id = this.parseId(idStr);
       const body = await req.json();
       const validatedData = UpdateClientSchema.parse(body);
 
@@ -87,11 +95,10 @@ export class ClientController {
     }
   }
 
-  static async delete(req: NextRequest, id: string) {
+  static async delete(req: NextRequest, idStr: string) {
     try {
       await connectDB();
-      if (!id) throw new Error('Client ID is required');
-
+      const id = this.parseId(idStr);
       const result = await clientService.softDeleteClient(id);
 
       return NextResponse.json(
@@ -103,11 +110,10 @@ export class ClientController {
     }
   }
 
-  static async restore(req: NextRequest, id: string) {
+  static async restore(req: NextRequest, idStr: string) {
     try {
       await connectDB();
-      if (!id) throw new Error('Client ID is required');
-
+      const id = this.parseId(idStr);
       const result = await clientService.restoreClient(id);
 
       return NextResponse.json(
