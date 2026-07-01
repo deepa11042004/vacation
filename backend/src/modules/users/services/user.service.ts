@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { Transaction } from 'sequelize';
 import { UserRepository } from '../repositories/user.repository';
 import { CreateUserDTO, UpdateUserDTO } from '../dto/user.dto';
 import { UserFilterOptions } from '../types/user.types';
@@ -19,7 +20,7 @@ export class UserService {
     return userJson;
   }
 
-  async createUser(data: CreateUserDTO) {
+  async createUser(data: CreateUserDTO, transaction?: Transaction) {
     const existingEmail = await this.userRepository.findByEmail(data.email);
     if (existingEmail) {
       throw new AppError(USER_CONSTANTS.ERRORS.EMAIL_EXISTS, 400);
@@ -33,7 +34,7 @@ export class UserService {
       password: hashedPassword,
     };
 
-    const newUser = await this.userRepository.create(userData);
+    const newUser = await this.userRepository.create(userData, transaction);
     return this.sanitizeUser(newUser.toJSON());
   }
 

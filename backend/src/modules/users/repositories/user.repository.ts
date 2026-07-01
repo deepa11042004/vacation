@@ -1,15 +1,15 @@
-import { Op } from 'sequelize';
-
-const MAX_LIMIT = 100;
+import { Op, Transaction } from 'sequelize';
 import { User } from '../models/User.model';
 import { Client } from '../../clients/models/Client.model';
 import { UpdateUserDTO } from '../dto/user.dto';
 import { UserFilterOptions } from '../types/user.types';
 import { IUser } from '../interfaces/user.interface';
 
+const MAX_LIMIT = 100;
+
 export class UserRepository {
-  async create(data: Partial<IUser>): Promise<User> {
-    return await User.create(data);
+  async create(data: Partial<IUser>, transaction?: Transaction): Promise<User> {
+    return await User.create(data, { transaction });
   }
 
   async findById(user_id: number): Promise<User | null> {
