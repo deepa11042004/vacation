@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Client } from '../../modules/clients/models/Client.model';
 import { User } from '../../modules/users/models/User.model';
+import { Package } from '../../modules/packages/models/Package.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -14,8 +15,9 @@ export const sequelize = new Sequelize({
   logging: env === 'development' ? console.log : false,
   models: [
     Client,
-    User
-  ], // Register models here
+    User,
+    Package,
+  ],
 });
 
 let dbConnected = false;
