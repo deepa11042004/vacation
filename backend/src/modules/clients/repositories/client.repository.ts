@@ -1,12 +1,14 @@
-import { Op } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import { Client } from '../models/Client.model';
 import { UpdateClientDTO } from '../dto/client.dto';
 import { ClientFilterOptions } from '../types/client.types';
 import { IClient } from '../interfaces/client.interface';
 
+const MAX_LIMIT = 100;
+
 export class ClientRepository {
-  async create(data: Partial<IClient>): Promise<Client> {
-    return await Client.create(data);
+  async create(data: Partial<IClient>, transaction?: Transaction): Promise<Client> {
+    return await Client.create(data, { transaction });
   }
 
   async findById(client_id: number): Promise<Client | null> {
@@ -25,16 +27,10 @@ export class ClientRepository {
     return await Client.findOne({ where: { mobile } });
   }
 
-  async findLastClient(): Promise<Client | null> {
-    return await Client.findOne({
-      order: [['client_id', 'DESC']],
-      paranoid: false,
-    });
-  }
-
   async findAll(filters: ClientFilterOptions = {}): Promise<{ rows: Client[]; count: number }> {
     const { search, status, page = 1, limit = 10 } = filters;
-    const offset = (page - 1) * limit;
+    const cappedLimit = Math.min(limit, MAX_LIMIT);
+    const offset = (page - 1) * cappedLimit;
 
     const where: any = {};
 
@@ -54,7 +50,7 @@ export class ClientRepository {
 
     return await Client.findAndCountAll({
       where,
-      limit,
+      limit: cappedLimit,
       offset,
       order: [['created_at', 'DESC']],
     });

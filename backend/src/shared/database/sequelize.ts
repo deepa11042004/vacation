@@ -18,11 +18,16 @@ export const sequelize = new Sequelize({
   ], // Register models here
 });
 
+let dbConnected = false;
+
 export const connectDB = async () => {
+  if (dbConnected) return;
   try {
     await sequelize.authenticate();
+    dbConnected = true;
     console.log('Database connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
+    throw error;
   }
 };

@@ -4,6 +4,7 @@ import { ClientFilterOptions } from '../types/client.types';
 import { CLIENT_CONSTANTS } from '../constants/client.constants';
 import { AppError } from '../../../shared/middlewares/error.middleware';
 import { IClient } from '../interfaces/client.interface';
+import { sequelize } from '../../../shared/database/sequelize';
 
 export class ClientService {
   private clientRepository: ClientRepository;
@@ -13,37 +14,35 @@ export class ClientService {
   }
 
   async createClient(data: CreateClientDTO) {
-    // 1. Check unique email
     const existingEmail = await this.clientRepository.findByEmail(data.email);
     if (existingEmail) {
       throw new AppError(CLIENT_CONSTANTS.ERRORS.EMAIL_EXISTS, 400);
     }
 
-    // 2. Check unique mobile
     const existingMobile = await this.clientRepository.findByMobile(data.mobile);
     if (existingMobile) {
       throw new AppError(CLIENT_CONSTANTS.ERRORS.MOBILE_EXISTS, 400);
     }
 
-    // 3. Generate client_code CLI-000001, CLI-000002
-    const lastClient = await this.clientRepository.findLastClient();
-    let nextId = 1;
-    if (lastClient && lastClient.client_code) {
-      const match = lastClient.client_code.match(/\d+/);
-      if (match) {
-        nextId = parseInt(match[0], 10) + 1;
-      }
+    const t = await sequelize.transaction();
+    try {
+      // Use a unique temp code — replaced atomically inside the transaction
+      const tempCode = `T${Date.now()}${Math.random().toString(36).slice(2, 8)}`.slice(0, 20);
+      const newClient = await this.clientRepository.create(
+        { ...(data as Partial<IClient>), client_code: tempCode },
+        t,
+      );
+
+      // Derive code from the DB-assigned auto-increment PK — no race condition possible
+      const client_code = `CLI-${newClient.client_id.toString().padStart(6, '0')}`;
+      await newClient.update({ client_code }, { transaction: t });
+      await t.commit();
+
+      return newClient.toJSON();
+    } catch (error) {
+      await t.rollback();
+      throw error;
     }
-    const client_code = `CLI-${nextId.toString().padStart(6, '0')}`;
-
-    // 4. Create
-    const clientData: Partial<IClient> = {
-      ...data,
-      client_code,
-    };
-
-    const newClient = await this.clientRepository.create(clientData);
-    return newClient.toJSON();
   }
 
   async getClientById(client_id: number) {
@@ -67,13 +66,11 @@ export class ClientService {
   }
 
   async updateClient(client_id: number, data: UpdateClientDTO) {
-    // 1. Verify existence
     const client = await this.clientRepository.findById(client_id);
     if (!client) {
       throw new AppError(CLIENT_CONSTANTS.ERRORS.NOT_FOUND, 404);
     }
 
-    // 2. Check unique constraints if updating email/mobile
     if (data.email && data.email !== client.email) {
       const existingEmail = await this.clientRepository.findByEmail(data.email);
       if (existingEmail) {
@@ -99,7 +96,6 @@ export class ClientService {
     }
 
     await this.clientRepository.delete(client_id);
-    return { message: 'Client deleted successfully' };
   }
 
   async restoreClient(client_id: number) {
@@ -113,6 +109,5 @@ export class ClientService {
     }
 
     await this.clientRepository.restore(client_id);
-    return { message: 'Client restored successfully' };
   }
 }

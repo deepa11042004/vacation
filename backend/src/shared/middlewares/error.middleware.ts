@@ -37,7 +37,7 @@ export function errorHandler(error: unknown) {
 
   if (error instanceof Error) {
     return NextResponse.json(
-      ResponseUtil.failure(error.message),
+      ResponseUtil.failure('Internal Server Error'),
       { status: 500 }
     );
   }

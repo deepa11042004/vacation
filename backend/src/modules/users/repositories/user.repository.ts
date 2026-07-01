@@ -1,4 +1,6 @@
 import { Op } from 'sequelize';
+
+const MAX_LIMIT = 100;
 import { User } from '../models/User.model';
 import { Client } from '../../clients/models/Client.model';
 import { UpdateUserDTO } from '../dto/user.dto';
@@ -29,7 +31,8 @@ export class UserRepository {
 
   async findAll(filters: UserFilterOptions = {}): Promise<{ rows: User[]; count: number }> {
     const { search, role, status, page = 1, limit = 10 } = filters;
-    const offset = (page - 1) * limit;
+    const cappedLimit = Math.min(limit, MAX_LIMIT);
+    const offset = (page - 1) * cappedLimit;
 
     const where: any = {};
 
@@ -49,7 +52,7 @@ export class UserRepository {
 
     return await User.findAndCountAll({
       where,
-      limit,
+      limit: cappedLimit,
       offset,
       order: [['created_at', 'DESC']],
       include: [{ model: Client, as: 'client' }],

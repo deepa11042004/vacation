@@ -6,6 +6,7 @@ import { errorHandler, AppError } from '../../../shared/middlewares/error.middle
 import { UserRole, UserStatus } from '../types/user.types';
 import { connectDB } from '../../../shared/database/sequelize';
 import { authenticateRequest, requireRoles } from '../../../shared/middlewares/auth.middleware';
+import { USER_CONSTANTS } from '../constants/user.constants';
 
 const userService = new UserService();
 
@@ -14,7 +15,7 @@ export class UserController {
   private static parseId(idStr: string): number {
     const id = parseInt(idStr, 10);
     if (isNaN(id) || id <= 0) {
-      throw new AppError('Invalid User ID', 400);
+      throw new AppError(USER_CONSTANTS.ERRORS.INVALID_ID, 400);
     }
     return id;
   }
