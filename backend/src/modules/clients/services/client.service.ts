@@ -4,13 +4,16 @@ import { ClientFilterOptions } from '../types/client.types';
 import { CLIENT_CONSTANTS } from '../constants/client.constants';
 import { AppError } from '../../../shared/middlewares/error.middleware';
 import { IClient } from '../interfaces/client.interface';
-import { sequelize } from '../../../shared/database/sequelize';
+import { UserService } from '../../users/services/user.service';
+import { UserRole } from '../../users/types/user.types';
 
 export class ClientService {
   private clientRepository: ClientRepository;
+  private userService: UserService;
 
   constructor() {
     this.clientRepository = new ClientRepository();
+    this.userService = new UserService();
   }
 
   async createClient(data: CreateClientDTO) {
@@ -24,25 +27,44 @@ export class ClientService {
       throw new AppError(CLIENT_CONSTANTS.ERRORS.MOBILE_EXISTS, 400);
     }
 
-    const t = await sequelize.transaction();
-    try {
-      // Use a unique temp code — replaced atomically inside the transaction
-      const tempCode = `T${Date.now()}${Math.random().toString(36).slice(2, 8)}`.slice(0, 20);
-      const newClient = await this.clientRepository.create(
-        { ...(data as Partial<IClient>), client_code: tempCode },
-        t,
-      );
-
-      // Derive code from the DB-assigned auto-increment PK — no race condition possible
-      const client_code = `CLI-${newClient.client_id.toString().padStart(6, '0')}`;
-      await newClient.update({ client_code }, { transaction: t });
-      await t.commit();
-
-      return newClient.toJSON();
-    } catch (error) {
-      await t.rollback();
-      throw error;
+    // 3. Generate client_code CLI-000001, CLI-000002
+    const lastClient = await this.clientRepository.findLastClient();
+    let nextId = 1;
+    if (lastClient && lastClient.client_code) {
+      const match = lastClient.client_code.match(/\d+/);
+      if (match) {
+        nextId = parseInt(match[0], 10) + 1;
+      }
     }
+    const client_code = `CLI-${nextId.toString().padStart(6, '0')}`;
+
+    // 4. Create client profile
+    const clientData: Partial<IClient> = {
+      ...data,
+      client_code,
+    };
+
+    const newClient = await this.clientRepository.create(clientData);
+
+    // 5. Automatically create a user login account for the client
+    try {
+      await this.userService.createUser({
+        email: newClient.email,
+        password: newClient.mobile, // Save mobile number as the initial password
+        role: UserRole.CLIENT,
+        client_id: newClient.client_id,
+      });
+    } catch (userError) {
+      // Log error but we could decide if we should fail client creation, since client and user
+      // should remain loosely coupled. If the user registration fails (e.g. email exists in users),
+      // we throw an error so the client creation rolls back or fails.
+      console.error('Error creating user profile for client:', userError);
+      // Delete the created client to maintain consistency if user creation fails
+      await this.clientRepository.delete(newClient.client_id);
+      throw userError;
+    }
+
+    return newClient.toJSON();
   }
 
   async getClientById(client_id: number) {
