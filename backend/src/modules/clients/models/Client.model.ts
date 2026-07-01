@@ -13,7 +13,7 @@ import {
   AllowNull,
 } from 'sequelize-typescript';
 import { IClient } from '../interfaces/client.interface';
-import { ClientStatus, Gender } from '../types/client.types';
+import { ClientStatus, DSAType, Gender } from '../types/client.types';
 
 @Table({
   tableName: 'clients',
@@ -80,6 +80,31 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   @AllowNull(false)
   @Column(DataType.ENUM(...Object.values(ClientStatus)))
   status!: ClientStatus;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(100))
+  sales_consultant?: string | null;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(100))
+  take_over_manager?: string | null;
+
+  @AllowNull(true)
+  @Default(null)
+  @Column(DataType.ENUM(...Object.values(DSAType)))
+  dsa?: DSAType | null;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(100))
+  reference_by?: string | null;
+
+  @AllowNull(true)
+  @Column(DataType.DATEONLY)
+  marriage_anniversary?: Date | null;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(100))
+  spouse_name?: string | null;
 
   @AllowNull(true)
   @Column(DataType.TEXT)

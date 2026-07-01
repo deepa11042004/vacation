@@ -9,6 +9,12 @@ export enum Gender {
   OTHER = 'OTHER',
 }
 
+export enum DSAType {
+  VENUE = 'VENUE',
+  CSDO = 'CSDO',
+  OTHER = 'OTHER',
+}
+
 export type ClientFilterOptions = {
   search?: string;
   status?: ClientStatus;
