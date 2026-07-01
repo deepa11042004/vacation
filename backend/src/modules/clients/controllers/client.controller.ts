@@ -4,6 +4,7 @@ import { CreateClientSchema, UpdateClientSchema } from '../validators/client.val
 import { ResponseUtil } from '../../../shared/utils/response.util';
 import { errorHandler } from '../../../shared/middlewares/error.middleware';
 import { ClientStatus } from '../types/client.types';
+import { connectDB } from '../../../shared/database/sequelize';
 
 const clientService = new ClientService();
 
@@ -11,6 +12,7 @@ export class ClientController {
   
   static async create(req: NextRequest) {
     try {
+      await connectDB();
       const body = await req.json();
       
       // Validation
@@ -30,6 +32,7 @@ export class ClientController {
 
   static async getAll(req: NextRequest) {
     try {
+      await connectDB();
       const { searchParams } = new URL(req.url);
       const search = searchParams.get('search') || undefined;
       const status = searchParams.get('status') as ClientStatus | undefined;
@@ -51,6 +54,7 @@ export class ClientController {
 
   static async getById(req: NextRequest, id: string) {
     try {
+      await connectDB();
       if (!id) throw new Error('Client ID is required');
 
       const result = await clientService.getClientById(id);
@@ -66,6 +70,7 @@ export class ClientController {
 
   static async update(req: NextRequest, id: string) {
     try {
+      await connectDB();
       if (!id) throw new Error('Client ID is required');
 
       const body = await req.json();
@@ -84,6 +89,7 @@ export class ClientController {
 
   static async delete(req: NextRequest, id: string) {
     try {
+      await connectDB();
       if (!id) throw new Error('Client ID is required');
 
       const result = await clientService.softDeleteClient(id);
@@ -99,6 +105,7 @@ export class ClientController {
 
   static async restore(req: NextRequest, id: string) {
     try {
+      await connectDB();
       if (!id) throw new Error('Client ID is required');
 
       const result = await clientService.restoreClient(id);

@@ -1,6 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-// Import models here as they are created
-// import { Client } from '../../modules/clients/models/Client.model';
+import { Client } from '../../modules/clients/models/Client.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -13,7 +12,7 @@ export const sequelize = new Sequelize({
   dialect: 'mysql',
   logging: env === 'development' ? console.log : false,
   models: [
-    // Client
+    Client
   ], // Register models here
 });
 
