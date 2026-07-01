@@ -15,7 +15,7 @@ import {
 } from 'sequelize-typescript';
 import { IClient } from '../interfaces/client.interface';
 import { ClientStatus, DSAType, Gender } from '../types/client.types';
-import { ClientAddress } from './ClientAddress.model';
+import type { ClientAddress } from './ClientAddress.model';
 
 @Table({
   tableName: 'clients',
@@ -132,6 +132,11 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   @Column(DataType.DATE)
   deleted_at?: Date | null;
 
-  @HasOne(() => ClientAddress, { sourceKey: 'client_code' })
+  @HasOne(() => (global as any).models.ClientAddress, { sourceKey: 'client_code' })
   address?: ClientAddress | null;
 }
+
+if (!(global as any).models) {
+  (global as any).models = {};
+}
+(global as any).models.Client = Client;

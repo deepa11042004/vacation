@@ -12,7 +12,7 @@ import {
   AllowNull,
 } from 'sequelize-typescript';
 import { IClientAddress } from '../interfaces/client-address.interface';
-import { Client } from './Client.model';
+import type { Client } from './Client.model';
 
 @Table({
   tableName: 'client_addresses',
@@ -24,12 +24,12 @@ export class ClientAddress extends Model<IClientAddress, Partial<IClientAddress>
   @Column(DataType.INTEGER)
   address_id!: number;
 
-  @ForeignKey(() => Client)
+  @ForeignKey(() => (global as any).models.Client)
   @AllowNull(false)
   @Column(DataType.STRING(20))
   client_code!: string;
 
-  @BelongsTo(() => Client, { targetKey: 'client_code' })
+  @BelongsTo(() => (global as any).models.Client, { targetKey: 'client_code' })
   client!: Client;
 
   @AllowNull(true)
@@ -64,3 +64,8 @@ export class ClientAddress extends Model<IClientAddress, Partial<IClientAddress>
   @Column(DataType.DATE)
   updated_at!: Date;
 }
+
+if (!(global as any).models) {
+  (global as any).models = {};
+}
+(global as any).models.ClientAddress = ClientAddress;

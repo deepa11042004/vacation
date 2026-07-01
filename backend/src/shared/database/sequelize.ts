@@ -1,7 +1,11 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Client } from '../../modules/clients/models/Client.model';
+import { ClientAddress } from '../../modules/clients/models/ClientAddress.model';
 import { User } from '../../modules/users/models/User.model';
 import { Package } from '../../modules/packages/models/Package.model';
+import { Location } from '../../modules/locations/models/Location.model';
+import { Hotel } from '../../modules/hotels/models/Hotel.model';
+import { HotelImage } from '../../modules/hotels/models/HotelImage.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -15,8 +19,12 @@ export const sequelize = new Sequelize({
   logging: env === 'development' ? console.log : false,
   models: [
     Client,
+    ClientAddress,
     User,
     Package,
+    Location,
+    Hotel,
+    HotelImage,
   ],
 });
 
