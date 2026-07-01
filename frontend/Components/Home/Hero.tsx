@@ -33,6 +33,7 @@ export default function Hero() {
         loop
         muted
         playsInline
+        preload="auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, ease: "easeOut" }}

@@ -125,7 +125,7 @@ export default function ContactForm() {
       >
         <div className="text-center mb-12">
           <Badge icon={Minus} text="Book Now" variant="black" className="uppercase tracking-[0.5em]" />
-          <h2 className="mt-5 font-serif text-4xl md:text-5xl leading-tight text-black">
+          <h2 className="mt-5 font-semibold text-4xl md:text-5xl leading-tight text-black">
             Your perfect stay
             <br />
             starts right here
@@ -144,11 +144,11 @@ export default function ContactForm() {
             <motion.div
               key={field.id}
               variants={rowVariants}
-              className="grid grid-cols-[110px_1fr] md:grid-cols-[130px_1fr] items-baseline gap-4 border-b border-black/10 py-4"
+              className="grid grid-cols-[110px_1fr] md:grid-cols-[130px_1fr] items-baseline gap-4 border-b border-black/50 py-4"
             >
               <label
                 htmlFor={field.id}
-                className="text-[11px] tracking-[0.2em] text-black/40 uppercase"
+                className="text-[11px] tracking-[0.2em] opacity-50 uppercase"
               >
                 {field.label}
               </label>
