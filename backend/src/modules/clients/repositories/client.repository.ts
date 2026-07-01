@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 import { Client } from '../models/Client.model';
-import { CreateClientDTO, UpdateClientDTO } from '../dto/client.dto';
+import { UpdateClientDTO } from '../dto/client.dto';
 import { ClientFilterOptions } from '../types/client.types';
 import { IClient } from '../interfaces/client.interface';
 
@@ -9,11 +9,11 @@ export class ClientRepository {
     return await Client.create(data);
   }
 
-  async findById(client_id: string): Promise<Client | null> {
+  async findById(client_id: number): Promise<Client | null> {
     return await Client.findByPk(client_id);
   }
 
-  async findByIdWithDeleted(client_id: string): Promise<Client | null> {
+  async findByIdWithDeleted(client_id: number): Promise<Client | null> {
     return await Client.findByPk(client_id, { paranoid: false });
   }
 
@@ -27,7 +27,7 @@ export class ClientRepository {
 
   async findLastClient(): Promise<Client | null> {
     return await Client.findOne({
-      order: [['created_at', 'DESC']],
+      order: [['client_id', 'DESC']],
       paranoid: false,
     });
   }
@@ -60,20 +60,20 @@ export class ClientRepository {
     });
   }
 
-  async update(client_id: string, data: UpdateClientDTO): Promise<[number, Client[]]> {
+  async update(client_id: number, data: UpdateClientDTO): Promise<[number, Client[]]> {
     return await Client.update(data, {
       where: { client_id },
-      returning: true, // Note: returning works fully in Postgres, for MySQL it might return rows affected
+      returning: true,
     });
   }
 
-  async delete(client_id: string): Promise<number> {
+  async delete(client_id: number): Promise<number> {
     return await Client.destroy({
       where: { client_id },
-    }); // This performs a soft delete because paranoid: true is set on the model
+    });
   }
 
-  async restore(client_id: string): Promise<void> {
+  async restore(client_id: number): Promise<void> {
     await Client.restore({
       where: { client_id },
     });

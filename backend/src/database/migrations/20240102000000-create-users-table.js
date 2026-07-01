@@ -3,70 +3,43 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('clients', {
-      client_id: {
+    await queryInterface.createTable('users', {
+      user_id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
         allowNull: false,
       },
-      client_code: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-        unique: true,
-      },
-      title: {
-        type: Sequelize.STRING(10),
+      client_id: {
+        type: Sequelize.INTEGER,
         allowNull: true,
-      },
-      first_name: {
-        type: Sequelize.STRING(50),
-        allowNull: false,
-      },
-      middle_name: {
-        type: Sequelize.STRING(50),
-        allowNull: true,
-      },
-      last_name: {
-        type: Sequelize.STRING(50),
-        allowNull: false,
-      },
-      gender: {
-        type: Sequelize.ENUM('MALE', 'FEMALE', 'OTHER'),
-        allowNull: false,
-      },
-      date_of_birth: {
-        type: Sequelize.DATEONLY,
-        allowNull: true,
-      },
-      mobile: {
-        type: Sequelize.STRING(15),
-        allowNull: false,
-        unique: true,
-      },
-      alternate_mobile: {
-        type: Sequelize.STRING(15),
-        allowNull: true,
+        references: {
+          model: 'clients',
+          key: 'client_id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
       },
       email: {
         type: Sequelize.STRING(100),
         allowNull: false,
         unique: true,
       },
-      country_code: {
-        type: Sequelize.STRING(5),
+      password: {
+        type: Sequelize.STRING(255),
         allowNull: false,
       },
-      profile_photo: {
-        type: Sequelize.STRING(255),
-        allowNull: true,
+      role: {
+        type: Sequelize.ENUM('ADMIN', 'AGENT', 'MANAGER', 'CLIENT'),
+        defaultValue: 'AGENT',
+        allowNull: false,
       },
       status: {
         type: Sequelize.ENUM('ACTIVE', 'INACTIVE'),
         defaultValue: 'ACTIVE',
         allowNull: false,
       },
-      remarks: {
+      refresh_token: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
@@ -96,6 +69,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('clients');
+    await queryInterface.dropTable('users');
   },
 };
