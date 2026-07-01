@@ -2,6 +2,9 @@ import { UserRole, UserStatus } from '../types/user.types';
 
 export interface CreateUserDTO {
   email: string;
+  first_name?: string | null;
+  middle_name?: string | null;
+  last_name?: string | null;
   password?: string;
   role?: UserRole;
   status?: UserStatus;
@@ -11,6 +14,9 @@ export interface CreateUserDTO {
 
 export interface UpdateUserDTO {
   email?: string;
+  first_name?: string | null;
+  middle_name?: string | null;
+  last_name?: string | null;
   password?: string;
   role?: UserRole;
   status?: UserStatus;

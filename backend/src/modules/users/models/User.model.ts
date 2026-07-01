@@ -42,6 +42,18 @@ export class User extends Model<IUser, Partial<IUser>> implements IUser {
   @Column(DataType.STRING(100))
   email!: string;
 
+  @AllowNull(true)
+  @Column(DataType.STRING(50))
+  first_name?: string | null;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(50))
+  middle_name?: string | null;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(50))
+  last_name?: string | null;
+
   @AllowNull(false)
   @Column(DataType.STRING(255))
   password!: string;

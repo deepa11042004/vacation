@@ -3,6 +3,9 @@ import { UserRole, UserStatus } from '../types/user.types';
 export interface IUser {
   user_id: number;
   client_id?: number | null;
+  first_name?: string | null;
+  middle_name?: string | null;
+  last_name?: string | null;
   email: string;
   password?: string;
   role: UserRole;
