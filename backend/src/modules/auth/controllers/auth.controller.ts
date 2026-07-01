@@ -25,6 +25,22 @@ export class AuthController {
     }
   }
 
+  static async adminLogin(req: NextRequest) {
+    try {
+      await connectDB();
+      const body = await req.json();
+      const validatedData = LoginSchema.parse(body);
+      const result = await authService.adminLogin(validatedData);
+
+      return NextResponse.json(
+        ResponseUtil.success('Admin logged in successfully', result),
+        { status: 200 }
+      );
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
+
   static async refresh(req: NextRequest) {
     try {
       await connectDB();

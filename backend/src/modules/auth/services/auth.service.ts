@@ -4,7 +4,7 @@ import { UserService } from '../../users/services/user.service';
 import { LoginDTO } from '../dto/auth.dto';
 import { JwtUtil } from '../../../shared/utils/jwt.util';
 import { AppError } from '../../../shared/middlewares/error.middleware';
-import { UserStatus } from '../../users/types/user.types';
+import { UserRole, UserStatus } from '../../users/types/user.types';
 
 export class AuthService {
   private authRepository: AuthRepository;
@@ -19,6 +19,44 @@ export class AuthService {
     const user = await this.authRepository.findByEmail(data.email);
     if (!user) {
       throw new AppError('Invalid email or password', 401);
+    }
+
+    if (user.status !== UserStatus.ACTIVE) {
+      throw new AppError('User account is inactive', 403);
+    }
+
+    const isPasswordValid = await bcrypt.compare(data.password!, user.password);
+    if (!isPasswordValid) {
+      throw new AppError('Invalid email or password', 401);
+    }
+
+    const tokenPayload = {
+      user_id: user.user_id,
+      email: user.email,
+      role: user.role,
+      client_id: user.client_id || null,
+    };
+
+    const accessToken = JwtUtil.generateAccessToken(tokenPayload);
+    const refreshToken = JwtUtil.generateRefreshToken(tokenPayload);
+
+    await this.authRepository.updateRefreshToken(user.user_id, refreshToken);
+
+    const userJson = user.toJSON();
+    delete userJson.password;
+    delete userJson.refresh_token;
+
+    return { accessToken, refreshToken, user: userJson };
+  }
+
+  async adminLogin(data: LoginDTO) {
+    const user = await this.authRepository.findByEmail(data.email);
+    if (!user) {
+      throw new AppError('Invalid email or password', 401);
+    }
+
+    if (user.role !== UserRole.ADMIN) {
+      throw new AppError('Access denied. Admin privileges required.', 403);
     }
 
     if (user.status !== UserStatus.ACTIVE) {
