@@ -2,6 +2,8 @@ import { Sequelize } from 'sequelize-typescript';
 import { Client } from '../../modules/clients/models/Client.model';
 import { User } from '../../modules/users/models/User.model';
 import { Package } from '../../modules/packages/models/Package.model';
+import { Membership } from '../../modules/memberships/models/Membership.model';
+import { Payment } from '../../modules/payments/models/Payment.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -17,6 +19,8 @@ export const sequelize = new Sequelize({
     Client,
     User,
     Package,
+    Membership,
+    Payment,
   ],
 });
 
