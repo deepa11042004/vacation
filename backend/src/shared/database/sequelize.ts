@@ -2,6 +2,9 @@ import { Sequelize } from 'sequelize-typescript';
 import { Client } from '../../modules/clients/models/Client.model';
 import { ClientAddress } from '../../modules/clients/models/ClientAddress.model';
 import { User } from '../../modules/users/models/User.model';
+import { Location } from '../../modules/locations/models/Location.model';
+import { Hotel } from '../../modules/hotels/models/Hotel.model';
+import { HotelImage } from '../../modules/hotels/models/HotelImage.model';
 import { Package } from '../../modules/packages/models/Package.model';
 import { Membership } from '../../modules/memberships/models/Membership.model';
 import { Payment } from '../../modules/payments/models/Payment.model';
@@ -20,6 +23,9 @@ export const sequelize = new Sequelize({
     Client,
     ClientAddress,
     User,
+    Location,
+    Hotel,
+    HotelImage,
     Package,
     Membership,
     Payment,
