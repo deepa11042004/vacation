@@ -13,7 +13,7 @@ export default function LuxuryContactBooking() {
         {/* Left Column */}
         <div className="lg:col-span-6 flex flex-col p-8 md:p-16 lg:p-24 space-y-12 relative">
           <div className="pb-4">
-            <Badge icon={Minus} text="Information ↓" variant="black" className="uppercase tracking-[0.3em]" />
+            <Badge icon={Minus} text="Information ↓" variant="black" className="tracking-[0.3em]" />
           </div>
 
           {/* Location Block */}
