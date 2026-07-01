@@ -11,9 +11,11 @@ import {
   UpdatedAt,
   DeletedAt,
   AllowNull,
+  HasOne,
 } from 'sequelize-typescript';
 import { IClient } from '../interfaces/client.interface';
 import { ClientStatus, DSAType, Gender } from '../types/client.types';
+import type { ClientAddress } from './ClientAddress.model';
 
 @Table({
   tableName: 'clients',
@@ -129,4 +131,12 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   @DeletedAt
   @Column(DataType.DATE)
   deleted_at?: Date | null;
+
+  @HasOne(() => (global as any).models.ClientAddress, { sourceKey: 'client_code' })
+  address?: ClientAddress | null;
 }
+
+if (!(global as any).models) {
+  (global as any).models = {};
+}
+(global as any).models.Client = Client;
