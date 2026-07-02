@@ -8,7 +8,7 @@ import CtaButton from "@/UI/CtaButton";
 
 export default function Story() {
   return (
-    <section className="w-full bg-white px-6 py-20 sm:px-10 lg:px-14 font-display">
+    <section className="w-full bg-blue-50 px-6 py-20 sm:px-10 lg:px-14 font-display">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
           {/* Left Side */}

@@ -11,66 +11,59 @@ import {
 } from "framer-motion";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
-import {
-  Minus,
-  DollarSign,
-  CalendarX,
-  MessageSquare,
-  ShieldCheck,
-  Headphones,
-  Zap,
-} from "lucide-react";
+import { Minus } from "lucide-react";
 import Testimonials from "@/Components/Home/Testimonials";
 
-
-const GUARANTEE_FEATURES = [
+const NEW_CAROUSEL_DATA = [
   {
-    id: "g1",
-    title: "Best Price Guarantee",
-    description: "We are committed to providing the most competitive rates. If you find a lower qualifying price online, we will match it and offer an additional discount, ensuring you always get the best value for your luxury stay.",
-    imageSrc:
-      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
-    icon: DollarSign,
+    title: "Spacious Rooms",
+    image:
+      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: "g2",
-    title: "Free Cancellation",
-    description: "Travel plans can change unexpectedly. Enjoy peace of mind with our flexible booking options, offering free cancellation and effortless modifications on most reservations up to 24 hours before your arrival.",
-    imageSrc:
-      "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=800&q=80",
-    icon: CalendarX,
+    title: "Premium Service",
+    image:
+      "https://images.unsplash.com/photo-1541971875076-8f970d573be6?auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: "g3",
-    title: "Verified Reviews",
-    description: "Make informed decisions based on authentic feedback. Our platform only features verified reviews from real guests who have completed their stays, giving you transparent and trustworthy insights into every property.",
-    imageSrc:
-      "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=800&q=80",
-    icon: MessageSquare,
+    title: "Scenic Locations",
+    image:
+      "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: "g4",
-    title: "Secure Payments",
-    description: "Your privacy and financial security are our top priorities. All transactions are protected by industry-leading 256-bit SSL encryption and strict data privacy protocols, guaranteeing a safe and seamless checkout experience.",
-    imageSrc:
-      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80",
-    icon: ShieldCheck,
+    title: "Fine Dining",
+    image:
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: "g5",
-    title: "24/7 Support",
-    description: "Experience world-class hospitality before you even arrive. Our dedicated travel concierge team is available around the clock to assist with special requests, itinerary changes, and expert local recommendations.",
-    imageSrc:
-      "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80",
-    icon: Headphones,
+    title: "Infinity Pools",
+    image:
+      "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: "g6",
-    title: "Instant Confirmation",
-    description: "Skip the waiting period and secure your dream getaway immediately. Receive an instant booking confirmation directly to your inbox, complete with all the details you need for a frictionless check-in process.",
-    imageSrc:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
-    icon: Zap,
+    title: "Spa & Wellness",
+    image:
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    title: "Private Beaches",
+    image:
+      "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    title: "Exclusive Experiences",
+    image:
+      "https://images.unsplash.com/photo-1522798514-97ceb8c4f1c8?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    title: "Guided Tours",
+    image:
+      "https://images.unsplash.com/photo-1533692328991-08159ff19fca?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    title: "Luxury Transport",
+    image:
+      "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=600&q=80",
   },
 ];
 
@@ -358,6 +351,14 @@ const cardVariants: Variants = {
 
 export default function Stay() {
   const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFanIndex, setActiveFanIndex] = useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveFanIndex((prev) => (prev + 1) % NEW_CAROUSEL_DATA.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
 
   const filteredStays = stayTypes.filter((s) => {
     if (activeFilter === "all") return true;
@@ -443,29 +444,31 @@ export default function Stay() {
 
   const carouselCards = [
     {
-      badge: "WELLNESS",
-      title: "Rejuvenate Your Senses at The Serenity Spa",
-      src: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
+      badge: "SCENIC VIEWS",
+      title: "Wake up to breathtaking landscapes every morning.",
+      src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
     },
     {
-      badge: "EXCLUSIVE",
-      title: "Your Private Oasis: Infinity Pool & Cabanas",
-      src: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80",
+      badge: "LOCAL EXPERIENCES",
+      title:
+        "Immerse yourself in authentic culture and unforgettable adventures.",
+      src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80",
     },
     {
-      badge: "DINING",
-      title: "A Culinary Journey: Farm-to-Table Fine Dining",
-      src: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
+      badge: "PEACEFUL ESCAPES",
+      title: "Disconnect from the everyday and reconnect with nature.",
+      src: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80",
     },
     {
-      badge: "RELAXATION",
-      title: "Unwind in Our Rooftop Lounge & Bar",
-      src: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80",
+      badge: "UNIQUE STAYS",
+      title: "Sleep somewhere extraordinary, from treehouses to glass domes.",
+      src: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
     },
     {
-      badge: "FITNESS",
-      title: "State-of-the-Art Gym & Yoga Studio",
-      src: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+      badge: "LASTING MEMORIES",
+      title:
+        "Create unforgettable moments with family, friends, or someone special.",
+      src: "https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=800&q=80",
     },
   ];
 
@@ -491,7 +494,7 @@ export default function Stay() {
             icon={Minus}
             text="Stays"
             variant="black"
-            className="mb-3 tracking-widest"
+            className="mb-3 mr-8 tracking-widest"
           />
           <h1 className="font-bold text-4xl md:text-6xl tracking-wide max-w-4xl mx-auto leading-tight text-black">
             Beyond the Map, <br /> Into Your Perfect Stay
@@ -546,81 +549,7 @@ export default function Stay() {
         </div>
       </section>
 
-      {/* Why Book With Us Section */}
-      <section className="w-full bg-white px-6 py-20 md:pt-50">
-        <div className="mx-auto max-w-7xl">
-          {/* Header Layout */}
-          <div className="mb-14 w-full">
-            <Badge
-              text="Why Book With Us"
-              variant="black"
-              size="lg"
-              icon={Minus}
-              className="mb-4 tracking-widest"
-            />
-
-            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl lg:text-5xl max-w-2xl leading-tight">
-                Your Booking, Our Guarantee <br />
-                <span className="text-xl font-medium text-gray-600 mt-2 block">
-                  Every reservation comes with built-in protections and premium
-                  service standards.
-                </span>
-              </h2>
-            </div>
-          </div>
-
-          {/* Stacked Card Modules Matrix */}
-          <div className="flex flex-col gap-6">
-            {GUARANTEE_FEATURES.map((feature, index) => {
-              const IconComponent = feature.icon;
-
-              return (
-                <div
-                  key={feature.id}
-                  className="sticky w-full rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch duration-300"
-                  style={{
-                    top: "120px",
-                    zIndex: index + 1,
-                  }}
-                >
-                  {/* Left Side */}
-                  <div className="md:col-span-5 flex flex-col justify-between gap-12 min-h-55">
-                    {/* Top: Icon + Feature Heading */}
-                    <div className="flex flex-col items-start gap-5">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-xs">
-                        <IconComponent className="h-5 w-5" strokeWidth={2.2} />
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-950 tracking-wide">
-                        {feature.title}
-                      </h3>
-                    </div>
-
-                    {/* Bottom */}
-                    <p className="text-sm font-medium text-gray-500 leading-relaxed max-w-sm">
-                      {feature.description}
-                    </p>
-                  </div>
-
-                  {/* Right Side  */}
-                  <div className="relative md:col-span-7 h-65 sm:h-80 md:h-auto min-h-60 w-full overflow-hidden rounded-2xl bg-neutral-50 transform-gpu">
-                    <Image
-                      fill
-                      src={feature.imageSrc}
-                      alt={feature.title}
-                      sizes="(max-width: 1024px) 100vw, 700px"
-                      className="object-cover object-center"
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Phase 4: Types of Hotels Grid */}
+      {/* Phase 2: Types of Hotels Grid */}
       <section className="w-full bg-white px-6 pt-20 flex flex-col justify-center items-center relative">
         <div className="w-full max-w-7xl flex flex-col gap-16">
           {/* Heading */}
@@ -712,20 +641,118 @@ export default function Stay() {
         </div>
       </section>
 
-      {/* Dynamic Expanding Width Carousel with Button Controls */}
-      <section className="w-full bg-white py-32 px-6 md:px-24 border-t border-b border-black/5">
+      {/* Phase 3: Dynamic Fan Carousel Section */}
+      <section className="w-full bg-white px-6 pt-30 pb-20 overflow-hidden flex flex-col items-center">
+        <div className="w-full max-w-7xl flex flex-col gap-16 py-15">
+          {/* Heading */}
+          <div className="flex flex-col gap-6 items-center text-center">
+            <Badge
+              icon={Minus}
+              text="Why Choose Us"
+              variant="black"
+              className="tracking-widest"
+            />
+            <h2 className="text-4xl md:text-6xl font-semibold tracking-tight leading-widest text-black">
+              Experience Comfort, <br /> Unforgettable Moments
+            </h2>
+          </div>
+        </div>
+
+        <div
+          className="relative w-full max-w-6xl h-100 flex items-center justify-center"
+          style={{ perspective: "1200px" }}
+        >
+          <AnimatePresence>
+            {NEW_CAROUSEL_DATA.map((item, index) => {
+              let offset = index - activeFanIndex;
+              const total = NEW_CAROUSEL_DATA.length;
+
+              if (offset < -Math.floor(total / 2)) offset += total;
+              if (offset > Math.floor(total / 2)) offset -= total;
+
+              if (Math.abs(offset) > 2) return null;
+
+              const isCenter = offset === 0;
+              const xPos = offset * 300;
+              const zPos = isCenter ? 50 : Math.abs(offset) * -120;
+              const rotateY = offset * -15;
+              const rotateZ = offset * 8;
+              const yPos = Math.abs(offset) * 30;
+
+              return (
+                <motion.div
+                  key={item.title}
+                  initial={false}
+                  animate={{
+                    x: xPos,
+                    y: yPos,
+                    z: zPos,
+                    rotateY: rotateY,
+                    rotateZ: rotateZ,
+                    scale: isCenter ? 1.1 : 1,
+                    zIndex: 10 - Math.abs(offset),
+                    opacity: 1,
+                  }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  // Changed: Removed overflow-hidden and background from wrapper to isolate the image container from the text block
+                  className="absolute w-60 flex flex-col items-center cursor-pointer select-none"
+                  style={{ transformOrigin: "bottom center" }}
+                  onClick={() => setActiveFanIndex(index)}
+                >
+                  {/* The Image "Cube" - Separate container mimicking card-design.png structure */}
+                  <div className="relative w-full h-64 rounded-3xl overflow-hidden bg-gray-100">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      sizes="240px"
+                      className="object-cover"
+                      priority={isCenter}
+                    />
+                  </div>
+
+                  {/* Text Area - Positioned safely below the isolated image block */}
+                  <div className="w-full flex flex-col items-center justify-center pt-4 text-center">
+                    <h3 className="text-base sm:text-lg font-medium text-black tracking-wide">
+                      {item.title}
+                    </h3>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+        {/* Pagination Dots */}
+        <div className="gap-2 mt-12 sm:mt-16 z-10 hidden">
+          {NEW_CAROUSEL_DATA.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setActiveFanIndex(idx)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                activeFanIndex === idx ? "bg-blue-500 w-6" : "bg-gray-200"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Phase 4: Dynamic Expanding Width Carousel with Button Controls */}
+      <section className="w-full bg-white py-32 px-6 md:px-24">
         <div className="max-w-7xl mx-auto relative">
           {/* Header Layout with integrated Left/Right Control Buttons */}
           <div className="flex items-end justify-between mb-12">
             <div>
               <Badge
                 icon={Minus}
-                text="Stays Facility"
+                text="WHAT AWAITS YOU"
                 variant="black"
                 className="mb-5 tracking-widest"
               />
-              <h2 className="font-bold text-3xl md:text-5xl tracking-wide text-black">
-                Everything You Need
+              <h2 className="font-semibold text-3xl md:text-6xl tracking-wide text-black">
+                Experiences That Make <br />
+                Every Stay Memorable
               </h2>
             </div>
             <div className="flex gap-3">
@@ -802,7 +829,7 @@ export default function Stay() {
       <Testimonials />
 
       {/* Phase 5: Rotating orbit gallery final base */}
-      <section className="min-h-[160vh] w-full flex flex-col items-center justify-center relative bg-white overflow-hidden">
+      <section className="min-h-[15j0vh] w-full flex flex-col items-center justify-center relative bg-white overflow-hidden">
         <div className="absolute w-200 h-200 md:w-212.5 md:h-212.5 border border-gray-300 rounded-full pointer-events-none animate-[pulse_6s_infinite]" />
         <div className="absolute w-262.5 h-262.5 md:w-275 md:h-275 border border-gray-300 rounded-full pointer-events-none" />
 
