@@ -20,7 +20,7 @@ import type { ClientAddress } from './ClientAddress.model';
 @Table({
   tableName: 'clients',
   timestamps: true,
-  paranoid: true, // Enables soft deletes (deleted_at)
+  paranoid: true,
 })
 export class Client extends Model<IClient, Partial<IClient>> implements IClient {
   @PrimaryKey
@@ -132,11 +132,7 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   @Column(DataType.DATE)
   deleted_at?: Date | null;
 
-  @HasOne(() => (global as any).models.ClientAddress, { foreignKey: 'client_id' })
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  @HasOne(() => require('./ClientAddress.model').ClientAddress, { foreignKey: 'client_id' })
   address?: ClientAddress | null;
 }
-
-if (!(global as any).models) {
-  (global as any).models = {};
-}
-(global as any).models.Client = Client;

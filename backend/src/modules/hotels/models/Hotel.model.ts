@@ -6,7 +6,6 @@ import {
   PrimaryKey,
   AutoIncrement,
   Default,
-  Unique,
   ForeignKey,
   BelongsTo,
   HasMany,
@@ -18,7 +17,7 @@ import {
 import { IHotel } from '../interfaces/hotel.interface';
 import { PropertyType, HotelType, HotelStatus } from '../types/hotel.types';
 import type { Location } from '../../locations/models/Location.model';
-import type { HotelImage } from '@/modules/hotels/models/HotelImage.model';
+import type { HotelImage } from './HotelImage.model';
 
 @Table({
   tableName: 'hotels',
@@ -31,12 +30,14 @@ export class Hotel extends Model<IHotel, Partial<IHotel>> implements IHotel {
   @Column(DataType.INTEGER)
   hotel_id!: number;
 
-  @ForeignKey(() => (global as any).models.Location)
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  @ForeignKey(() => require('../../locations/models/Location.model').Location)
   @AllowNull(false)
   @Column(DataType.INTEGER)
   location_id!: number;
 
-  @BelongsTo(() => (global as any).models.Location, { foreignKey: 'location_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  @BelongsTo(() => require('../../locations/models/Location.model').Location, { foreignKey: 'location_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
   location!: Location;
 
   @AllowNull(false)
@@ -92,11 +93,7 @@ export class Hotel extends Model<IHotel, Partial<IHotel>> implements IHotel {
   @Column(DataType.DATE)
   deleted_at?: Date | null;
 
-  @HasMany(() => (global as any).models.HotelImage, { foreignKey: 'hotel_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  @HasMany(() => require('./HotelImage.model').HotelImage, { foreignKey: 'hotel_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   images?: HotelImage[];
 }
-
-if (!(global as any).models) {
-  (global as any).models = {};
-}
-(global as any).models.Hotel = Hotel;

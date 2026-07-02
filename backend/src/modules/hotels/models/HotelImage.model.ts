@@ -13,7 +13,7 @@ import {
   AllowNull,
 } from 'sequelize-typescript';
 import { IHotelImage } from '../interfaces/hotel.interface';
-import type { Hotel } from './Hotel.model';
+import { Hotel } from './Hotel.model';
 
 @Table({
   tableName: 'hotel_images',
@@ -25,12 +25,12 @@ export class HotelImage extends Model<IHotelImage, Partial<IHotelImage>> impleme
   @Column(DataType.INTEGER)
   image_id!: number;
 
-  @ForeignKey(() => (global as any).models.Hotel)
+  @ForeignKey(() => Hotel)
   @AllowNull(false)
   @Column(DataType.INTEGER)
   hotel_id!: number;
 
-  @BelongsTo(() => (global as any).models.Hotel, { foreignKey: 'hotel_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @BelongsTo(() => Hotel, { foreignKey: 'hotel_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   hotel!: Hotel;
 
   @AllowNull(false)
@@ -50,8 +50,3 @@ export class HotelImage extends Model<IHotelImage, Partial<IHotelImage>> impleme
   @Column(DataType.DATE)
   updated_at!: Date;
 }
-
-if (!(global as any).models) {
-  (global as any).models = {};
-}
-(global as any).models.HotelImage = HotelImage;

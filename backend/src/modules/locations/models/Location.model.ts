@@ -82,12 +82,7 @@ export class Location extends Model<ILocation, Partial<ILocation>> implements IL
   @Column(DataType.DATE)
   deleted_at?: Date | null;
 
-  // Association placeholder (will resolve once Hotel model is registered)
-  @HasMany(() => (global as any).models.Hotel, { foreignKey: 'location_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  @HasMany(() => require('../../hotels/models/Hotel.model').Hotel, { foreignKey: 'location_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
   hotels?: Hotel[];
 }
-
-if (!(global as any).models) {
-  (global as any).models = {};
-}
-(global as any).models.Location = Location;
