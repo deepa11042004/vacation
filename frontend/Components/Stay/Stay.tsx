@@ -829,7 +829,7 @@ export default function Stay() {
       <Testimonials />
 
       {/* Phase 5: Rotating orbit gallery final base */}
-      <section className="min-h-[15j0vh] w-full flex flex-col items-center justify-center relative bg-white overflow-hidden">
+      <section className="min-h-[150vh] w-full flex flex-col items-center justify-center relative bg-white overflow-hidden">
         <div className="absolute w-200 h-200 md:w-212.5 md:h-212.5 border border-gray-300 rounded-full pointer-events-none animate-[pulse_6s_infinite]" />
         <div className="absolute w-262.5 h-262.5 md:w-275 md:h-275 border border-gray-300 rounded-full pointer-events-none" />
 
