@@ -44,8 +44,10 @@ export default function Navbar() {
   return (
     /*  Layer 4 — navigation */
     <nav
-      className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 md:px-12 lg:px-40 transition-all duration-300 ${
-        isScrolled ? "bg-transparent  py-4" : "bg-transparent py-6"
+      className={`fixed z-50 flex items-center justify-between transition-all duration-300 ${
+        isScrolled
+          ? "top-4 inset-x-4 md:inset-x-8 lg:inset-x-32 bg-blue-50 rounded-full py-3 px-4 md:px-6 lg:px-8 shadow-md"
+          : "inset-x-0 top-0 bg-transparent py-6 px-6 md:px-12 lg:px-40"
       }`}
     >
       <Link
@@ -59,7 +61,9 @@ export default function Navbar() {
         className={`hidden items-center gap-1 rounded-full px-2 py-2 lg:flex transition-colors duration-300 ${
           !useLightStyle
             ? "border border-white/25 bg-white/10 backdrop-blur-md"
-            : "bg-blue-50"
+            : isScrolled
+              ? "bg-transparent"
+              : "bg-blue-50"
         }`}
       >
         {navItems.map((item) => (

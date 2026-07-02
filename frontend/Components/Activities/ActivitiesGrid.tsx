@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { Minus } from "lucide-react";
 import Badge from "@/UI/Badge";
 
@@ -14,21 +14,21 @@ const ACTIVITY_COLUMNS = [
       title: "Desert Safari",
       image:
         "https://images.pexels.com/photos/29306297/pexels-photo-29306297.jpeg",
-      aspect: "aspect-[3/4]",
+      aspect: "aspect-[3/3]",
     },
     {
       id: 2,
       title: "Paragliding",
       image:
         "https://images.pexels.com/photos/3551078/pexels-photo-3551078.jpeg",
-      aspect: "aspect-square",
+      aspect: "aspect-[3/3]",
     },
     {
       id: 3,
       title: "River Rafting",
       image:
         "https://images.pexels.com/photos/33732201/pexels-photo-33732201.jpeg",
-      aspect: "aspect-[3/4]",
+      aspect: "aspect-[3/3]",
     },
   ],
   [
@@ -37,21 +37,21 @@ const ACTIVITY_COLUMNS = [
       title: "Scuba Diving",
       image:
         "https://images.pexels.com/photos/11060853/pexels-photo-11060853.jpeg",
-      aspect: "aspect-[4/5]",
+      aspect: "aspect-[3/3]",
     },
     {
       id: 5,
       title: "Jet Skiing",
       image:
         "https://images.pexels.com/photos/18636557/pexels-photo-18636557.jpeg",
-      aspect: "aspect-[3/4]",
+      aspect: "aspect-[3/3]",
     },
     {
       id: 6,
       title: "Bungy Jumping",
       image:
         "https://images.pexels.com/photos/27471607/pexels-photo-27471607.jpeg",
-      aspect: "aspect-square",
+      aspect: "aspect-[3/3]",
     },
   ],
   [
@@ -60,42 +60,24 @@ const ACTIVITY_COLUMNS = [
       title: "Surfing",
       image:
         "https://images.pexels.com/photos/5007332/pexels-photo-5007332.jpeg",
-      aspect: "aspect-[4/5]",
+      aspect: "aspect-[3/3]",
     },
     {
       id: 8,
       title: "Skydiving",
       image:
         "https://images.pexels.com/photos/28544954/pexels-photo-28544954.jpeg",
-      aspect: "aspect-[3/4]",
+      aspect: "aspect-[3/3]",
     },
     {
       id: 9,
       title: "Alpine Cable Cars",
       image:
         "https://images.pexels.com/photos/28202478/pexels-photo-28202478.jpeg",
-      aspect: "aspect-[3/4]",
+      aspect: "aspect-[3/3]",
     },
   ],
 ];
-
-// Animation presets
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.12 },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 18 },
-  },
-};
 
 export default function Activities() {
   return (
@@ -116,44 +98,53 @@ export default function Activities() {
           </h2>
         </div>
 
-        {/* ─── 2. Staggered Bento Layout System ─── */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-60px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start"
-        >
-          {ACTIVITY_COLUMNS.map((column, colIdx) => (
-            <div key={colIdx} className="flex flex-col gap-6 w-full">
-              {column.map((activity) => (
-                <motion.div
-                  key={activity.id}
-                  variants={itemVariants}
-                  whileHover={{ y: -6 }}
-                  className={`relative w-full ${activity.aspect} rounded-2xl overflow-hidden shadow-xs bg-neutral-200 group cursor-pointer`}
-                >
-                  {/* Activity Image Frame */}
-                  <Image
-                    src={activity.image}
-                    alt={activity.title}
-                    fill
-                    sizes="(max-w-640px) 100vw, (max-w-1024px) 50vw, 33vw"
-                    className="object-cover brightness-[0.93] group-hover:scale-103 transition-transform duration-700 ease-out"
-                    loading="lazy"
-                  />
+        {/* ─── 2. Infinite Vertical Marquee System ─── */}
+        <div className="relative bg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start h-150 md:h-300 overflow-hidden rounded-3xl">
+          {/* Top and Bottom Fade Overlays */}
+          <div className="absolute inset-x-0 top-0 h-10 bg-linear-to-b from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-white to-transparent z-10 pointer-events-none" />
 
-                  {/* Clean Lower Title Mask overlay */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6 z-10">
-                    <span className="text-white text-base font-bold tracking-wide">
-                      {activity.title}
-                    </span>
+          {ACTIVITY_COLUMNS.map((column, colIdx) => (
+            <div key={colIdx} className="h-full w-full">
+              <motion.div
+                animate={{
+                  y: colIdx % 2 === 0 ? ["0%", "-50%"] : ["-50%", "0%"],
+                }}
+                transition={{
+                  duration: 30 + colIdx * 5, // Varied speeds for visual interest
+                  ease: "linear",
+                  repeat: Infinity,
+                }}
+                className="flex flex-col gap-6 w-full pb-6"
+              >
+                {/* Duplicate the array to allow seamless looping */}
+                {[...column, ...column, ...column].map((activity, idx) => (
+                  <div
+                    key={`${activity.id}-${idx}`}
+                    className={`relative w-full ${activity.aspect} rounded-2xl overflow-hidden shadow-xs bg-neutral-200 group cursor-pointer shrink-0`}
+                  >
+                    {/* Activity Image Frame */}
+                    <Image
+                      src={activity.image}
+                      alt={activity.title}
+                      fill
+                      sizes="(max-w-640px) 100vw, (max-w-1024px) 50vw, 33vw"
+                      className="object-cover brightness-[0.93] group-hover:scale-103 transition-transform duration-700 ease-out"
+                      loading="lazy"
+                    />
+
+                    {/* Clean Lower Title Mask overlay */}
+                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6 z-10">
+                      <span className="text-white text-base font-bold tracking-wide">
+                        {activity.title}
+                      </span>
+                    </div>
                   </div>
-                </motion.div>
-              ))}
+                ))}
+              </motion.div>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

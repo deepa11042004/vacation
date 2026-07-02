@@ -80,7 +80,7 @@ const variantConfig: Record<
   },
   outline: {
     outer:
-      "bg-transparent text-white/90 border border-white/25 hover:bg-white hover:text-black",
+      "bg-white/10 text-white/90 border border-white/25 hover:bg-white hover:text-black",
     viewport: "bg-white",
     hoverCircle: "bg-blue-600",
     restIcon: "text-blue-600",

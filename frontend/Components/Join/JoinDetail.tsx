@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { Minus } from "lucide-react";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
@@ -24,7 +24,7 @@ interface TierGroup {
   textClass: string;
   mutedTextClass: string;
   linePatternOpacity: string;
-  btnVariant: "transparent-white" | "white" | "blue";
+  btnVariant: "outline" | "white" | "blue";
   cards: PricingCard[];
 }
 
@@ -39,7 +39,7 @@ const TIER_DATA: Record<string, TierGroup> = {
     textClass: "text-white",
     mutedTextClass: "text-neutral-400",
     linePatternOpacity: "opacity-40",
-    btnVariant: "transparent-white",
+    btnVariant: "outline",
     cards: [
       {
         id: "e1",
@@ -121,7 +121,7 @@ const TIER_DATA: Record<string, TierGroup> = {
     textClass: "text-white",
     mutedTextClass: "text-teal-200/70",
     linePatternOpacity: "opacity-30",
-    btnVariant: "transparent-white",
+    btnVariant: "outline",
     cards: [
       {
         id: "j1",
@@ -160,27 +160,36 @@ const TIER_ORDER = ["ebony", "ivory", "jade"];
 // Ease
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// Card
-const cardVariants: Variants = {
-  initial: { opacity: 0, y: 14, scale: 0.98 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.4, ease: EASE },
-  },
-};
-
 export default function JoinDetail() {
   const [activeTab, setActiveTab] = useState<string>("ebony");
-  const directionRef = useRef(1);
-  const currentTier = TIER_DATA[activeTab];
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveTab(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-40% 0px -59% 0px" },
+    );
+
+    TIER_ORDER.forEach((slug) => {
+      const el = document.getElementById(slug);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleTabChange = (slug: string) => {
-    const fromIdx = TIER_ORDER.indexOf(activeTab);
-    const toIdx = TIER_ORDER.indexOf(slug);
-    directionRef.current = toIdx > fromIdx ? 1 : -1;
     setActiveTab(slug);
+    const element = document.getElementById(slug);
+    if (element) {
+      const y = element.getBoundingClientRect().top + window.scrollY - 140;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
   };
 
   return (
@@ -205,7 +214,7 @@ export default function JoinDetail() {
         </div>
 
         {/* Navigation Switcher */}
-        <div className="flex justify-center mb-14">
+        <div className="flex justify-center mb-14 sticky top-20 z-40 py-4 -mx-6 px-6">
           <div className="inline-flex rounded-full bg-neutral-100 p-1.5 border border-neutral-200 shadow-xs">
             {Object.values(TIER_DATA).map((tier) => (
               <button
@@ -231,99 +240,119 @@ export default function JoinDetail() {
         </div>
 
         {/* Dynamic Content */}
-        <div className="relative">
-          <div className="mb-6 max-w-xl text-left md:pl-1">
-            <h3 className="text-xl font-bold uppercase text-neutral-950 tracking-wide flex items-center gap-2">
-              <span
-                className={`w-2 h-2 rounded-full ${activeTab === "jade" ? "bg-[#165B54]" : activeTab === "ivory" ? "bg-[#c7bfb0]" : "bg-black"}`}
-              />
-              {currentTier.name} Ownership Options
-            </h3>
-            <p className="text-md text-gray-500 font-medium mt-2 ml-4">
-              {currentTier.description}
-            </p>
-          </div>
-
-          {/* Cards */}
-          <div className="overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full will-change-transform"
+        <div className="relative flex flex-col gap-24">
+          {TIER_ORDER.map((tierSlug) => {
+            const tier = TIER_DATA[tierSlug];
+            return (
+              <div
+                key={tier.slug}
+                id={tier.slug}
+                className="relative scroll-mt-40"
               >
-                {currentTier.cards.map((card) => (
-                  <motion.div
-                    key={card.id}
-                    variants={cardVariants}
-                    className={`relative flex flex-col justify-between p-6 xl:p-8 rounded-3xl border shadow-xs hover:shadow-lg transition-shadow duration-300 w-full h-67.5 overflow-hidden ${currentTier.cardBgClass}`}
-                  >
-                    <div
-                      className={`absolute inset-0 pointer-events-none z-0 ${currentTier.linePatternOpacity}`}
-                    >
-                      <Image
-                        fill
-                        src="/Img/pattern.png"
-                        alt=""
-                        className="object-cover"
-                        aria-hidden="true"
-                      />
-                    </div>
+                <div className="mb-6 max-w-xl text-left md:pl-1">
+                  <h3 className="text-xl font-bold uppercase text-neutral-950 tracking-wide flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        tier.slug === "jade"
+                          ? "bg-[#165B54]"
+                          : tier.slug === "ivory"
+                            ? "bg-[#c7bfb0]"
+                            : "bg-black"
+                      }`}
+                    />
+                    {tier.name} Ownership Options
+                  </h3>
+                  <p className="text-md text-gray-500 font-medium mt-2 ml-4">
+                    {tier.description}
+                  </p>
+                </div>
 
-                    <div className="relative z-10 flex justify-between items-start gap-2">
-                      <div>
-                        <h4 className="text-lg font-black tracking-wider uppercase font-sans leading-none">
-                          {currentTier.name}
-                        </h4>
-                        <span
-                          className={`text-[11px] font-semibold tracking-wide block mt-1.5 ${currentTier.mutedTextClass}`}
-                        >
-                          {card.roomType}
-                        </span>
-                      </div>
-                      <span className="text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5 backdrop-blur-xs border border-current/10 whitespace-nowrap">
-                        {card.duration}
-                      </span>
-                    </div>
-
-                    <div className="relative z-10 grid grid-cols-2 gap-2 border-y border-current/10 py-4 my-2">
-                      <div>
-                        <span
-                          className={`text-[9px] uppercase font-bold tracking-widest block ${currentTier.mutedTextClass}`}
-                        >
-                          EMI Starts at
-                        </span>
-                        <p className="text-lg font-black tracking-tight mt-0.5 whitespace-nowrap">
-                          {card.emiStarts}
-                        </p>
-                      </div>
-                      <div className="border-l border-current/10 pl-3">
-                        <span
-                          className={`text-[9px] uppercase font-bold tracking-widest block ${currentTier.mutedTextClass}`}
-                        >
-                          Total Cost
-                        </span>
-                        <p className="text-lg font-black tracking-tight mt-0.5 whitespace-nowrap">
-                          {card.totalCost}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="relative z-10 flex items-center justify-between mt-1 gap-2">
-                      <CtaButton text="Buy Now" variant="white" size="sm" />
-                      <button
-                        className={`text-[11px] font-bold tracking-wide hover:underline cursor-pointer whitespace-nowrap ${currentTier.mutedTextClass}`}
+                {/* Cards */}
+                <div className="overflow-hidden">
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full">
+                    {tier.cards.map((card, idx) => (
+                      <motion.div
+                        key={card.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-40px" }}
+                        transition={{
+                          duration: 0.5,
+                          delay: idx * 0.1,
+                          ease: EASE,
+                        }}
+                        className={`relative flex flex-col justify-between p-6 xl:p-8 rounded-3xl border shadow-xs hover:shadow-lg transition-shadow duration-300 w-full h-67.5 overflow-hidden ${tier.cardBgClass}`}
                       >
-                        + Compare
-                      </button>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                        <div
+                          className={`absolute inset-0 pointer-events-none z-0 ${tier.linePatternOpacity}`}
+                        >
+                          <Image
+                            fill
+                            src="/Img/pattern.png"
+                            alt=""
+                            className="object-cover"
+                            aria-hidden="true"
+                          />
+                        </div>
+
+                        <div className="relative z-10 flex justify-between items-start gap-2">
+                          <div>
+                            <h4 className="text-lg font-black tracking-wider uppercase font-sans leading-none">
+                              {tier.name}
+                            </h4>
+                            <span
+                              className={`text-[11px] font-semibold tracking-wide block mt-1.5 ${tier.mutedTextClass}`}
+                            >
+                              {card.roomType}
+                            </span>
+                          </div>
+                          <span className="text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5 backdrop-blur-xs border border-current/10 whitespace-nowrap">
+                            {card.duration}
+                          </span>
+                        </div>
+
+                        <div className="relative z-10 grid grid-cols-2 gap-2 border-y border-current/10 py-4 my-2">
+                          <div>
+                            <span
+                              className={`text-[9px] uppercase font-bold tracking-widest block ${tier.mutedTextClass}`}
+                            >
+                              EMI Starts at
+                            </span>
+                            <p className="text-lg font-black tracking-tight mt-0.5 whitespace-nowrap">
+                              {card.emiStarts}
+                            </p>
+                          </div>
+                          <div className="border-l border-current/10 pl-3">
+                            <span
+                              className={`text-[9px] uppercase font-bold tracking-widest block ${tier.mutedTextClass}`}
+                            >
+                              Total Cost
+                            </span>
+                            <p className="text-lg font-black tracking-tight mt-0.5 whitespace-nowrap">
+                              {card.totalCost}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="relative z-10 flex items-center justify-between mt-1 gap-2">
+                          <CtaButton
+                            text="Buy Now"
+                            variant={tier.btnVariant}
+                            size="sm"
+                          />
+                          <button
+                            className={`text-[11px] font-bold tracking-wide hover:underline cursor-pointer whitespace-nowrap ${tier.mutedTextClass}`}
+                          >
+                            + Compare
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
