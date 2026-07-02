@@ -496,7 +496,7 @@ export default function Stay() {
             variant="black"
             className="mb-3 mr-8 tracking-widest"
           />
-          <h1 className="font-bold text-4xl md:text-6xl tracking-wide max-w-4xl mx-auto leading-tight text-black">
+          <h1 className="font-semibold text-4xl md:text-6xl tracking-wide max-w-4xl mx-auto leading-tight text-black">
             Beyond the Map, <br /> Into Your Perfect Stay
           </h1>
           <p className="text-sm tracking-[0.3em] text-black mt-6 flex items-center justify-center gap-2">

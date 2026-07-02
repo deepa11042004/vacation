@@ -1,5 +1,6 @@
+import FAQsec from "@/Components/Home/FAQsec";
+import KeyDetails from "@/Components/Member/KeyDetails";
 import MemberHero from "@/Components/Member/MemberHero";
-import MemberHome from "@/Components/Member/MemberHome";
 import PlanSec from "@/Components/Member/PlanSec";
 import React from "react";
 
@@ -7,8 +8,9 @@ function Member() {
   return (
     <>
       <MemberHero />
-      <MemberHome />
       <PlanSec />
+      <KeyDetails />
+      <FAQsec />
     </>
   );
 }
