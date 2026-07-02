@@ -10,7 +10,13 @@ import { Client } from '../../clients/models/Client.model';
 import { Package } from '../../packages/models/Package.model';
 import { Payment } from '../../payments/models/Payment.model';
 import { PaymentMode, PaymentStatus, PaymentType } from '../../payments/types/payment.types';
-import { PackageStatus } from '../../packages/types/package.types';
+import { PackageCategory, PackageStatus } from '../../packages/types/package.types';
+
+const CARD_PREFIX: Record<PackageCategory, string> = {
+  [PackageCategory.SILVER]: 'SIL',
+  [PackageCategory.GOLD]: 'GLD',
+  [PackageCategory.PLATINUM]: 'PLT',
+};
 
 export class MembershipService {
   private membershipRepository: MembershipRepository;
@@ -54,7 +60,7 @@ export class MembershipService {
 
     const t = await sequelize.transaction();
     try {
-      const tempNumber = `T${Date.now()}${Math.random().toString(36).slice(2, 5)}`.slice(0, 20);
+      const tempNumber = `T${Date.now()}`.slice(0, 20);
 
       const membershipData: Partial<IMembership> = {
         ...(data as any),
@@ -70,7 +76,7 @@ export class MembershipService {
       };
 
       const newMembership = await this.membershipRepository.create(membershipData, t);
-      const membership_number = `MEM-${newMembership.membership_id.toString().padStart(6, '0')}`;
+      const membership_number = `${CARD_PREFIX[pkg.category]}-${newMembership.membership_id.toString().padStart(5, '0')}`;
       await newMembership.update({ membership_number }, { transaction: t });
 
       // Auto-create a DOWN_PAYMENT record if down_payment > 0

@@ -11,7 +11,7 @@ const MAX_LIMIT = 100;
 
 const INCLUDE_ASSOCIATIONS = [
   { model: Client, as: 'client', attributes: ['client_id', 'client_code', 'first_name', 'last_name', 'email', 'mobile'] },
-  { model: Package, as: 'package', attributes: ['package_id', 'package_code', 'name', 'category', 'unit_type'] },
+  { model: Package, as: 'package', attributes: ['package_id', 'name', 'category', 'unit_type'] },
   { model: User, as: 'salesConsultant', attributes: ['user_id', 'email'] },
   { model: User, as: 'takeOverManager', attributes: ['user_id', 'email'] },
 ];

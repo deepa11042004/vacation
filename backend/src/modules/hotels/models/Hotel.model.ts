@@ -31,10 +31,6 @@ export class Hotel extends Model<IHotel, Partial<IHotel>> implements IHotel {
   @Column(DataType.INTEGER)
   hotel_id!: number;
 
-  @Unique
-  @Column(DataType.STRING(20))
-  hotel_code!: string;
-
   @ForeignKey(() => (global as any).models.Location)
   @AllowNull(false)
   @Column(DataType.INTEGER)

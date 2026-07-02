@@ -2,7 +2,7 @@
 
 export interface IClientAddress {
   address_id: number;
-  client_code: string;
+  client_id: number;
   primary_address?: string | null;
   secondary_address?: string | null;
   primary_state?: string | null;

@@ -29,10 +29,6 @@ export class Location extends Model<ILocation, Partial<ILocation>> implements IL
   location_id!: number;
 
   @Unique
-  @Column(DataType.STRING(20))
-  location_code!: string;
-
-  @Unique
   @AllowNull(false)
   @Column(DataType.STRING(100))
   location_name!: string;

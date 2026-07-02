@@ -26,10 +26,10 @@ export class ClientAddress extends Model<IClientAddress, Partial<IClientAddress>
 
   @ForeignKey(() => (global as any).models.Client)
   @AllowNull(false)
-  @Column(DataType.STRING(20))
-  client_code!: string;
+  @Column(DataType.INTEGER)
+  client_id!: number;
 
-  @BelongsTo(() => (global as any).models.Client, { targetKey: 'client_code' })
+  @BelongsTo(() => (global as any).models.Client, { foreignKey: 'client_id' })
   client!: Client;
 
   @AllowNull(true)

@@ -3,7 +3,7 @@ import { Transaction } from 'sequelize';
 import { Payment } from '../models/Payment.model';
 import { UpdatePaymentDTO } from '../dto/payment.dto';
 import { IPayment } from '../interfaces/payment.interface';
-import { PaymentFilterOptions, PaymentStatus } from '../types/payment.types';
+import { PaymentFilterOptions, PaymentStatus, PaymentType } from '../types/payment.types';
 import { Membership } from '../../memberships/models/Membership.model';
 import { Client } from '../../clients/models/Client.model';
 
@@ -52,7 +52,11 @@ export class PaymentRepository {
 
   async sumPaidByMembership(membership_id: number, transaction?: Transaction): Promise<number> {
     const result = await Payment.sum('amount', {
-      where: { membership_id, status: PaymentStatus.PAID },
+      where: {
+        membership_id,
+        status: PaymentStatus.PAID,
+        payment_type: { [Op.ne]: PaymentType.REFUND },
+      },
       transaction,
     });
     return result || 0;

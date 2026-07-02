@@ -52,7 +52,6 @@ export class HotelRepository {
     if (search) {
       where[Op.or] = [
         { hotel_name: { [Op.like]: `%${search}%` } },
-        { hotel_code: { [Op.like]: `%${search}%` } },
         { address: { [Op.like]: `%${search}%` } },
       ];
     }

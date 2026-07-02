@@ -3,8 +3,6 @@ import { CreateLocationDTO, UpdateLocationDTO } from '../dto/location.dto';
 import { LocationFilterOptions } from '../types/location.types';
 import { LOCATION_CONSTANTS } from '../constants/location.constants';
 import { AppError } from '../../../shared/middlewares/error.middleware';
-import { ILocation } from '../interfaces/location.interface';
-import { sequelize } from '../../../shared/database/sequelize';
 import { Hotel } from '../../hotels/models/Hotel.model';
 
 export class LocationService {
@@ -20,23 +18,8 @@ export class LocationService {
       throw new AppError(LOCATION_CONSTANTS.ERRORS.NAME_EXISTS, 400);
     }
 
-    const t = await sequelize.transaction();
-    try {
-      const tempCode = `T${Date.now()}${Math.random().toString(36).slice(2, 6)}`.slice(0, 20);
-      const newLocation = await this.locationRepository.create(
-        { ...(data as Partial<ILocation>), location_code: tempCode },
-        t,
-      );
-
-      const location_code = `LOC-${newLocation.location_id.toString().padStart(6, '0')}`;
-      await newLocation.update({ location_code }, { transaction: t });
-
-      await t.commit();
-      return newLocation.toJSON();
-    } catch (error) {
-      await t.rollback();
-      throw error;
-    }
+    const newLocation = await this.locationRepository.create(data);
+    return newLocation.toJSON();
   }
 
   async getLocationById(location_id: number) {

@@ -3,8 +3,6 @@ import { CreatePackageDTO, UpdatePackageDTO } from '../dto/package.dto';
 import { PackageFilterOptions } from '../types/package.types';
 import { PACKAGE_CONSTANTS } from '../constants/package.constants';
 import { AppError } from '../../../shared/middlewares/error.middleware';
-import { IPackage } from '../interfaces/package.interface';
-import { sequelize } from '../../../shared/database/sequelize';
 
 export class PackageService {
   private packageRepository: PackageRepository;
@@ -19,23 +17,8 @@ export class PackageService {
       throw new AppError(PACKAGE_CONSTANTS.ERRORS.NAME_EXISTS, 400);
     }
 
-    const t = await sequelize.transaction();
-    try {
-      const tempCode = `T${Date.now()}${Math.random().toString(36).slice(2, 6)}`.slice(0, 20);
-      const newPackage = await this.packageRepository.create(
-        { ...(data as Partial<IPackage>), package_code: tempCode },
-        t,
-      );
-
-      const package_code = `PKG-${newPackage.package_id.toString().padStart(6, '0')}`;
-      await newPackage.update({ package_code }, { transaction: t });
-
-      await t.commit();
-      return newPackage.toJSON();
-    } catch (error) {
-      await t.rollback();
-      throw error;
-    }
+    const newPackage = await this.packageRepository.create(data);
+    return newPackage.toJSON();
   }
 
   async getPackageById(package_id: number) {

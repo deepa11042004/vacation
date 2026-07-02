@@ -10,11 +10,6 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
-      hotel_code: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-        unique: true,
-      },
       location_id: {
         type: Sequelize.INTEGER,
         allowNull: false,

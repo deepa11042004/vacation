@@ -26,11 +26,6 @@ export class Package extends Model<IPackage, Partial<IPackage>> implements IPack
   @Column(DataType.INTEGER)
   package_id!: number;
 
-  @Unique
-  @AllowNull(false)
-  @Column(DataType.STRING(20))
-  package_code!: string;
-
   @AllowNull(false)
   @Column(DataType.STRING(150))
   name!: string;

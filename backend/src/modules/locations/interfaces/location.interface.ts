@@ -2,7 +2,6 @@ import { LocationType, LocationStatus } from '../types/location.types';
 
 export interface ILocation {
   location_id: number;
-  location_code: string;
   location_name: string;
   country: string;
   type: LocationType;

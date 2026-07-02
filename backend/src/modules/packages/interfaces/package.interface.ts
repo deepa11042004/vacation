@@ -2,7 +2,6 @@ import { PackageCategory, PackageStatus, UnitType } from '../types/package.types
 
 export interface IPackage {
   package_id: number;
-  package_code: string;
   name: string;
   category: PackageCategory;
   validity_years: number;

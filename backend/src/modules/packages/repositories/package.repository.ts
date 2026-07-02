@@ -41,7 +41,6 @@ export class PackageRepository {
     if (search) {
       where[Op.or] = [
         { name: { [Op.like]: `%${search}%` } },
-        { package_code: { [Op.like]: `%${search}%` } },
         { description: { [Op.like]: `%${search}%` } },
       ];
     }

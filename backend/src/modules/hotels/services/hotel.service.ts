@@ -4,8 +4,6 @@ import { CreateHotelDTO, UpdateHotelDTO, AddHotelImageDTO } from '../dto/hotel.d
 import { HotelFilterOptions } from '../types/hotel.types';
 import { HOTEL_CONSTANTS } from '../constants/hotel.constants';
 import { AppError } from '../../../shared/middlewares/error.middleware';
-import { IHotel } from '../interfaces/hotel.interface';
-import { sequelize } from '../../../shared/database/sequelize';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -19,35 +17,18 @@ export class HotelService {
   }
 
   async createHotel(data: CreateHotelDTO) {
-    // 1. Verify location exists
     const location = await this.locationRepository.findById(data.location_id);
     if (!location) {
       throw new AppError(HOTEL_CONSTANTS.ERRORS.LOCATION_NOT_FOUND, 404);
     }
 
-    // 2. Verify unique name in same location
     const existing = await this.hotelRepository.findByNameAndLocation(data.hotel_name, data.location_id);
     if (existing) {
       throw new AppError(HOTEL_CONSTANTS.ERRORS.NAME_EXISTS_IN_LOCATION, 400);
     }
 
-    const t = await sequelize.transaction();
-    try {
-      const tempCode = `T${Date.now()}${Math.random().toString(36).slice(2, 6)}`.slice(0, 20);
-      const newHotel = await this.hotelRepository.create(
-        { ...(data as Partial<IHotel>), hotel_code: tempCode },
-        t,
-      );
-
-      const hotel_code = `HOT-${newHotel.hotel_id.toString().padStart(6, '0')}`;
-      await newHotel.update({ hotel_code }, { transaction: t });
-
-      await t.commit();
-      return this.getHotelById(newHotel.hotel_id);
-    } catch (error) {
-      await t.rollback();
-      throw error;
-    }
+    const newHotel = await this.hotelRepository.create(data);
+    return this.getHotelById(newHotel.hotel_id);
   }
 
   async getHotelById(hotel_id: number) {

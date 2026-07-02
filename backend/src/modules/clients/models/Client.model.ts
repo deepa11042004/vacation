@@ -132,7 +132,7 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   @Column(DataType.DATE)
   deleted_at?: Date | null;
 
-  @HasOne(() => (global as any).models.ClientAddress, { sourceKey: 'client_code' })
+  @HasOne(() => (global as any).models.ClientAddress, { foreignKey: 'client_id' })
   address?: ClientAddress | null;
 }
 

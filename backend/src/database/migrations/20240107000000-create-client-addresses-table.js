@@ -10,13 +10,13 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
-      client_code: {
-        type: Sequelize.STRING(20),
+      client_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-        unique: true, // One-to-one relationship
+        unique: true,
         references: {
           model: 'clients',
-          key: 'client_code',
+          key: 'client_id',
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',

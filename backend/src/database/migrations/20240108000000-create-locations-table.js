@@ -10,11 +10,6 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
-      location_code: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-        unique: true,
-      },
       location_name: {
         type: Sequelize.STRING(100),
         allowNull: false,

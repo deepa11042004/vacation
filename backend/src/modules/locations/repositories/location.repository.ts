@@ -41,7 +41,6 @@ export class LocationRepository {
     if (search) {
       where[Op.or] = [
         { location_name: { [Op.like]: `%${search}%` } },
-        { location_code: { [Op.like]: `%${search}%` } },
         { country: { [Op.like]: `%${search}%` } },
       ];
     }

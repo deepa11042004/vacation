@@ -10,11 +10,6 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
-      package_code: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-        unique: true,
-      },
       name: {
         type: Sequelize.STRING(150),
         allowNull: false,
