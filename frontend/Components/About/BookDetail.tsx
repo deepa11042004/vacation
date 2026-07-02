@@ -53,7 +53,7 @@ function FeatureCard({ data, index }: { data: Feature; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.4 }}
       transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.08 }}
-      className="group flex flex-col gap-5 rounded-3xl border border-gray-200 bg-white p-7 transition-colors duration-300 hover:border-blue-600"
+      className="group flex flex-col gap-5 rounded-3xl border border-gray-200 bg-blue-50 p-7 transition-colors duration-300 hover:border-blue-600"
     >
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-xs transition-transform duration-300 group-hover:scale-105">
         <IconComponent className="h-5 w-5" strokeWidth={2.2} />
