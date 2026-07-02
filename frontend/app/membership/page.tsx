@@ -1,4 +1,3 @@
-import ActivitiesGrid from "@/Components/Activities/ActivitiesGrid";
 import MemberHero from "@/Components/Member/MemberHero";
 import MemberHome from "@/Components/Member/MemberHome";
 import PlanSec from "@/Components/Member/PlanSec";
@@ -10,7 +9,6 @@ function Member() {
       <MemberHero />
       <MemberHome />
       <PlanSec />
-      <ActivitiesGrid />
     </>
   );
 }

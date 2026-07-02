@@ -1,5 +1,5 @@
 import Hero from "@/Components/Home/Hero";
-import About from "@/Components/Home/About";
+import About from "@/Components/About/About";
 import React from "react";
 import Properties from "@/Components/Home/Properties";
 import Destination from "@/Components/Home/Destination";

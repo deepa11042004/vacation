@@ -607,7 +607,7 @@ export default function Stay() {
                     key={type.id}
                     variants={cardVariants}
                     className="relative overflow-hidden rounded-2xl bg-neutral-100 group cursor-pointer shadow-xs hover:shadow-lg transition-shadow duration-300 transform-gpu"
-                    style={{ aspectRatio: "3 / 4.2" }}
+                    style={{ aspectRatio: "3 / 3" }}
                   >
                     <Image
                       fill
