@@ -20,6 +20,7 @@ import { PaymentMode, PaymentStatus, PaymentType } from '../types/payment.types'
 
 @Table({
   tableName: 'payments',
+  modelName: 'Payment',
   timestamps: true,
   paranoid: false, // payments are never soft-deleted; cancelled via status
 })

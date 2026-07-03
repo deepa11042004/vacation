@@ -22,6 +22,7 @@ import { MembershipDSA, MembershipStatus, PaymentMode } from '../types/membershi
 
 @Table({
   tableName: 'memberships',
+  modelName: 'Membership',
   timestamps: true,
   paranoid: true,
 })

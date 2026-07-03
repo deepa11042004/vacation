@@ -4,9 +4,12 @@ import { ClientController } from '@/modules/clients/controllers/client.controlle
 /**
  * @swagger
  * /api/clients/{id}/restore:
- *   patch:
+ *   post:
  *     summary: Restore a soft-deleted client
+ *     description: Clears the `deleted_at` timestamp, making the client active again in all queries.
  *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -23,19 +26,15 @@ import { ClientController } from '@/modules/clients/controllers/client.controlle
  *                 success: { type: boolean, example: true }
  *                 message: { type: string, example: "Client restored successfully" }
  *       400:
- *         description: Bad Request (Client not deleted)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiErrorResponse'
+ *         description: Client is not deleted or invalid ID
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden — Admin only
  *       404:
  *         description: Client not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   return ClientController.restore(request, params.id);
 }

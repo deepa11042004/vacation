@@ -195,9 +195,13 @@ export async function POST(request: NextRequest) {
  *       - in: query
  *         name: limit
  *         schema: { type: integer, default: 10 }
+ *       - in: query
+ *         name: include_deleted
+ *         schema: { type: boolean, default: false }
+ *         description: When true, includes soft-deleted clients in the response (they have a non-null `deleted_at`)
  *     responses:
  *       200:
- *         description: A list of clients
+ *         description: A list of clients (active and/or deleted)
  *         content:
  *           application/json:
  *             schema:

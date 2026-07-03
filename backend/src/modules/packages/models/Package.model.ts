@@ -17,6 +17,7 @@ import { PackageCategory, PackageStatus, UnitType } from '../types/package.types
 
 @Table({
   tableName: 'packages',
+  modelName: 'Package',
   timestamps: true,
   paranoid: true,
 })

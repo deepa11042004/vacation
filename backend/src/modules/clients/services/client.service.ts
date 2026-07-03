@@ -4,6 +4,8 @@ import { ClientFilterOptions } from '../types/client.types';
 import { CLIENT_CONSTANTS } from '../constants/client.constants';
 import { AppError } from '../../../shared/middlewares/error.middleware';
 import { IClient } from '../interfaces/client.interface';
+import { IClientAddress } from '../interfaces/client-address.interface';
+import { ClientAddress } from '../models/ClientAddress.model';
 import { sequelize } from '../../../shared/database/sequelize';
 import { UserService, UserRole } from '../../users';
 
@@ -111,6 +113,23 @@ export class ClientService {
     }
 
     await this.clientRepository.delete(client_id);
+  }
+
+  async getAddress(client_id: number) {
+    const existing = await ClientAddress.findOne({ where: { client_id } });
+    return existing ? existing.toJSON() : null;
+  }
+
+  async upsertAddress(client_id: number, data: Partial<IClientAddress>) {
+    const client = await this.clientRepository.findById(client_id);
+    if (!client) throw new AppError(CLIENT_CONSTANTS.ERRORS.NOT_FOUND, 404);
+    const existing = await ClientAddress.findOne({ where: { client_id } });
+    if (existing) {
+      await existing.update(data);
+      return existing.toJSON();
+    }
+    const created = await ClientAddress.create({ ...data, client_id } as IClientAddress);
+    return created.toJSON();
   }
 
   async restoreClient(client_id: number) {

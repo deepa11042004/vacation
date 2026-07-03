@@ -19,6 +19,7 @@ import type { ClientAddress } from './ClientAddress.model';
 
 @Table({
   tableName: 'clients',
+  modelName: 'Client',
   timestamps: true,
   paranoid: true,
 })

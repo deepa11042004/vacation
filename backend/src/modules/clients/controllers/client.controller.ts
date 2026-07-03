@@ -51,8 +51,9 @@ export class ClientController {
       const status = searchParams.get('status') as ClientStatus | undefined;
       const page = parseInt(searchParams.get('page') || '1', 10);
       const limit = parseInt(searchParams.get('limit') || '10', 10);
+      const includeDeleted = searchParams.get('include_deleted') === 'true';
 
-      const filters = { search, status, page, limit };
+      const filters = { search, status, page, limit, includeDeleted };
       const result = await clientService.getAllClients(filters);
 
       return NextResponse.json(

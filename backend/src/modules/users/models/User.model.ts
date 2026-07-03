@@ -20,6 +20,7 @@ import { UserRole, UserStatus } from '../types/user.types';
 
 @Table({
   tableName: 'users',
+  modelName: 'User',
   timestamps: true,
   paranoid: true,
 })

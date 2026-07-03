@@ -28,7 +28,7 @@ export class ClientRepository {
   }
 
   async findAll(filters: ClientFilterOptions = {}): Promise<{ rows: Client[]; count: number }> {
-    const { search, status, page = 1, limit = 10 } = filters;
+    const { search, status, page = 1, limit = 10, includeDeleted = false } = filters;
     const cappedLimit = Math.min(limit, MAX_LIMIT);
     const offset = (page - 1) * cappedLimit;
 
@@ -53,6 +53,7 @@ export class ClientRepository {
       limit: cappedLimit,
       offset,
       order: [['created_at', 'DESC']],
+      paranoid: !includeDeleted,
     });
   }
 

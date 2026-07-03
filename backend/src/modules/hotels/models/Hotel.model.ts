@@ -21,6 +21,7 @@ import type { HotelImage } from './HotelImage.model';
 
 @Table({
   tableName: 'hotels',
+  modelName: 'Hotel',
   timestamps: true,
   paranoid: true,
 })

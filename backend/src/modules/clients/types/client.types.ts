@@ -20,4 +20,5 @@ export type ClientFilterOptions = {
   status?: ClientStatus;
   page?: number;
   limit?: number;
+  includeDeleted?: boolean;
 };

@@ -17,6 +17,7 @@ import { Hotel } from './Hotel.model';
 
 @Table({
   tableName: 'hotel_images',
+  modelName: 'HotelImage',
   timestamps: true,
 })
 export class HotelImage extends Model<IHotelImage, Partial<IHotelImage>> implements IHotelImage {

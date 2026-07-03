@@ -19,6 +19,7 @@ import type { Hotel } from '../../hotels/models/Hotel.model';
 
 @Table({
   tableName: 'locations',
+  modelName: 'Location',
   timestamps: true,
   paranoid: true,
 })

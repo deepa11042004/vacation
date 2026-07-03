@@ -1,0 +1,6 @@
+{
+  "invoice": {
+    "subject": "Invoice {{invoice_no}} — Peltown Vacations",
+    "body": "Dear {{client_name}},\n\nThank you for choosing Peltown Vacations.\n\nPlease find your invoice attached to this email.\n\nInvoice No: {{invoice_no}}\nDate: {{issue_date}}\nAmount: Rs. {{amount}}\n\nIf you have any questions regarding this invoice, please feel free to contact us.\n\nWarm regards,\nPeltown Vacations Team"
+  }
+}

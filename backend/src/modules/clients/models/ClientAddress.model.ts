@@ -16,6 +16,7 @@ import { Client } from './Client.model';
 
 @Table({
   tableName: 'client_addresses',
+  modelName: 'ClientAddress',
   timestamps: true,
 })
 export class ClientAddress extends Model<IClientAddress, Partial<IClientAddress>> implements IClientAddress {
