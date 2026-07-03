@@ -31,8 +31,8 @@ const navItems: NavItem[] = [
     label: "Hotels",
     url: "/hotels",
     dropdown: [
-      { label: "National", url: "/hotels/national" },
-      { label: "International", url: "/hotels/international" },
+      { label: "Associated", url: "/hotels/associated" },
+      { label: "Internal", url: "/hotels/internal" },
     ],
   },
   { label: "Contact", url: "/contact" },
