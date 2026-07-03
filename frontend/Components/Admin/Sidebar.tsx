@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, Users, CreditCard, IndianRupee,
-  Package, Building2, MapPin, LogOut, Hotel,
+  LayoutDashboard, Users,
+  Package, Building2, MapPin, LogOut, Hotel, Mail,
 } from "lucide-react";
 import { clearAuth } from "@/lib/api";
 
@@ -16,9 +16,7 @@ const sections = [
   {
     label: "Operations",
     items: [
-      { href: "/admin/clients",     label: "Clients",     icon: Users      },
-      { href: "/admin/memberships", label: "Memberships", icon: CreditCard },
-      { href: "/admin/payments",    label: "Payments",    icon: IndianRupee },
+      { href: "/admin/clients", label: "Clients", icon: Users },
     ],
   },
   {
@@ -27,6 +25,12 @@ const sections = [
       { href: "/admin/packages",  label: "Packages",   icon: Package },
       { href: "/admin/hotels",    label: "Hotels",     icon: Hotel   },
       { href: "/admin/locations", label: "Locations",  icon: MapPin  },
+    ],
+  },
+  {
+    label: "Settings",
+    items: [
+      { href: "/admin/settings/email-template", label: "Email Template", icon: Mail },
     ],
   },
 ];
