@@ -8,12 +8,33 @@ import CtaButton from "@/UI/CtaButton";
 
 /*  Data */
 
-const navItems: { label: string; url: string; dropdown?: boolean }[] = [
+type NavItem = {
+  label: string;
+  url: string;
+  dropdown?: { label: string; url: string }[];
+};
+
+const navItems: NavItem[] = [
   { label: "About Us", url: "/about" },
   { label: "Activities", url: "/activities" },
   { label: "Stays", url: "/stays" },
   { label: "Membership", url: "/membership" },
-  { label: "Pages", url: "#", dropdown: true },
+  {
+    label: "Destination",
+    url: "/destination",
+    dropdown: [
+      { label: "National", url: "/destination/national" },
+      { label: "International", url: "/destination/international" },
+    ],
+  },
+  {
+    label: "Hotels",
+    url: "/hotels",
+    dropdown: [
+      { label: "National", url: "/hotels/national" },
+      { label: "International", url: "/hotels/international" },
+    ],
+  },
   { label: "Contact", url: "/contact" },
 ];
 
@@ -27,11 +48,16 @@ export default function Navbar() {
     isScrolled ||
     pathname === "/stays" ||
     pathname === "/contact" ||
-    pathname === "/join";
+    pathname === "/join" ||
+    pathname === "/destination" ||
+    pathname === "/destination/national" ||
+    pathname === "/destination/international" ||
+    pathname === "/hotels/national" ||
+    pathname === "/hotels/international";
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 300);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -67,18 +93,47 @@ export default function Navbar() {
         }`}
       >
         {navItems.map((item) => (
-          <Link
-            key={item.label}
-            href={item.url}
-            className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm transition-colors duration-300 ${
-              !useLightStyle
-                ? "text-white/90 hover:bg-white/20"
-                : "text-gray-700 hover:bg-blue-100/50 hover:text-gray-900"
-            }`}
-          >
-            {item.label}
-            {item.dropdown && <ChevronDown className="h-3.5 w-3.5" />}
-          </Link>
+          <div key={item.label} className="group relative">
+            <Link
+              href={item.url}
+              className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm transition-colors duration-300 ${
+                !useLightStyle
+                  ? "text-white/90 hover:bg-white/20"
+                  : "text-gray-700 hover:bg-blue-100/50 hover:text-gray-900"
+              }`}
+            >
+              {item.label}
+              {item.dropdown && (
+                <ChevronDown className="h-3.5 w-3.5 group-hover:rotate-180 transition-transform duration-300" />
+              )}
+            </Link>
+
+            {item.dropdown && (
+              <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300">
+                <div
+                  className={`flex flex-col min-w-37.5 rounded-2xl shadow-lg overflow-hidden py-1 ${
+                    !useLightStyle
+                      ? "bg-white/10 backdrop-blur-md border border-white/25"
+                      : "bg-white border border-gray-100"
+                  }`}
+                >
+                  {item.dropdown.map((dropItem) => (
+                    <Link
+                      key={dropItem.label}
+                      href={dropItem.url}
+                      className={`px-4 py-2 text-sm transition-colors ${
+                        !useLightStyle
+                          ? "text-white/90 hover:bg-white/20"
+                          : "text-gray-700 hover:bg-blue-50 hover:text-gray-900"
+                      }`}
+                    >
+                      {dropItem.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         ))}
       </div>
 

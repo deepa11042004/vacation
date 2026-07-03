@@ -10,7 +10,7 @@ import BookDetail from "@/Components/About/BookDetail";
 
 function page() {
   return (
-    <>
+    <main className="overflow-x-hidden">
       <Hero />
       <Book />
       <BookDetail />
@@ -20,7 +20,7 @@ function page() {
       <Testimonials />
       <ActivitiesGrid />
       <FAQsec />
-    </>
+    </main>
   );
 }
 
