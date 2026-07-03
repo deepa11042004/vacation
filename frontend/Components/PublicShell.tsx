@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "@/Components/Navbar";
-import Footer from "@/Components/Footer";
+import Navbar from "@/Components/Shared/Navbar";
+import Footer from "@/Components/Shared/Footer";
 import SmoothScroll from "@/Provider/SmoothScroll";
 
 export default function PublicShell({ children }: { children: React.ReactNode }) {

@@ -4,155 +4,20 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import CtaButton from "@/UI/CtaButton";
 
-// Types
-export interface AllHotelsItem {
-  id: number;
-  location: string;
-  title: string;
-  description: string;
-  image: string;
-  category: "associated" | "internal";
-}
-
-// Mock Data
-const AllHotelsList: AllHotelsItem[] = [
-  // Associated Hotels
-  {
-    id: 1,
-    location: "Ranthambore, Rajasthan, India",
-    title: "Aman-i-Khas",
-    description:
-      "Experience the raw wilderness of Ranthambore National Park in ultimate luxury, featuring air-conditioned tents and guided safari excursions.",
-    image:
-      "https://images.pexels.com/photos/30791068/pexels-photo-30791068.jpeg",
-    category: "associated",
-  },
-  {
-    id: 2,
-    location: "Udaipur, Rajasthan, India",
-    title: "Taj Lake Palace",
-    description:
-      "A majestic 18th-century palace floating on Lake Pichola, offering legendary hospitality and unparalleled romantic views of the City Palace.",
-    image:
-      "https://images.pexels.com/photos/33243028/pexels-photo-33243028.jpeg",
-    category: "associated",
-  },
-  {
-    id: 3,
-    location: "Agra, Uttar Pradesh, India",
-    title: "The Oberoi Amarvilas",
-    description:
-      "Wake up to breathtaking, uninterrupted views of the Taj Mahal from your private balcony, wrapped in Moorish and Mughal architectural luxury.",
-    image:
-      "https://images.pexels.com/photos/37680039/pexels-photo-37680039.jpeg",
-    category: "associated",
-  },
-  {
-    id: 4,
-    location: "Kabini, Karnataka, India",
-    title: "Evolve Back",
-    description:
-      "Inspired by local Kuruba tribal design, this safari resort offers a sweeping view of the Kabini River and unparalleled wildlife sightings in the wild.",
-    image:
-      "https://images.pexels.com/photos/34909119/pexels-photo-34909119.jpeg",
-    category: "associated",
-  },
-  {
-    id: 5,
-    location: "Kumarakom, Kerala, India",
-    title: "Kumarakom Lake Resort",
-    description:
-      "Reconnect with nature along the pristine backwaters of Kerala, featuring luxury heritage villas reconstructed from traditional ancestral homes.",
-    image:
-      "https://images.pexels.com/photos/10135346/pexels-photo-10135346.jpeg",
-    category: "associated",
-  },
-  {
-    id: 6,
-    location: "Shimla, Himachal Pradesh, India",
-    title: "Wildflower Hall",
-    description:
-      "Located 8,250 feet above sea level in the Himalayas, experience pristine mountain air, pine forests, and an outdoor heated whirlpool with panoramic valley views.",
-    image:
-      "https://images.pexels.com/photos/27555453/pexels-photo-27555453.jpeg",
-    category: "associated",
-  },
-
-  // Internal Hotels
-  {
-    id: 7,
-    location: "Noonu Atoll, Maldives",
-    title: "Soneva Jani",
-    description:
-      "A sanctuary of overwater villas with retractable roofs to stargaze from bed and private water slides into the turquoise lagoon.",
-    image:
-      "https://images.pexels.com/photos/32457946/pexels-photo-32457946.jpeg",
-    category: "internal",
-  },
-  {
-    id: 8,
-    location: "Canyon Point, Utah, USA",
-    title: "Amangiri",
-    description:
-      "Tucked into a protected valley in the American Southwest, this modernist oasis blends seamlessly with the red-rock desert landscape.",
-    image:
-      "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg",
-    category: "internal",
-  },
-  {
-    id: 9,
-    location: "Lake Como, Italy",
-    title: "Villa d'Este",
-    description:
-      "A legendary hotel of timeless elegance, surrounded by 25 acres of manicured gardens, overlooking the serene waters of Lake Como.",
-    image:
-      "https://images.pexels.com/photos/6836380/pexels-photo-6836380.jpeg",
-    category: "internal",
-  },
-  {
-    id: 10,
-    location: "Kyoto, Japan",
-    title: "Hoshinoya Kyoto",
-    description:
-      "Accessible by a tranquil boat ride down the Oi River, this historic riverside ryokan offers a perfect blend of Japanese tradition and modern luxury.",
-    image:
-      "https://images.pexels.com/photos/37331182/pexels-photo-37331182.jpeg",
-    category: "internal",
-  },
-  {
-    id: 11,
-    location: "Sabi Sand, South Africa",
-    title: "Singita Boulders Lodge",
-    description:
-      "An organic masterpiece resting along the banks of the Sand River, providing front-row seats to frequent big game sightings in the bush.",
-    image:
-      "https://images.pexels.com/photos/3011575/pexels-photo-3011575.jpeg",
-    category: "internal",
-  },
-  {
-    id: 12,
-    location: "Santorini, Greece",
-    title: "Canaves Oia Suites",
-    description:
-      "Carved into the volcanic cliffside, enjoy panoramic vistas of the Aegean Sea and the caldera from your private infinity plunge pool.",
-    image:
-      "https://images.pexels.com/photos/3460597/pexels-photo-3460597.jpeg",
-    category: "internal",
-  },
-];
+import { AllHotelsList } from "@/data/mockData";
 
 interface AllHotelsProps {
   type?: "all" | "associated" | "internal";
 }
 
 export default function AllHotels({ type = "all" }: AllHotelsProps) {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<
     "ALL" | "ASSOCIATED" | "INTERNAL"
-  >(
-    type === "all" ? "ALL" : type === "associated" ? "ASSOCIATED" : "INTERNAL",
-  );
+  >(type === "all" ? "ALL" : type === "associated" ? "ASSOCIATED" : "INTERNAL");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Filtering Logic
@@ -273,6 +138,7 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                 transition={{ type: "spring", stiffness: 180, damping: 22 }}
                 key={hotel.id}
+                onClick={() => router.push(`/hotels/${hotel.id}`)}
                 className="flex flex-col justify-between items-start group cursor-pointer w-full bg-white rounded-3xl"
               >
                 {/* Media Image Area Container */}
@@ -306,7 +172,11 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
 
                 {/* 3. Footer Action Call */}
                 <div className="w-full pt-2 border-t border-transparent mt-2">
-                  <CtaButton text="Explore Now" variant="white" size="sm" />
+                  <CtaButton
+                    text="Explore Now"
+                    variant="white"
+                    size="sm"
+                  />
                 </div>
               </motion.div>
             ))}

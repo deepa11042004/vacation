@@ -49,11 +49,8 @@ export default function Navbar() {
     pathname === "/stays" ||
     pathname === "/contact" ||
     pathname === "/join" ||
-    pathname === "/destination" ||
-    pathname === "/destination/national" ||
-    pathname === "/destination/international" ||
-    pathname === "/hotels/national" ||
-    pathname === "/hotels/international";
+    pathname.startsWith("/destination") ||
+    pathname.startsWith("/hotels");
 
   useEffect(() => {
     const handleScroll = () => {
