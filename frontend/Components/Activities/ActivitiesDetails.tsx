@@ -76,7 +76,7 @@ const secondRow = ACTIVITIES_DATA.slice(3, 6);
 
 function ActivityCard({ item }: { item: ActivityItem }) {
   return (
-    <article className="group flex flex-col h-full bg-white border border-gray-300 rounded-3xl overflow-hidden hover:border-gray-400 hover:shadow-xl transition-all duration-300 transform-gpu">
+    <article className="group flex flex-col h-full bg-blue-50 border border-gray-300 rounded-3xl overflow-hidden hover:border-blue-600 hover:shadow-xl transition-all duration-300 transform-gpu">
       {/* ── Image/Video ── */}
       <div className="relative h-64 w-full overflow-hidden shrink-0">
         <video

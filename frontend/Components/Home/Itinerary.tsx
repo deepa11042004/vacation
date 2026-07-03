@@ -109,7 +109,7 @@ function ItineraryCard({ item, onPlay }: CardProps) {
   return (
     <motion.article
       variants={fadeInUp}
-      className="group flex flex-col h-full bg-white border border-gray-300 rounded-3xl overflow-hidden
+      className="group flex flex-col h-full bg-blue-50 border border-gray-300 rounded-3xl overflow-hidden
                  hover:border-gray-400 hover:shadow-xl transition-all duration-300 transform-gpu"
     >
       {/* ── Image ── */}

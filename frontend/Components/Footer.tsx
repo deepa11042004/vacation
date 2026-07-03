@@ -99,6 +99,22 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Middle Row: Customer Support Details */}
+        <div className="mt-16 flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 text-sm font-medium text-neutral-300 text-center md:text-left">
+          <div className="flex flex-col gap-1">
+            <span className="text-white font-bold uppercase tracking-wider text-xs">Support Email</span>
+            <a href="mailto:support@tourvia.com" className="hover:text-white transition-colors">support@tourvia.com</a>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-white font-bold uppercase tracking-wider text-xs">Phone</span>
+            <a href="tel:+18001234567" className="hover:text-white transition-colors">+1 (800) 123-4567</a>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-white font-bold uppercase tracking-wider text-xs">Location</span>
+            <span>123 Expedition Way, Adventure City, NY 10001</span>
+          </div>
+        </div>
+
         {/* Bottom Row: Legalities & Metadata Lockup */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-neutral-300 select-none">
           <p>© {currentYear} Tourvia. All Rights Reserved.</p>

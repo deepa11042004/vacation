@@ -92,7 +92,7 @@ export default function Properties() {
         {/* Header  */}
         <div className="mb-12 w-full">
           <Badge
-            text="Explore 200+ Resorts"
+            text="Explore"
             variant="black"
             size="lg"
             icon={Minus}

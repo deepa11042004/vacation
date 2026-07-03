@@ -22,42 +22,48 @@ const slides: SlideData[] = [
     id: 1,
     country: "Japan",
     title: "In het hart van Honshu",
-    imageUrl: "https://plus.unsplash.com/premium_photo-1661964177687-57387c2cbd14?q=80&w=1170&auto=format&fit=crop",
+    imageUrl:
+      "https://plus.unsplash.com/premium_photo-1661964177687-57387c2cbd14?q=80&w=1170&auto=format&fit=crop",
     type: "Heritage Hub",
   },
   {
     id: 2,
     country: "Tibet & China",
     title: "Het dak van de wereld met de Hemeltrein",
-    imageUrl: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
+    imageUrl:
+      "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
     type: "Wonders Track",
   },
   {
     id: 3,
     country: "Costa Rica",
     title: "Het wilde zuiden van Costa Rica",
-    imageUrl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+    imageUrl:
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
     type: "Spiritual Escape",
   },
   {
     id: 4,
     country: "Mexico",
     title: "Tesoros de México",
-    imageUrl: "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?q=80&w=1170&auto=format&fit=crop",
+    imageUrl:
+      "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?q=80&w=1170&auto=format&fit=crop",
     type: "Wilderness Oasis",
   },
   {
     id: 5,
     country: "Egypte",
     title: "Eeuwigheid langs de Nijl",
-    imageUrl: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=1200&q=80",
+    imageUrl:
+      "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=1200&q=80",
     type: "Lakeside Luxury",
   },
   {
     id: 6,
     country: "Marokko",
     title: "Van Atlas tot Sahara",
-    imageUrl: "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?auto=format&fit=crop&w=1200&q=80",
+    imageUrl:
+      "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?auto=format&fit=crop&w=1200&q=80",
     type: "Serene Retreat",
   },
 ];
@@ -93,11 +99,10 @@ const Destination = () => {
   return (
     <section className="bg-white px-6 py-20 sm:px-10 lg:px-14 font-display w-full select-none">
       <div className="max-w-7xl mx-auto flex flex-col">
-        
         {/* Header */}
         <div className="mb-12 w-full">
           <Badge
-            text="Explore 200+ Destinations"
+            text="Explore"
             variant="black"
             size="lg"
             icon={Minus}
@@ -106,7 +111,8 @@ const Destination = () => {
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl md:text-5xl">
-              Popular Destinations
+              Top destinations <br />
+              handpicked for you.
             </h2>
             <CtaButton
               text="View All Destinations"
@@ -118,7 +124,7 @@ const Destination = () => {
         </div>
 
         {/* 3D Visual Stage Viewport */}
-        <div className="relative w-full h-135 bg-white overflow-hidden flex items-center justify-center">
+        <div className="relative w-full h-135 flex items-center justify-center">
           <div className="relative w-full h-full max-w-4xl flex items-center justify-center">
             {slides.map((slide, index) => {
               let distance = index - currentIndex;
@@ -188,7 +194,9 @@ const Destination = () => {
 
                   {/* Context Overlay — Animates cleanly on the active focus deck */}
                   <div className="absolute bottom-0 left-0 right-0 z-20 p-6 flex flex-col gap-1.5 transform-gpu">
-                    <div className={`transition-all duration-500 transform ease-out ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+                    <div
+                      className={`transition-all duration-500 transform ease-out ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+                    >
                       <p className="text-xs font-semibold text-gray-300 tracking-wider uppercase opacity-80">
                         {slide.country}
                       </p>
@@ -220,7 +228,6 @@ const Destination = () => {
             </button>
           </div>
         </div>
-
       </div>
     </section>
   );
