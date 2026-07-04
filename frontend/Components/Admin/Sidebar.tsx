@@ -3,34 +3,44 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, Users,
-  Package, Building2, MapPin, LogOut, Hotel, Mail,
+  LayoutDashboard,
+  Users,
+  Package,
+  Building2,
+  MapPin,
+  LogOut,
+  Hotel,
+  Mail,
 } from "lucide-react";
 import { clearAuth } from "@/lib/api";
 
 const sections = [
   {
     label: null,
-    items: [{ href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard }],
+    items: [
+      { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    ],
   },
   {
     label: "Operations",
-    items: [
-      { href: "/admin/clients", label: "Clients", icon: Users },
-    ],
+    items: [{ href: "/admin/clients", label: "Clients", icon: Users }],
   },
   {
     label: "Catalog",
     items: [
-      { href: "/admin/packages",  label: "Packages",   icon: Package },
-      { href: "/admin/hotels",    label: "Hotels",     icon: Hotel   },
-      { href: "/admin/locations", label: "Locations",  icon: MapPin  },
+      { href: "/admin/packages", label: "Packages", icon: Package },
+      { href: "/admin/hotels", label: "Hotels", icon: Hotel },
+      { href: "/admin/locations", label: "Locations", icon: MapPin },
     ],
   },
   {
     label: "Settings",
     items: [
-      { href: "/admin/settings/email-template", label: "Email Template", icon: Mail },
+      {
+        href: "/admin/settings/email-template",
+        label: "Email Template",
+        icon: Mail,
+      },
     ],
   },
 ];
@@ -55,7 +65,7 @@ export default function Sidebar() {
           <Building2 className="w-4 h-4 text-white" />
         </div>
         <div>
-          <p className="text-white font-semibold text-sm leading-tight">Peltown</p>
+          <p className="text-white font-bold text-sm leading-tight">Peltown</p>
           <p className="text-slate-500 text-xs">Admin Panel</p>
         </div>
       </div>
@@ -64,7 +74,7 @@ export default function Sidebar() {
         {sections.map((section, si) => (
           <div key={si}>
             {section.label && (
-              <p className="text-slate-600 text-[10px] font-semibold uppercase tracking-widest px-3 mb-1">
+              <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 mb-1">
                 {section.label}
               </p>
             )}
@@ -72,9 +82,13 @@ export default function Sidebar() {
               {section.items.map(({ href, label, icon: Icon }) => {
                 const active = isActive(href);
                 return (
-                  <Link key={href} href={href}
+                  <Link
+                    key={href}
+                    href={href}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      active ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                      active
+                        ? "bg-blue-600 text-white"
+                        : "text-slate-400 hover:bg-slate-800 hover:text-white"
                     }`}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
@@ -88,8 +102,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="px-3 py-4 border-t border-slate-800">
-        <button onClick={logout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-red-400 transition-colors">
+        <button
+          onClick={logout}
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-red-400 transition-colors"
+        >
           <LogOut className="w-4 h-4 shrink-0" />
           Logout
         </button>

@@ -182,7 +182,7 @@ export default function Testimonials() {
                       <span className="text-base font-bold tracking-wide text-white">
                         {item.name}
                       </span>
-                      <span className="text-xs font-semibold tracking-wider text-neutral-400 mt-0.5 uppercase">
+                      <span className="text-xs font-bold tracking-wider text-neutral-400 mt-0.5 uppercase">
                         {item.location}
                       </span>
                     </div>

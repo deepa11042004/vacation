@@ -125,7 +125,7 @@ export default function PlanSec() {
           />
         </div>
 
-        <h3 className="text-3xl md:text-5xl font-semibold tracking-tight text-white mb-6">
+        <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
           A World of Privileged Access
         </h3>
 
@@ -137,7 +137,7 @@ export default function PlanSec() {
 
         {/* HORIZONTAL SLIDING PRIVILEGES CAROUSEL */}
         <div className="w-full relative flex flex-col items-center mt-4">
-          <h4 className="text-3xl font-semibold tracking-wider text-white mb-10">
+          <h4 className="text-3xl font-bold tracking-wider text-white mb-10">
             Handpicked Privileges
           </h4>
 
@@ -208,7 +208,7 @@ export default function PlanSec() {
               icon={Minus}
             />
           </div>
-          <h3 className="text-2xl md:text-6xl font-semibold tracking-tight text-black mb-5">
+          <h3 className="text-2xl md:text-6xl font-bold tracking-tight text-black mb-5">
             Your Key to Unlock Privileged Experiences
           </h3>
           <p className="text-neutral-500 text-xs md:text-sm font-medium tracking-wide mb-14 uppercase">
@@ -277,7 +277,7 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
       </div>
 
       <div className="relative z-10">
-        <span className="text-xs uppercase font-semibold tracking-widest text-neutral-400 block mb-1">
+        <span className="text-xs uppercase font-bold tracking-widest text-neutral-400 block mb-1">
           Key
         </span>
         <h4 className="text-3xl font-extrabold tracking-wide mb-4 font-sans">

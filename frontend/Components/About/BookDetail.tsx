@@ -58,7 +58,7 @@ function FeatureCard({ data, index }: { data: Feature; index: number }) {
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-xs transition-transform duration-300 group-hover:scale-105">
         <IconComponent className="h-5 w-5" strokeWidth={2.2} />
       </div>
-      <h3 className="text-xl font-semibold tracking-tight text-black">
+      <h3 className="text-xl font-bold tracking-tight text-black">
         {data.title}
       </h3>
       <p className="text-sm font-medium leading-relaxed text-gray-500">
@@ -82,7 +82,7 @@ export default function BookingDetail() {
             className="mb-5"
           />
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-3xl text-3xl font-semibold leading-[1.1] tracking-tight text-black md:text-6xl">
+            <h2 className="max-w-3xl text-3xl font-bold leading-[1.1] tracking-tight text-black md:text-6xl">
               Travel destinations <br />
               across the globe.
             </h2>

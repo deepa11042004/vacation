@@ -6,13 +6,13 @@ import { getStoredUser } from "@/lib/api";
 import { UserCircle } from "lucide-react";
 
 const titles: Record<string, string> = {
-  "/admin/dashboard":   "Dashboard",
-  "/admin/clients":     "Clients",
+  "/admin/dashboard": "Dashboard",
+  "/admin/clients": "Clients",
   "/admin/memberships": "Memberships",
-  "/admin/payments":    "Payments",
-  "/admin/packages":    "Packages",
-  "/admin/hotels":      "Hotels",
-  "/admin/locations":   "Locations",
+  "/admin/payments": "Payments",
+  "/admin/packages": "Packages",
+  "/admin/hotels": "Hotels",
+  "/admin/locations": "Locations",
 };
 
 function getTitle(pathname: string) {
@@ -24,7 +24,9 @@ function getTitle(pathname: string) {
 
 export default function Topbar() {
   const pathname = usePathname();
-  const [user, setUser] = useState<{ email?: string; role?: string } | null>(null);
+  const [user, setUser] = useState<{ email?: string; role?: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     setUser(getStoredUser());
@@ -32,12 +34,14 @@ export default function Topbar() {
 
   return (
     <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
-      <h1 className="text-slate-800 font-semibold text-base">{getTitle(pathname)}</h1>
+      <h1 className="text-slate-800 font-bold text-base">
+        {getTitle(pathname)}
+      </h1>
       <div className="flex items-center gap-2 text-sm text-slate-600">
         <UserCircle className="w-5 h-5 text-slate-400" />
         <span className="font-medium">{user?.email ?? "Admin"}</span>
         {user?.role && (
-          <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+          <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
             {user.role}
           </span>
         )}

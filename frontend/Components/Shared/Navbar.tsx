@@ -67,7 +67,7 @@ export default function Navbar() {
   return (
     /*  Layer 4 — navigation */
     <nav
-      className={`fixed z-50 flex items-center justify-between transition-all duration-300 ${
+      className={`fixed z-1000 flex items-center justify-between transition-all duration-300 ${
         isScrolled
           ? "top-4 inset-x-4 md:inset-x-8 lg:inset-x-32 bg-blue-50 rounded-full py-3 px-4 md:px-6 lg:px-8 shadow-md"
           : "inset-x-0 top-0 bg-transparent py-6 px-6 md:px-12 lg:px-40"
@@ -75,7 +75,7 @@ export default function Navbar() {
     >
       <Link
         href="/"
-        className={`text-xl md:text-3xl font-semibold transition-colors duration-300 ${!useLightStyle ? "text-white" : "text-gray-900"}`}
+        className={`text-xl md:text-4xl font-[--font-marcellus] transition-colors duration-300 ${!useLightStyle ? "text-white" : "text-gray-900"}`}
       >
         Tourvia.
       </Link>

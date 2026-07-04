@@ -301,7 +301,7 @@ export default function JoinDetail() {
                               {tier.name}
                             </h4>
                             <span
-                              className={`text-[11px] font-semibold tracking-wide block mt-1.5 ${tier.mutedTextClass}`}
+                              className={`text-[11px] font-bold tracking-wide block mt-1.5 ${tier.mutedTextClass}`}
                             >
                               {card.roomType}
                             </span>

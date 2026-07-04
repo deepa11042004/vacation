@@ -13,12 +13,17 @@ export default function LuxuryContactBooking() {
         {/* Left Column */}
         <div className="lg:col-span-6 flex flex-col p-8 md:p-16 lg:p-24 space-y-12 relative">
           <div className="pb-4">
-            <Badge icon={Minus} text="Information ↓" variant="black" className="tracking-[0.3em]" />
+            <Badge
+              icon={Minus}
+              text="Information ↓"
+              variant="black"
+              className="tracking-[0.3em]"
+            />
           </div>
 
           {/* Location Block */}
           <div className="space-y-3 pt-4">
-            <h3 className="text-4xl font-semibold text-black">Location</h3>
+            <h3 className="text-4xl font-bold text-black">Location</h3>
             <p className="text-base font-medium leading-relaxed text-black">
               7 Basta Lane, Mala Strana <br /> Prague 1, 11800
             </p>
@@ -31,7 +36,7 @@ export default function LuxuryContactBooking() {
 
           {/* Reservations Block */}
           <div className="space-y-3">
-            <h3 className="text-4xl font-semibold text-black">Reservations</h3>
+            <h3 className="text-4xl font-bold text-black">Reservations</h3>
             <p className="text-sm font-medium leading-relaxed text-black max-w-sm">
               Need help booking your stay or managing an existing reservation?
             </p>
@@ -42,7 +47,7 @@ export default function LuxuryContactBooking() {
 
           {/* Contact Block */}
           <div className="space-y-3">
-            <h3 className="text-4xl font-semibold text-black">Contact</h3>
+            <h3 className="text-4xl font-bold text-black">Contact</h3>
             <p className="text-sm font-medium leading-relaxed text-black max-w-sm">
               For general inquiries or special requests, our team is available
               every day.
@@ -58,7 +63,7 @@ export default function LuxuryContactBooking() {
           {/* Stay Connected Signup Box */}
           <div className="space-y-6 max-w-xl">
             <div className="space-y-1">
-              <h3 className="text-4xl font-semibold text-black">
+              <h3 className="text-4xl font-bold text-black">
                 Stay connected with us
               </h3>
               <p className="text-sm font-medium leading-relaxed text-black max-w-sm">
@@ -69,23 +74,23 @@ export default function LuxuryContactBooking() {
 
             <div className="border border-black/10 p-8 rounded-sm space-y-6 bg-white">
               <div className="flex items-center border-b border-black/50 py-3">
-                <span className="text-[10px] uppercase tracking-widest opacity-50 font-semibold w-24">
+                <span className="text-[10px] uppercase tracking-widest opacity-50 font-bold w-24">
                   Name
                 </span>
                 <input
                   type="text"
                   defaultValue="joe"
-                  className="bg-transparent border-none p-0 outline-none text-sm font-semibold w-full focus:ring-0 text-black"
+                  className="bg-transparent border-none p-0 outline-none text-sm font-bold w-full focus:ring-0 text-black"
                 />
               </div>
               <div className="flex items-center border-b border-black/50 py-3">
-                <span className="text-[10px] uppercase tracking-widest opacity-50 font-semibold w-24">
+                <span className="text-[10px] uppercase tracking-widest opacity-50 font-bold w-24">
                   Email
                 </span>
                 <input
                   type="email"
                   defaultValue="webbster@example.com"
-                  className="bg-transparent border-none p-0 outline-none text-sm font-semibold w-full focus:ring-0 text-black"
+                  className="bg-transparent border-none p-0 outline-none text-sm font-bold w-full focus:ring-0 text-black"
                 />
               </div>
 
@@ -97,7 +102,7 @@ export default function LuxuryContactBooking() {
 
           {/* Absolute Title Overlay */}
           <div className="hidden lg:block absolute right-0 top-[18%] translate-x-1/2 z-20 pointer-events-none">
-            <h1 className="text-6xl xl:text-7xl tracking-tight leading-[0.95] font-semibold text-black bg-white py-4 px-6 select-none">
+            <h1 className="text-6xl xl:text-7xl tracking-tight leading-[0.95] font-bold text-black bg-white py-4 px-6 select-none">
               Book Your <br /> Experience
             </h1>
           </div>
