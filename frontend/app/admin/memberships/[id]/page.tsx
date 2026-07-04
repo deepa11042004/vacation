@@ -14,7 +14,7 @@ interface Membership {
   down_payment: number; outstanding_balance: number; payment_mode: string;
   nights_remaining: number; nights_per_year: number;
   dsa?: string; reference_by?: string; cancellation_reason?: string; remarks?: string;
-  client?: { client_id: number; client_code: string; first_name: string; last_name: string; email: string; mobile: string };
+  client?: { client_id: number; first_name: string; last_name: string; email: string; mobile: string };
   package?: { name: string; category: string; unit_type: string; validity_years?: number; total_nights?: number };
 }
 
@@ -143,7 +143,7 @@ export default function MembershipDetailPage() {
             </div>
             <p className="text-slate-400 text-sm mt-1">
               <Link href={`/admin/clients/${m.client?.client_id}`} className="text-blue-600 hover:underline">
-                {m.client?.first_name} {m.client?.last_name} ({m.client?.client_code})
+                {m.client?.first_name} {m.client?.last_name}
               </Link>
             </p>
           </div>

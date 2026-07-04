@@ -7,8 +7,9 @@ import { api } from "@/lib/api";
 import { Search, Plus, ChevronLeft, ChevronRight, Loader2, MoreVertical, Pencil, Trash2, RotateCcw } from "lucide-react";
 
 interface Client {
-  client_id: number; client_code: string;
-  title?: string; first_name: string; last_name: string;
+  client_id: number;
+  membership_number?: string | null;
+  first_name: string; last_name: string;
   email: string; mobile: string; country_code: string;
   status: string; created_at: string; deleted_at?: string | null;
 }
@@ -160,7 +161,7 @@ export default function ClientsPage() {
         {loading ? <div className="flex items-center justify-center h-48"><Loader2 className="w-5 h-5 animate-spin text-blue-600" /></div> : (
           <table className="w-full text-sm" style={{ overflow: 'visible' }}>
             <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>{["Code", "Name", "Email", "Mobile", "Status", "Joined", ""].map(h => (
+              <tr>{["Membership No", "Name", "Email", "Mobile", "Status", "Joined", ""].map(h => (
                 <th key={h} className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3">{h}</th>
               ))}</tr>
             </thead>
@@ -170,9 +171,9 @@ export default function ClientsPage() {
                 const deleted = !!c.deleted_at;
                 return (
                   <tr key={c.client_id} className={`transition-colors ${deleted ? "bg-blue-50 hover:bg-blue-100" : "hover:bg-slate-50"}`}>
-                    <td className={`px-4 py-3 font-mono text-xs ${deleted ? "text-blue-400" : "text-slate-500"}`}>{c.client_code}</td>
+                    <td className={`px-4 py-3 font-mono text-xs ${deleted ? "text-blue-400" : "text-slate-500"}`}>{c.membership_number ?? "—"}</td>
                     <td className={`px-4 py-3 font-medium ${deleted ? "text-blue-600" : "text-slate-800"}`}>
-                      {c.title} {c.first_name} {c.last_name}
+                      {c.first_name} {c.last_name}
                       {deleted && <span className="ml-2 text-[10px] font-semibold bg-blue-100 text-blue-500 px-1.5 py-0.5 rounded-full">Deleted</span>}
                     </td>
                     <td className={`px-4 py-3 text-xs ${deleted ? "text-blue-400" : "text-slate-600"}`}>{c.email}</td>

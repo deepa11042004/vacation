@@ -30,7 +30,7 @@ export default function EditClientPage() {
   const [toast, setToast]     = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
   const [form, setForm] = useState({
-    title: "", first_name: "", middle_name: "", last_name: "",
+    first_name: "", middle_name: "", last_name: "",
     gender: "MALE", date_of_birth: "",
     country_code: "+91", mobile: "", alternate_mobile: "",
     email: "", spouse_name: "", marriage_anniversary: "",
@@ -54,7 +54,6 @@ export default function EditClientPage() {
       const c = cr?.data;
       if (c) {
         setForm({
-          title:               c.title              ?? "",
           first_name:          c.first_name         ?? "",
           middle_name:         c.middle_name        ?? "",
           last_name:           c.last_name          ?? "",
@@ -94,7 +93,6 @@ export default function EditClientPage() {
     setToast(null);
     try {
       const payload: Record<string, string | null> = { ...form };
-      // send null for empty optional fields
       (["middle_name","date_of_birth","alternate_mobile","spouse_name",
         "marriage_anniversary","sales_consultant","take_over_manager",
         "dsa","reference_by","remarks"] as const).forEach(k => {
@@ -142,12 +140,18 @@ export default function EditClientPage() {
         <p className="text-sm font-semibold text-slate-700 border-b border-slate-100 pb-3">Personal Details</p>
 
         <div className="grid grid-cols-3 gap-4">
-          <Field label="Title">
-            <select className={sel} value={form.title} onChange={e => setF("title", e.target.value)}>
-              <option value="">—</option>
-              {["Mr","Mrs","Ms","Dr","Prof"].map(t => <option key={t}>{t}</option>)}
-            </select>
+          <Field label="First Name" required>
+            <input className={inp} value={form.first_name} onChange={e => setF("first_name", e.target.value)} />
           </Field>
+          <Field label="Middle Name">
+            <input className={inp} value={form.middle_name} onChange={e => setF("middle_name", e.target.value)} />
+          </Field>
+          <Field label="Last Name" required>
+            <input className={inp} value={form.last_name} onChange={e => setF("last_name", e.target.value)} />
+          </Field>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
           <Field label="Gender" required>
             <select className={sel} value={form.gender} onChange={e => setF("gender", e.target.value)}>
               <option value="MALE">Male</option>
@@ -158,17 +162,8 @@ export default function EditClientPage() {
           <Field label="Date of Birth">
             <input type="date" className={inp} value={form.date_of_birth} onChange={e => setF("date_of_birth", e.target.value)} />
           </Field>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4">
-          <Field label="First Name" required>
-            <input className={inp} value={form.first_name} onChange={e => setF("first_name", e.target.value)} />
-          </Field>
-          <Field label="Middle Name">
-            <input className={inp} value={form.middle_name} onChange={e => setF("middle_name", e.target.value)} />
-          </Field>
-          <Field label="Last Name" required>
-            <input className={inp} value={form.last_name} onChange={e => setF("last_name", e.target.value)} />
+          <Field label="Spouse Name">
+            <input className={inp} value={form.spouse_name} onChange={e => setF("spouse_name", e.target.value)} />
           </Field>
         </div>
 
@@ -185,12 +180,11 @@ export default function EditClientPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <Field label="Email" required>
-            <input type="email" className={inp} value={form.email} onChange={e => setF("email", e.target.value)} />
-          </Field>
-          <Field label="Spouse Name">
-            <input className={inp} value={form.spouse_name} onChange={e => setF("spouse_name", e.target.value)} />
-          </Field>
+          <div className="col-span-2">
+            <Field label="Email" required>
+              <input type="email" className={inp} value={form.email} onChange={e => setF("email", e.target.value)} />
+            </Field>
+          </div>
           <Field label="Marriage Anniversary">
             <input type="date" className={inp} value={form.marriage_anniversary} onChange={e => setF("marriage_anniversary", e.target.value)} />
           </Field>
@@ -234,11 +228,9 @@ export default function EditClientPage() {
         <p className="text-sm font-semibold text-slate-700 border-b border-slate-100 pb-3">Address</p>
 
         <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-3">
-            <Field label="Primary Address">
-              <textarea rows={2} className={`${inp} resize-none`} value={addr.primary_address} onChange={e => setA("primary_address", e.target.value)} />
-            </Field>
-          </div>
+          <Field label="Primary Address">
+            <input className={inp} value={addr.primary_address} onChange={e => setA("primary_address", e.target.value)} placeholder="Street / flat / building" />
+          </Field>
           <Field label="Primary State">
             <input className={inp} value={addr.primary_state} onChange={e => setA("primary_state", e.target.value)} />
           </Field>
@@ -247,12 +239,10 @@ export default function EditClientPage() {
           </Field>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-3">
-            <Field label="Secondary Address">
-              <textarea rows={2} className={`${inp} resize-none`} value={addr.secondary_address} onChange={e => setA("secondary_address", e.target.value)} />
-            </Field>
-          </div>
+        <div className="grid grid-cols-3 gap-4 mt-4">
+          <Field label="Secondary Address">
+            <input className={inp} value={addr.secondary_address} onChange={e => setA("secondary_address", e.target.value)} placeholder="Street / flat / building" />
+          </Field>
           <Field label="Secondary State">
             <input className={inp} value={addr.secondary_state} onChange={e => setA("secondary_state", e.target.value)} />
           </Field>

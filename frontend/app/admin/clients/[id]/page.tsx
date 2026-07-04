@@ -8,7 +8,7 @@ import Modal from "@/Components/Admin/Modal";
 import { ArrowLeft, Loader2, User, Pencil, Plus } from "lucide-react";
 
 interface Client {
-  client_id: number; client_code: string;
+  client_id: number;
   title?: string; first_name: string; middle_name?: string; last_name: string;
   gender: string; date_of_birth?: string;
   mobile: string; alternate_mobile?: string; email: string; country_code: string;
@@ -162,7 +162,7 @@ export default function ClientDetailPage() {
             </div>
             <div>
               <h2 className="text-slate-900 font-bold text-lg">{client.title} {client.first_name} {client.middle_name} {client.last_name}</h2>
-              <p className="text-slate-400 text-sm font-mono">{client.client_code}</p>
+              <p className="text-slate-400 text-sm">{client.email}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

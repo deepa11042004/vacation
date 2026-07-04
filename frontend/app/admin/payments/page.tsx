@@ -9,7 +9,7 @@ interface Payment {
   payment_type: string; amount: number; payment_date: string;
   payment_mode: string; status: string; transaction_ref?: string; bank_name?: string; remarks?: string;
   membership?: { membership_number: string; membership_id: number };
-  client?: { client_id: number; first_name: string; last_name: string; client_code: string };
+  client?: { client_id: number; first_name: string; last_name: string };
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -119,7 +119,6 @@ export default function PaymentsPage() {
                   <td className="px-4 py-3 font-mono text-xs text-slate-500">{p.payment_number}</td>
                   <td className="px-4 py-3">
                     <p className="text-slate-800 text-xs font-medium">{p.client?.first_name} {p.client?.last_name}</p>
-                    <p className="text-slate-400 text-xs">{p.client?.client_code}</p>
                   </td>
                   <td className="px-4 py-3 font-mono text-xs text-slate-600">{p.membership?.membership_number ?? "—"}</td>
                   <td className="px-4 py-3"><Badge value={p.payment_type} map={TYPE_COLORS} /></td>

@@ -9,12 +9,12 @@ import { Search, ChevronLeft, ChevronRight, Loader2, Plus } from "lucide-react";
 interface Membership {
   membership_id: number; membership_number: string; status: string;
   outstanding_balance: number; net_price: number; sale_date: string; end_date: string;
-  client?: { client_id: number; first_name: string; last_name: string; client_code: string };
+  client?: { client_id: number; first_name: string; last_name: string };
   package?: { name: string; category: string };
 }
 
 interface Pkg { package_id: number; name: string; category: string; validity_years: number; base_price: number }
-interface Client { client_id: number; client_code: string; first_name: string; last_name: string; email: string }
+interface Client { client_id: number; first_name: string; last_name: string; email: string }
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: "bg-emerald-50 text-emerald-700", SUSPENDED: "bg-amber-50 text-amber-700",
@@ -140,7 +140,6 @@ export default function MembershipsPage() {
                   <td className="px-4 py-3 font-mono text-xs font-semibold text-slate-700">{m.membership_number}</td>
                   <td className="px-4 py-3">
                     <Link href={`/admin/clients/${m.client?.client_id}`} className="text-blue-600 text-xs hover:underline">{m.client?.first_name} {m.client?.last_name}</Link>
-                    <p className="text-slate-400 text-xs">{m.client?.client_code}</p>
                   </td>
                   <td className="px-4 py-3 text-slate-700 text-xs">{m.package?.name}</td>
                   <td className="px-4 py-3"><span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${CAT_COLORS[m.package?.category ?? ""] ?? "bg-slate-100 text-slate-500"}`}>{m.package?.category}</span></td>
@@ -175,7 +174,7 @@ export default function MembershipsPage() {
             ? <div className="flex items-center justify-between bg-blue-50 rounded-lg px-3 py-2">
                 <div>
                   <p className="text-sm font-medium text-blue-900">{selectedClient.first_name} {selectedClient.last_name}</p>
-                  <p className="text-xs text-blue-600">{selectedClient.client_code} · {selectedClient.email}</p>
+                  <p className="text-xs text-blue-600">{selectedClient.email}</p>
                 </div>
                 <button onClick={() => { setSelectedClient(null); setClients([]); setClientSearch(""); }} className="text-xs text-blue-600 hover:text-blue-800 underline">Change</button>
               </div>
@@ -191,7 +190,7 @@ export default function MembershipsPage() {
                 <button key={c.client_id} onClick={() => { setSelectedClient(c); setClients([]); }}
                   className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
                   <span className="font-medium text-slate-800">{c.first_name} {c.last_name}</span>
-                  <span className="text-slate-400 ml-2 text-xs">{c.client_code}</span>
+                  <span className="text-slate-400 ml-2 text-xs">{c.email}</span>
                 </button>
               ))}
             </div>

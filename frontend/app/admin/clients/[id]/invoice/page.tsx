@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { ArrowLeft, Loader2, Send, CheckCircle, AlertCircle } from "lucide-react";
 
 interface Client {
-  client_id: number; client_code: string;
+  client_id: number;
   title?: string; first_name: string; middle_name?: string; last_name: string;
   email: string; mobile: string; country_code: string;
 }
@@ -78,7 +78,7 @@ export default function InvoicePage() {
           ...f,
           invoice_no: genInvoiceNo(c.client_id),
           client_name: name,
-          card_number: mem?.membership_number ?? c.client_code,
+          card_number: mem?.membership_number ?? '',
           email: c.email,
           phone: `${c.country_code} ${c.mobile}`,
         }));
@@ -109,7 +109,7 @@ export default function InvoicePage() {
             <h1 className="text-xl font-bold text-slate-800">Generate Invoice</h1>
             {client && (
               <p className="text-sm text-slate-500">
-                {client.first_name} {client.last_name} &middot; {client.client_code}
+                {client.first_name} {client.last_name} &middot; {client.email}
               </p>
             )}
           </div>

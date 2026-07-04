@@ -5,7 +5,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { Users, CreditCard, IndianRupee, TrendingDown, ArrowRight, Loader2 } from "lucide-react";
 
-interface Client { client_id: number; client_code: string; first_name: string; last_name: string; email: string; status: string; created_at: string }
+interface Client { client_id: number; first_name: string; last_name: string; email: string; status: string; created_at: string }
 interface Payment { payment_id: number; payment_number: string; amount: number; payment_type: string; payment_date: string; status: string; client?: { first_name: string; last_name: string } }
 interface Membership { membership_id: number; membership_number: string; outstanding_balance: number; status: string; client?: { first_name: string; last_name: string }; package?: { category: string } }
 
@@ -91,7 +91,7 @@ export default function DashboardPage() {
                 className="flex items-center justify-between px-5 py-3 hover:bg-slate-50 transition-colors">
                 <div>
                   <p className="text-slate-800 text-sm font-medium">{c.first_name} {c.last_name}</p>
-                  <p className="text-slate-400 text-xs">{c.client_code} · {c.email}</p>
+                  <p className="text-slate-400 text-xs">{c.email}</p>
                 </div>
                 <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS[c.status] ?? "bg-slate-100 text-slate-500"}`}>{c.status}</span>
               </Link>
