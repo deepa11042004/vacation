@@ -234,7 +234,7 @@ function DestCard({
         <h3 className="text-2xl font-bold text-white tracking-wide">
           {dest.name}
         </h3>
-        <p className="text-xs font-semibold text-gray-300 tracking-wider uppercase opacity-80">
+        <p className="text-xs font-bold text-gray-300 tracking-wider uppercase opacity-80">
           Active Spot
         </p>
       </div>

@@ -69,7 +69,7 @@ export default function AboutHero() {
 
         <motion.h1
           variants={foregroundItem}
-          className="text-4xl md:text-5xl lg:text-7xl font-medium leading-[1.1] text-white"
+          className="text-4xl md:text-5xl lg:text-7xl font-bold leading-[1.1] text-white"
         >
           Our Story, <br /> Your Journey
         </motion.h1>

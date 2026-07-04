@@ -13,7 +13,7 @@ export default function Book() {
     <section className="w-full bg-white py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Main Search Container */}
-        <div className="w-full bg-blue-50 rounded-4xl p-6 sm:p-8 border border-gray-200">
+        <div className="w-full bg-blue-50 rounded-4xl p-6 sm:p-8 border border-gray-200 hover:border-blue-600 transition-colors duration-300 ease-in-out">
           {/* Header Title */}
           <h2 className="text-3xl sm:text-4xl font-medium text-black tracking-tight mb-6 pl-1">
             Plan Your Stays
@@ -23,10 +23,10 @@ export default function Book() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             {/* 1. Destination */}
             <div className="md:col-span-3 flex flex-col gap-2">
-              <label className="text-sm font-medium text-black pl-1">
+              <label className="text-sm font-medium text-black pl-1 ">
                 Destination
               </label>
-              <div className="relative">
+              <div className="relative border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
                 <select
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
@@ -48,7 +48,7 @@ export default function Book() {
               <label className="text-sm font-medium text-black pl-1">
                 Check-in — Out
               </label>
-              <div className="relative">
+              <div className="relative border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
                 <input
                   type="date"
                   className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full appearance-none outline-none"
@@ -61,7 +61,7 @@ export default function Book() {
               <label className="text-sm font-medium text-black pl-1">
                 Adults
               </label>
-              <div className="relative">
+              <div className="relative border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
                 <select
                   value={adults}
                   onChange={(e) => setAdults(e.target.value)}
@@ -84,7 +84,7 @@ export default function Book() {
               <label className="text-sm font-medium text-black pl-1">
                 Number Of Rooms
               </label>
-              <div className="relative">
+              <div className="relative border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
                 <select
                   value={rooms}
                   onChange={(e) => setRooms(e.target.value)}

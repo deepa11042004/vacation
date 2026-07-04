@@ -496,7 +496,7 @@ export default function Stay() {
             variant="black"
             className="mb-3 mr-8 tracking-widest"
           />
-          <h1 className="font-semibold text-4xl md:text-6xl tracking-wide max-w-4xl mx-auto leading-tight text-black">
+          <h1 className="font-bold text-4xl md:text-5xl lg:text-7xl tracking-wide max-w-4xl mx-auto leading-tight text-black">
             Beyond the Map, <br /> Into Your Perfect Stay
           </h1>
           <p className="text-sm tracking-[0.3em] text-black mt-6 flex items-center justify-center gap-2">
@@ -624,7 +624,7 @@ export default function Stay() {
                       <h3 className="text-2xl font-bold text-white tracking-wide">
                         {type.title}
                       </h3>
-                      <p className="text-xs font-semibold text-gray-300 tracking-wider uppercase opacity-80">
+                      <p className="text-xs font-bold text-gray-300 tracking-wider uppercase opacity-80">
                         {type.subtitle}
                       </p>
                     </div>
@@ -652,7 +652,7 @@ export default function Stay() {
               variant="black"
               className="tracking-widest"
             />
-            <h2 className="text-4xl md:text-6xl font-semibold tracking-tight leading-widest text-black">
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tight leading-widest text-black">
               Experience Comfort, <br /> Unforgettable Moments
             </h2>
           </div>
@@ -750,7 +750,7 @@ export default function Stay() {
                 variant="black"
                 className="mb-5 tracking-widest"
               />
-              <h2 className="font-semibold text-3xl md:text-6xl tracking-wide text-black">
+              <h2 className="font-bold text-3xl md:text-6xl tracking-wide text-black">
                 Experiences That Make <br />
                 Every Stay Memorable
               </h2>
@@ -813,7 +813,7 @@ export default function Stay() {
                       className="space-y-3"
                     >
                       <h4
-                        className={`tracking-wide leading-tight transition-all duration-300 ${isActive ? "text-2xl md:text-3xl font-semibold max-w-xl" : "text-base font-medium line-clamp-2"}`}
+                        className={`tracking-wide leading-tight transition-all duration-300 ${isActive ? "text-2xl md:text-3xl font-bold max-w-xl" : "text-base font-medium line-clamp-2"}`}
                       >
                         {card.title}
                       </h4>
@@ -834,7 +834,7 @@ export default function Stay() {
         <div className="absolute w-262.5 h-262.5 md:w-275 md:h-275 border border-gray-300 rounded-full pointer-events-none" />
 
         <div className="text-center space-y-8 max-w-2xl px-6 z-10">
-          <h2 className="font-semibold text-5xl md:text-7xl tracking-wide leading-tight text-black">
+          <h2 className="font-bold text-5xl md:text-7xl tracking-wide leading-tight text-black">
             Ready for Your Next Vacation?
           </h2>
           <CtaButton text="Book Now" variant="blue" size="md" />

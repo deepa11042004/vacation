@@ -75,7 +75,7 @@ export default function Navbar() {
     >
       <Link
         href="/"
-        className={`text-xl md:text-3xl font-semibold transition-colors duration-300 ${!useLightStyle ? "text-white" : "text-gray-900"}`}
+        className={`text-xl md:text-4xl font-[--font-marcellus] transition-colors duration-300 ${!useLightStyle ? "text-white" : "text-gray-900"}`}
       >
         Tourvia.
       </Link>

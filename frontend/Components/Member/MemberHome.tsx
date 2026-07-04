@@ -80,7 +80,7 @@ export default function MemberHome() {
           className="mb-5"
         />
 
-        <h2 className="max-w-5xl text-3xl font-semibold leading-[1.2] text-gray-950 sm:text-4xl md:text-5xl lg:text-6xl tracking-tight">
+        <h2 className="max-w-5xl text-3xl font-bold leading-[1.2] text-gray-950 sm:text-4xl md:text-5xl lg:text-6xl tracking-tight">
           Journey to the Planet’s Rarest <br /> Places, With Refined in Every
           Detail
         </h2>

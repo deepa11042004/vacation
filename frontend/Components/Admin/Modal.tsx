@@ -11,10 +11,18 @@ interface ModalProps {
   size?: "sm" | "md" | "lg";
 }
 
-export default function Modal({ open, onClose, title, children, size = "md" }: ModalProps) {
+export default function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  size = "md",
+}: ModalProps) {
   useEffect(() => {
     if (!open) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
@@ -25,10 +33,15 @@ export default function Modal({ open, onClose, title, children, size = "md" }: M
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-      <div className={`bg-white rounded-2xl shadow-xl w-full ${widths[size]} my-8`}>
+      <div
+        className={`bg-white rounded-2xl shadow-xl w-full ${widths[size]} my-8`}
+      >
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-          <h3 className="font-semibold text-slate-800">{title}</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+          <h3 className="font-bold text-slate-800">{title}</h3>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-600 transition-colors"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>

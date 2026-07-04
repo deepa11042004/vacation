@@ -197,7 +197,7 @@ const Destination = () => {
                     <div
                       className={`transition-all duration-500 transform ease-out ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
                     >
-                      <p className="text-xs font-semibold text-gray-300 tracking-wider uppercase opacity-80">
+                      <p className="text-xs font-bold text-gray-300 tracking-wider uppercase opacity-80">
                         {slide.country}
                       </p>
                       <h3 className="text-2xl font-bold text-white tracking-wide leading-tight">

@@ -7,11 +7,11 @@ import { Building2, Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail]       = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPw, setShowPw]     = useState(false);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (localStorage.getItem("admin_token")) {
@@ -24,10 +24,11 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await api.post<{ success: boolean; data?: { accessToken: string; user: unknown }; message?: string }>(
-        "/auth/admin/login",
-        { email, password }
-      );
+      const res = await api.post<{
+        success: boolean;
+        data?: { accessToken: string; user: unknown };
+        message?: string;
+      }>("/auth/admin/login", { email, password });
       if (res?.success && res.data?.accessToken) {
         saveAuth(res.data.accessToken, res.data.user);
         router.replace("/admin/dashboard");
@@ -57,34 +58,42 @@ export default function LoginPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Email
+              </label>
               <input
                 type="email"
                 required
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@peltown.com"
                 className="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Password
+              </label>
               <div className="relative">
                 <input
                   type={showPw ? "text" : "password"}
                   required
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full px-3 py-2.5 pr-10 rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPw(v => !v)}
+                  onClick={() => setShowPw((v) => !v)}
                   className="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600"
                 >
-                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPw ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -98,7 +107,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               {loading ? "Signing in…" : "Sign In"}

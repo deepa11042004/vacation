@@ -35,7 +35,7 @@ export default function Story() {
             />
 
             {/* Main Header Display */}
-            <h2 className="text-3xl font-semibold leading-tight text-gray-950 sm:text-4xl lg:text-5xl tracking-tight mb-6 max-w-xl">
+            <h2 className="text-3xl font-bold leading-tight text-gray-950 sm:text-4xl lg:text-5xl tracking-tight mb-6 max-w-xl">
               Discovering beauty Then <br /> sharing it exclusively
             </h2>
 

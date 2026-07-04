@@ -14,7 +14,7 @@ import {
   Waves,
   Clock,
   ParkingCircle,
-  Info
+  Info,
 } from "lucide-react";
 
 export interface PropertyData {
@@ -42,7 +42,6 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-30 bg-white min-h-screen text-neutral-900">
-      
       {/* --- Image Gallery --- */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 h-[50vh] md:h-150">
         {/* Main large image */}
@@ -83,10 +82,9 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
       {/* --- Content Area --- */}
       {/* We center the content or give it a max-width to balance since we removed the right widget */}
       <div className="max-w-4xl mx-auto md:mx-0 w-full space-y-10">
-        
         {/* Header Section */}
         <div>
-          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight mb-4">
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
             {property.title}
           </h1>
           <div className="flex items-center gap-4 text-sm font-medium text-neutral-500">
@@ -115,7 +113,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
 
         {/* Amenities Section */}
         <div className="border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-xs">
-          <h3 className="text-xl font-semibold mb-6">Amenities</h3>
+          <h3 className="text-xl font-bold mb-6">Amenities</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4 text-sm text-neutral-600">
             <div className="flex items-center gap-3">
               <Sofa className="w-5 h-5 text-neutral-400" />
@@ -158,7 +156,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
 
         {/* Hotel Information Section */}
         <div className="border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-xs">
-          <h3 className="text-xl font-semibold mb-6">Hotel Information</h3>
+          <h3 className="text-xl font-bold mb-6">Hotel Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4 text-sm text-neutral-600">
             <div className="flex items-center gap-3">
               <Clock className="w-5 h-5 text-neutral-400" />
@@ -178,7 +176,6 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

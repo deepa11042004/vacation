@@ -105,7 +105,7 @@ const CtaButton: React.FC<CtaButtonProps> = ({
 
   // Outer pill — background + border swap on hover
   const outerClasses = [
-    "group relative inline-flex items-center rounded-full font-semibold",
+    "group relative inline-flex items-center rounded-full font-bold",
     "transition-all duration-500 ease-out cursor-pointer",
     cfg.padding,
     cfg.fontSize,

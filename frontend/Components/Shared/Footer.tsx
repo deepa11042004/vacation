@@ -51,7 +51,7 @@ export default function Footer() {
 
           {/* Central Column: Slogan Lockup + Custom Trigger Button */}
           <div className="md:col-span-6 flex flex-col items-center text-center justify-center order-1 md:order-2 self-center">
-            <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-white mb-6 leading-tight max-w-lg">
+            <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-6 leading-tight max-w-lg">
               Expeditions Expertise <br /> at Your Service
             </h3>
             <CtaButton text="Contact Us" variant="white" size="md" />
@@ -102,15 +102,31 @@ export default function Footer() {
         {/* Middle Row: Customer Support Details */}
         <div className="mt-16 flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 text-sm font-medium text-neutral-300 text-center md:text-left">
           <div className="flex flex-col gap-1">
-            <span className="text-white font-bold uppercase tracking-wider text-xs">Support Email</span>
-            <a href="mailto:support@tourvia.com" className="hover:text-white transition-colors">support@tourvia.com</a>
+            <span className="text-white font-bold uppercase tracking-wider text-xs">
+              Support Email
+            </span>
+            <a
+              href="mailto:support@tourvia.com"
+              className="hover:text-white transition-colors"
+            >
+              support@tourvia.com
+            </a>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="text-white font-bold uppercase tracking-wider text-xs">Phone</span>
-            <a href="tel:+18001234567" className="hover:text-white transition-colors">+1 (800) 123-4567</a>
+            <span className="text-white font-bold uppercase tracking-wider text-xs">
+              Phone
+            </span>
+            <a
+              href="tel:+18001234567"
+              className="hover:text-white transition-colors"
+            >
+              +1 (800) 123-4567
+            </a>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="text-white font-bold uppercase tracking-wider text-xs">Location</span>
+            <span className="text-white font-bold uppercase tracking-wider text-xs">
+              Location
+            </span>
             <span>123 Expedition Way, Adventure City, NY 10001</span>
           </div>
         </div>

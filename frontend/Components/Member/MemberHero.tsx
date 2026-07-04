@@ -70,7 +70,7 @@ export default function MemberHero() {
 
         <motion.h1
           variants={foregroundItem}
-          className="text-4xl md:text-5xl lg:text-7xl font-medium leading-[1.1] text-white"
+          className="text-4xl md:text-5xl lg:text-7xl font-bold leading-[1.1] text-white"
         >
           Go Further. <br /> Unlock the World.
         </motion.h1>

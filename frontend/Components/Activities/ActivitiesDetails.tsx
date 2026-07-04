@@ -111,7 +111,7 @@ function ActivityCard({ item }: { item: ActivityItem }) {
 
         {/* Footer */}
         <div className="pt-4 mt-auto border-t border-gray-100 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 text-gray-400 text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center gap-1.5 text-gray-400 text-xs font-bold uppercase tracking-wider">
             <Clock className="w-3.5 h-3.5 shrink-0" />
             <span>{item.duration}</span>
           </div>
