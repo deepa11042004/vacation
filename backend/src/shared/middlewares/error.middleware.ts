@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
+import { UniqueConstraintError, ValidationError as SequelizeValidationError } from 'sequelize';
 import { ResponseUtil } from '../utils/response.util';
 
 export class AppError extends Error {
@@ -15,7 +16,26 @@ export class AppError extends Error {
 }
 
 export function errorHandler(error: unknown) {
-  console.error('Error occurred:', error);
+  const safe = error instanceof Error
+    ? { name: error.name, message: error.message, stack: error.stack }
+    : String(error);
+  try { console.error('Error occurred:', safe); } catch { console.error('Error occurred:', String(error)); }
+
+  if (error instanceof UniqueConstraintError) {
+    const field = error.errors?.[0]?.path ?? 'field';
+    return NextResponse.json(
+      ResponseUtil.failure(`A record with this ${field} already exists.`),
+      { status: 409 },
+    );
+  }
+
+  if (error instanceof SequelizeValidationError) {
+    const messages = error.errors.map(e => e.message);
+    return NextResponse.json(
+      ResponseUtil.failure('Validation failed', messages),
+      { status: 400 },
+    );
+  }
 
   if (error instanceof ZodError) {
     const formattedErrors = error.errors.map((err) => ({

@@ -92,7 +92,6 @@ import { PaymentController } from '@/modules/payments/controllers/payment.contro
  *           nullable: true
  *           properties:
  *             client_id: { type: integer, example: 1 }
- *             client_code: { type: string, example: "CLI-000001" }
  *             first_name: { type: string, example: "John" }
  *             last_name: { type: string, example: "Doe" }
  *     PaymentResponse:

@@ -1,3 +1,4 @@
+import { UniqueConstraintError } from 'sequelize';
 import { Transaction } from 'sequelize';
 import { MembershipRepository } from '../repositories/membership.repository';
 import { CreateMembershipDTO, UpdateMembershipDTO } from '../dto/membership.dto';
@@ -18,6 +19,15 @@ const CARD_PREFIX: Record<PackageCategory, string> = {
   [PackageCategory.PLATINUM]: 'PLT',
 };
 
+function round2(n: number): number {
+  return parseFloat(n.toFixed(2));
+}
+
+function uniqueTemp(prefix: string, maxLen: number): string {
+  const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
+  return `${prefix}${Date.now()}${rand}`.slice(0, maxLen);
+}
+
 export class MembershipService {
   private membershipRepository: MembershipRepository;
 
@@ -26,48 +36,66 @@ export class MembershipService {
   }
 
   async createMembership(data: CreateMembershipDTO) {
-    // Validate client
     const client = await Client.findByPk(data.client_id);
-    if (!client) {
-      throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.CLIENT_NOT_FOUND, 404);
+    if (!client) throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.CLIENT_NOT_FOUND, 404);
+
+    let membershipPrefix: string;
+    let validityYears: number;
+    let nightsPerYear: number;
+    let totalNights: number;
+
+    if (data.package_id) {
+      const pkg = await Package.findByPk(data.package_id);
+      if (!pkg || pkg.status !== PackageStatus.ACTIVE) {
+        throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.PACKAGE_NOT_FOUND, 404);
+      }
+      membershipPrefix = CARD_PREFIX[pkg.category];
+      validityYears = pkg.validity_years;
+      nightsPerYear = pkg.nights_per_year;
+      totalNights = pkg.total_nights;
+    } else if (data.package_name) {
+      validityYears = data.validity_years ?? 1;
+      nightsPerYear = data.nights_per_year ?? 0;
+      totalNights = nightsPerYear * validityYears;
+      const clean = data.package_name.replace(/[^A-Za-z]/g, '').toUpperCase();
+      membershipPrefix = (clean.slice(0, 3) || 'MEM').padEnd(3, 'X');
+    } else {
+      throw new AppError('Provide package_id or package_name with validity details', 400);
     }
 
-    // Validate package is active
-    const pkg = await Package.findByPk(data.package_id);
-    if (!pkg || pkg.status !== PackageStatus.ACTIVE) {
-      throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.PACKAGE_NOT_FOUND, 404);
-    }
+    const total_price = round2(data.total_price);
+    const discount_amount = round2(data.discount_amount ?? 0);
+    const down_payment = round2(data.down_payment ?? 0);
 
-    const discount_amount = data.discount_amount ?? 0;
-    const down_payment = data.down_payment ?? 0;
-
-    if (discount_amount > data.total_price) {
+    if (discount_amount > total_price) {
       throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.DISCOUNT_EXCEEDS_PRICE, 400);
     }
 
-    const net_price = data.total_price - discount_amount;
+    const net_price = round2(total_price - discount_amount);
 
     if (down_payment > net_price) {
       throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.DOWN_PAYMENT_EXCEEDS_NET, 400);
     }
 
-    // Calculate end_date from start_date + package validity_years
+    const outstanding_balance = round2(net_price - down_payment);
+
     const start_date = new Date(data.start_date);
     const end_date = new Date(start_date);
-    end_date.setFullYear(end_date.getFullYear() + pkg.validity_years);
-
-    const outstanding_balance = net_price - down_payment;
+    end_date.setFullYear(end_date.getFullYear() + validityYears);
 
     const t = await sequelize.transaction();
     try {
-      const tempNumber = `T${Date.now()}`.slice(0, 20);
+      const tempNumber = uniqueTemp('T', 20);
 
       const membershipData: Partial<IMembership> = {
         ...(data as any),
+        package_id: data.package_id ?? null,
         membership_number: tempNumber,
         end_date,
-        nights_remaining: pkg.total_nights,
-        nights_per_year: pkg.nights_per_year,
+        nights_remaining: totalNights,
+        nights_per_year: nightsPerYear,
+        validity_years: validityYears,
+        total_price,
         discount_amount,
         net_price,
         down_payment,
@@ -76,12 +104,11 @@ export class MembershipService {
       };
 
       const newMembership = await this.membershipRepository.create(membershipData, t);
-      const membership_number = `${CARD_PREFIX[pkg.category]}-${newMembership.membership_id.toString().padStart(5, '0')}`;
+      const membership_number = `${membershipPrefix}-${newMembership.membership_id.toString().padStart(5, '0')}`;
       await newMembership.update({ membership_number }, { transaction: t });
 
-      // Auto-create a DOWN_PAYMENT record if down_payment > 0
       if (down_payment > 0) {
-        const tempPayNum = `T${Date.now()}${Math.random().toString(36).slice(2, 5)}`.slice(0, 20);
+        const tempPayNum = uniqueTemp('P', 20);
         const paymentRecord = await Payment.create({
           payment_number: tempPayNum,
           membership_id: newMembership.membership_id,
@@ -103,6 +130,10 @@ export class MembershipService {
       return this.getMembershipById(newMembership.membership_id);
     } catch (error) {
       await t.rollback();
+      if (error instanceof UniqueConstraintError) {
+        const field = error.errors?.[0]?.path ?? 'field';
+        throw new AppError(`A membership with this ${field} already exists.`, 409);
+      }
       throw error;
     }
   }
@@ -136,31 +167,32 @@ export class MembershipService {
       throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.NOT_FOUND, 404);
     }
 
-    // Recalculate net_price and outstanding_balance if price fields changed
     const updatedData: any = { ...data };
+
     if (data.total_price !== undefined || data.discount_amount !== undefined) {
-      const total_price = data.total_price ?? membership.total_price;
-      const discount_amount = data.discount_amount ?? membership.discount_amount;
+      const total_price = round2(data.total_price ?? membership.total_price);
+      const discount_amount = round2(data.discount_amount ?? membership.discount_amount);
 
       if (discount_amount > total_price) {
         throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.DISCOUNT_EXCEEDS_PRICE, 400);
       }
 
-      const net_price = total_price - discount_amount;
-      // Adjust outstanding balance proportionally (keep what's been paid the same)
-      const paid = membership.net_price - membership.outstanding_balance;
+      const net_price = round2(total_price - discount_amount);
+      const paid = round2(membership.net_price - membership.outstanding_balance);
       updatedData.net_price = net_price;
-      updatedData.outstanding_balance = Math.max(0, net_price - paid);
+      updatedData.outstanding_balance = round2(Math.max(0, net_price - paid));
     }
 
-    // Recalculate end_date if start_date changes
+    // Recalculate end_date if start_date changes — works for both package and free-text memberships
     if (data.start_date) {
-      const pkg = await Package.findByPk(membership.package_id);
-      if (pkg) {
-        const end_date = new Date(data.start_date);
-        end_date.setFullYear(end_date.getFullYear() + pkg.validity_years);
-        updatedData.end_date = end_date;
+      let validity = membership.validity_years ?? 1;
+      if (membership.package_id) {
+        const pkg = await Package.findByPk(membership.package_id);
+        if (pkg) validity = pkg.validity_years;
       }
+      const end_date = new Date(data.start_date);
+      end_date.setFullYear(end_date.getFullYear() + validity);
+      updatedData.end_date = end_date;
     }
 
     await this.membershipRepository.update(membership_id, updatedData);
@@ -229,13 +261,12 @@ export class MembershipService {
     await this.membershipRepository.restore(membership_id);
   }
 
-  // Called by payment service after recording a payment — adjusts outstanding balance
   async adjustOutstandingBalance(membership_id: number, amountDelta: number, transaction?: Transaction) {
     const membership = await this.membershipRepository.findById(membership_id);
     if (!membership) {
       throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.NOT_FOUND, 404);
     }
-    const newBalance = parseFloat((membership.outstanding_balance - amountDelta).toFixed(2));
+    const newBalance = round2(membership.outstanding_balance - amountDelta);
     await this.membershipRepository.update(membership_id, { outstanding_balance: newBalance }, transaction);
   }
 }

@@ -5,6 +5,7 @@ import {
   DataType,
   PrimaryKey,
   AutoIncrement,
+  Unique,
   ForeignKey,
   BelongsTo,
   CreatedAt,
@@ -25,6 +26,7 @@ export class ClientAddress extends Model<IClientAddress, Partial<IClientAddress>
   @Column(DataType.INTEGER)
   address_id!: number;
 
+  @Unique
   @ForeignKey(() => Client)
   @AllowNull(false)
   @Column(DataType.INTEGER)

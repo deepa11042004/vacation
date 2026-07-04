@@ -11,7 +11,7 @@ const MAX_LIMIT = 100;
 
 const INCLUDE_ASSOCIATIONS = [
   { model: Membership, as: 'membership', attributes: ['membership_id', 'membership_number'] },
-  { model: Client, as: 'client', attributes: ['client_id', 'client_code', 'first_name', 'last_name'] },
+  { model: Client, as: 'client', attributes: ['client_id', 'first_name', 'last_name'] },
 ];
 
 export class PaymentRepository {
@@ -62,10 +62,11 @@ export class PaymentRepository {
     return result || 0;
   }
 
-  async update(payment_id: number, data: UpdatePaymentDTO): Promise<[number, Payment[]]> {
+  async update(payment_id: number, data: UpdatePaymentDTO, transaction?: Transaction): Promise<[number, Payment[]]> {
     return await Payment.update(data, {
       where: { payment_id },
       returning: true,
+      transaction,
     });
   }
 

@@ -1,3 +1,4 @@
+import { QueryTypes } from 'sequelize';
 import { ClientRepository } from '../repositories/client.repository';
 import { CreateClientDTO, UpdateClientDTO } from '../dto/client.dto';
 import { ClientFilterOptions } from '../types/client.types';
@@ -31,16 +32,10 @@ export class ClientService {
 
     const t = await sequelize.transaction();
     try {
-      // Unique temp code — replaced atomically within the transaction
-      const tempCode = `T${Date.now()}${Math.random().toString(36).slice(2, 6)}`.slice(0, 20);
       const newClient = await this.clientRepository.create(
-        { ...(data as Partial<IClient>), client_code: tempCode },
+        data as Partial<IClient>,
         t,
       );
-
-      // Derive code from the DB-assigned PK — no race condition possible
-      const client_code = `CLI-${newClient.client_id.toString().padStart(6, '0')}`;
-      await newClient.update({ client_code }, { transaction: t });
 
       // Auto-create login account within the same transaction.
       // If user creation fails the entire operation rolls back — no orphaned client.
@@ -72,7 +67,25 @@ export class ClientService {
 
   async getAllClients(filters: ClientFilterOptions) {
     const { rows, count } = await this.clientRepository.findAll(filters);
-    const clients = rows.map((client) => client.toJSON());
+
+    const clientIds = rows.map(c => c.client_id);
+    const memMap = new Map<number, string>();
+    if (clientIds.length > 0) {
+      const mems = await sequelize.query<{ client_id: number; membership_number: string }>(
+        `SELECT client_id, membership_number FROM memberships
+         WHERE client_id IN (:clientIds) AND deleted_at IS NULL
+         ORDER BY created_at ASC`,
+        { replacements: { clientIds }, type: QueryTypes.SELECT },
+      );
+      for (const m of mems) {
+        if (!memMap.has(m.client_id)) memMap.set(m.client_id, m.membership_number);
+      }
+    }
+
+    const clients = rows.map(c => ({
+      ...c.toJSON(),
+      membership_number: memMap.get(c.client_id) ?? null,
+    }));
 
     return {
       clients,

@@ -40,7 +40,7 @@ export class Payment extends Model<IPayment, Partial<IPayment>> implements IPaym
   @Column(DataType.INTEGER)
   membership_id!: number;
 
-  @BelongsTo(() => Membership, { foreignKey: 'membership_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
+  @BelongsTo(() => Membership, { foreignKey: 'membership_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   membership?: Membership;
 
   @ForeignKey(() => Client)
@@ -48,7 +48,7 @@ export class Payment extends Model<IPayment, Partial<IPayment>> implements IPaym
   @Column(DataType.INTEGER)
   client_id!: number;
 
-  @BelongsTo(() => Client, { foreignKey: 'client_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
+  @BelongsTo(() => Client, { foreignKey: 'client_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   client?: Client;
 
   @AllowNull(false)

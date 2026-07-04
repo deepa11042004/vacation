@@ -42,16 +42,24 @@ export class Membership extends Model<IMembership, Partial<IMembership>> impleme
   @Column(DataType.INTEGER)
   client_id!: number;
 
-  @BelongsTo(() => Client, { foreignKey: 'client_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
+  @BelongsTo(() => Client, { foreignKey: 'client_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   client?: Client;
 
   @ForeignKey(() => Package)
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.INTEGER)
-  package_id!: number;
+  package_id?: number | null;
 
   @BelongsTo(() => Package, { foreignKey: 'package_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
   package?: Package;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(255))
+  package_name?: string | null;
+
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  validity_years?: number | null;
 
   @AllowNull(false)
   @Column(DataType.DATEONLY)

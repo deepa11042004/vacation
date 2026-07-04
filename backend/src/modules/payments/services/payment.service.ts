@@ -43,7 +43,8 @@ export class PaymentService {
 
     const t = await sequelize.transaction();
     try {
-      const tempNum = `T${Date.now()}${Math.random().toString(36).slice(2, 5)}`.slice(0, 20);
+      const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
+      const tempNum = `P${Date.now()}${rand}`.slice(0, 20);
       const newPayment = await this.paymentRepository.create(
         { ...(data as Partial<IPayment>), payment_number: tempNum, status },
         t,
@@ -111,10 +112,10 @@ export class PaymentService {
     if (data.amount && payment.status === PaymentStatus.PAID) {
       const oldAmount = parseFloat(String(payment.amount));
       const newAmount = data.amount;
-      const diff = newAmount - oldAmount;
+      const diff = parseFloat((newAmount - oldAmount).toFixed(2));
       const t = await sequelize.transaction();
       try {
-        await this.paymentRepository.update(payment_id, data);
+        await this.paymentRepository.update(payment_id, data, t);
         await this.membershipService.adjustOutstandingBalance(payment.membership_id, diff, t);
         await t.commit();
       } catch (error) {

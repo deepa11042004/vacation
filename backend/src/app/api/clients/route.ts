@@ -11,12 +11,6 @@ import { ClientController } from '@/modules/clients/controllers/client.controlle
  *         client_id:
  *           type: integer
  *           example: 1
- *         client_code:
- *           type: string
- *           example: "CLI-000001"
- *         title:
- *           type: string
- *           example: "Mr"
  *         first_name:
  *           type: string
  *           example: "John"

@@ -6,12 +6,12 @@ import {
   PrimaryKey,
   AutoIncrement,
   Default,
-  Unique,
   CreatedAt,
   UpdatedAt,
   DeletedAt,
   AllowNull,
   HasOne,
+  Unique,
 } from 'sequelize-typescript';
 import { IClient } from '../interfaces/client.interface';
 import { ClientStatus, DSAType, Gender } from '../types/client.types';
@@ -28,14 +28,6 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   @AutoIncrement
   @Column(DataType.INTEGER)
   client_id!: number;
-
-  @Unique
-  @Column(DataType.STRING(20))
-  client_code!: string;
-
-  @AllowNull(true)
-  @Column(DataType.STRING(10))
-  title?: string | null;
 
   @AllowNull(false)
   @Column(DataType.STRING(50))
@@ -72,7 +64,8 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   email!: string;
 
   @AllowNull(false)
-  @Column(DataType.STRING(5))
+  @Default('+91')
+  @Column(DataType.STRING(10))
   country_code!: string;
 
   @AllowNull(true)

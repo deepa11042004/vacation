@@ -44,7 +44,6 @@ export class ClientRepository {
         { last_name: { [Op.like]: `%${search}%` } },
         { email: { [Op.like]: `%${search}%` } },
         { mobile: { [Op.like]: `%${search}%` } },
-        { client_code: { [Op.like]: `%${search}%` } },
       ];
     }
 

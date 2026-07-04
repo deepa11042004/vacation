@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { ClientStatus, DSAType, Gender } from '../types/client.types';
 
 export const CreateClientSchema = z.object({
-  title: z.string().max(10).optional(),
   first_name: z.string().min(1, 'First name is required').max(50),
   middle_name: z.string().max(50).optional().nullable(),
   last_name: z.string().min(1, 'Last name is required').max(50),
@@ -13,7 +12,7 @@ export const CreateClientSchema = z.object({
   mobile: z.string().min(10, 'Mobile must be at least 10 characters').max(15),
   alternate_mobile: z.string().max(15).optional().nullable(),
   email: z.string().email('Invalid email address'),
-  country_code: z.string().min(1).max(5),
+  country_code: z.string().max(10).optional().default('+91'),
   profile_photo: z.string().url('Profile photo must be a valid URL').optional().nullable(),
   status: z.nativeEnum(ClientStatus).optional(),
   sales_consultant: z.string().max(100).optional().nullable(),

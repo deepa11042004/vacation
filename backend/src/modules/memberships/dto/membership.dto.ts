@@ -2,7 +2,10 @@ import { MembershipDSA, MembershipStatus, PaymentMode } from '../types/membershi
 
 export interface CreateMembershipDTO {
   client_id: number;
-  package_id: number;
+  package_id?: number | null;
+  package_name?: string | null;
+  validity_years?: number | null;
+  nights_per_year?: number | null;
   sale_date: Date;
   start_date: Date;
   total_price: number;

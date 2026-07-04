@@ -2,8 +2,6 @@ import { ClientStatus, DSAType, Gender } from '../types/client.types';
 
 export interface IClient {
   client_id: number;
-  client_code: string;
-  title?: string | null;
   first_name: string;
   middle_name?: string | null;
   last_name: string;

@@ -3,7 +3,10 @@ import { MembershipDSA, MembershipStatus, PaymentMode } from '../types/membershi
 
 export const CreateMembershipSchema = z.object({
   client_id: z.number().int().positive('Client ID is required'),
-  package_id: z.number().int().positive('Package ID is required'),
+  package_id: z.number().int().positive().optional().nullable(),
+  package_name: z.string().min(1).max(255).optional().nullable(),
+  validity_years: z.number().int().min(1).optional().nullable(),
+  nights_per_year: z.number().int().min(0).optional().nullable(),
   sale_date: z.coerce.date(),
   start_date: z.coerce.date(),
   total_price: z.number().positive('Total price must be greater than 0'),
@@ -18,7 +21,10 @@ export const CreateMembershipSchema = z.object({
   reference_by: z.string().max(100).optional().nullable(),
   remarks: z.string().optional().nullable(),
   created_by: z.number().int().optional().nullable(),
-});
+}).refine(
+  (d) => d.package_id != null || (d.package_name != null && d.package_name.trim().length > 0),
+  { message: 'Provide either package_id (from catalogue) or package_name (free-text) with validity details', path: ['package_id'] },
+);
 
 export const UpdateMembershipSchema = z.object({
   sale_date: z.coerce.date().optional(),

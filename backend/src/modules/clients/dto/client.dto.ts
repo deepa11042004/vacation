@@ -1,7 +1,6 @@
 import { ClientStatus, DSAType, Gender } from '../types/client.types';
 
 export interface CreateClientDTO {
-  title?: string | null;
   first_name: string;
   middle_name?: string | null;
   last_name: string;
@@ -24,7 +23,6 @@ export interface CreateClientDTO {
 }
 
 export interface UpdateClientDTO {
-  title?: string | null;
   first_name?: string;
   middle_name?: string | null;
   last_name?: string;

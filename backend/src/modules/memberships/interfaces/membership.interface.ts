@@ -4,7 +4,9 @@ export interface IMembership {
   membership_id: number;
   membership_number: string;
   client_id: number;
-  package_id: number;
+  package_id?: number | null;
+  package_name?: string | null;
+  validity_years?: number | null;
   sale_date: Date;
   start_date: Date;
   end_date: Date;

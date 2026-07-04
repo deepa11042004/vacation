@@ -15,7 +15,7 @@ export const CreatePaymentSchema = z.object({
   }),
   transaction_ref: z.string().max(100).optional().nullable(),
   bank_name: z.string().max(100).optional().nullable(),
-  status: z.nativeEnum(PaymentStatus).optional(),
+  status: z.enum([PaymentStatus.PENDING, PaymentStatus.PAID] as [PaymentStatus, ...PaymentStatus[]]).optional(),
   remarks: z.string().optional().nullable(),
   created_by: z.number().int().optional().nullable(),
 });
