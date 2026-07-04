@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Search, Plus, ChevronLeft, ChevronRight, Loader2, MoreVertical, Pencil, Trash2, RotateCcw } from "lucide-react";
+import { Search, Plus, ChevronLeft, ChevronRight, Loader2, MoreVertical, Pencil, Trash2, RotateCcw, ChevronDown, FileText } from "lucide-react";
 
 interface Client {
   client_id: number;
@@ -91,6 +90,49 @@ function ActionMenu({ client, onRefresh }: { client: Client; onRefresh: () => vo
               {busy ? "Deleting…" : confirming ? "Confirm Delete" : "Delete"}
             </button>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InvoiceDropdown({ clientId }: { clientId: number }) {
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function close(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+      >
+        <FileText className="w-3 h-3" />
+        Invoice
+        <ChevronDown className="w-3 h-3" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-8 w-36 bg-white rounded-xl border border-slate-200 shadow-lg py-1" style={{ zIndex: 9999 }}>
+          <button
+            onClick={() => { setOpen(false); router.push(`/admin/clients/${clientId}/invoice?type=invoice`); }}
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            Invoice
+          </button>
+          <button
+            onClick={() => { setOpen(false); router.push(`/admin/clients/${clientId}/invoice?type=tax`); }}
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            Tax Invoice
+          </button>
         </div>
       )}
     </div>
@@ -186,9 +228,7 @@ export default function ClientsPage() {
                     <td className={`px-4 py-3 text-xs ${deleted ? "text-blue-400" : "text-slate-400"}`}>{new Date(c.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
-                        {!deleted && (
-                          <Link href={`/admin/clients/${c.client_id}/invoice`} className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">Invoice</Link>
-                        )}
+                        {!deleted && <InvoiceDropdown clientId={c.client_id} />}
                         <ActionMenu client={c} onRefresh={load} />
                       </div>
                     </td>
