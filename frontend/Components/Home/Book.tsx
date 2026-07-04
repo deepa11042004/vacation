@@ -15,7 +15,7 @@ export default function Book() {
         {/* Main Search Container */}
         <div className="w-full bg-blue-50 rounded-4xl p-6 sm:p-8 border border-gray-200 hover:border-blue-600 transition-colors duration-300 ease-in-out">
           {/* Header Title */}
-          <h2 className="text-3xl sm:text-4xl font-medium text-black tracking-tight mb-6 pl-1">
+          <h2 className="text-3xl md:text-4xl font-bold text-black tracking-tight mb-6 pl-1">
             Plan Your Stays
           </h2>
 
