@@ -1,27 +1,31 @@
 import PDFDocument from 'pdfkit';
 import { InvoiceData } from './email.service';
+import { getCompanySettings } from './company-settings.service';
+import fs from 'fs';
+import path from 'path';
 
-const BLUE  = '#1d4ed8';
-const DARK  = '#0f172a';
-const SLATE = '#475569';
-const LIGHT = '#f8fafc';
-const BORDER= '#e2e8f0';
-const WHITE = 'white';
+const BLACK = '#000000';
+const LIGHT_GRAY = '#f4f4f4';
+const BORDER = '#cccccc';
+const WHITE = '#ffffff';
 
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  if (!iso) return '—';
+  return iso; // Keep exactly as input (e.g. 2026-07-04)
 }
 
 function fmtAmt(amt: string | number) {
-  return `Rs.${Number(amt || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `Rs. ${Number(amt || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
+  const co = getCompanySettings();
+
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: 'A4',
       margin: 0,
-      info: { Title: `Invoice ${data.invoice_no}`, Author: 'Peltown Vacations' },
+      info: { Title: `Invoice ${data.invoice_no}`, Author: co.name },
     });
 
     const chunks: Buffer[] = [];
@@ -29,131 +33,198 @@ export function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    const ML = 50;           // left margin
-    const MT = 50;           // top margin
+    const ML = 40;           // left margin
+    const MT = 40;           // top margin
     const W  = 595.28;       // A4 width
     const CW = W - ML * 2;   // content width
 
-    // ── Header band ──────────────────────────────────────
-    doc.rect(ML, MT, CW, 58).fill(BLUE);
+    let y = MT;
 
-    doc.fillColor(WHITE).fontSize(17).font('Helvetica-Bold')
-      .text('Peltown Vacations', ML + 12, MT + 10);
-    doc.fillColor(WHITE).fontSize(9).font('Helvetica')
-      .text('Holiday Package Management', ML + 12, MT + 32, { characterSpacing: 0.3 });
+    // ── Header ──────────────────────────────────────────
+    // Attempt to draw logo if exists
+    let logoDrawn = false;
+    const possibleLogoPaths = [
+      path.join(process.cwd(), 'public', 'logo.png'),
+      path.join(process.cwd(), 'frontend', 'public', 'logo.png'),
+      path.join(process.cwd(), '..', 'frontend', 'public', 'logo.png'),
+    ];
+    for (const p of possibleLogoPaths) {
+      if (fs.existsSync(p)) {
+        try {
+          doc.image(p, ML, y, { width: 80, height: 50, fit: [80, 50] });
+          logoDrawn = true;
+          break;
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
 
-    doc.fillColor(WHITE).fontSize(17).font('Helvetica-Bold')
-      .text('INVOICE', ML + CW - 130, MT + 10, { width: 118, align: 'right' });
-    doc.fillColor(WHITE).fontSize(8.5).font('Helvetica')
-      .text(`No: ${data.invoice_no}`, ML + CW - 130, MT + 33, { width: 118, align: 'right' })
-      .text(`Date: ${fmtDate(data.issue_date)}`, ML + CW - 130, MT + 45, { width: 118, align: 'right' });
+    if (logoDrawn) {
+      y += 60;
+    }
 
-    let y = MT + 74;
+    // Company Details
+    doc.fillColor(BLACK).fontSize(12).font('Helvetica-Bold')
+      .text(co.name, ML, y);
+    y += 14;
+    doc.fontSize(10).font('Helvetica').text(co.address, ML, y);
+    y += 12;
+    doc.font('Helvetica-Bold').text('Phone: ', ML, y, { continued: true })
+      .font('Helvetica').text(co.phone || '8447391828');
+    y += 12;
+    doc.font('Helvetica-Bold').text('Complaint Mail: ', ML, y, { continued: true })
+      .font('Helvetica').text('customercare@arenainternationalholidays.com');
+    y += 12;
+    doc.font('Helvetica-Bold').text('Official Mail: ', ML, y, { continued: true })
+      .font('Helvetica').text(co.email || 'info@arenainternationalholidays.com');
 
-    // ── Bill To ──────────────────────────────────────────
-    doc.fillColor(SLATE).fontSize(7.5).font('Helvetica-Bold')
-      .text('BILL TO', ML, y, { characterSpacing: 1.2 });
-    y += 11;
+    // Right side header (Invoice No, Date, GSTIN)
+    let rightY = MT + (logoDrawn ? 20 : 0);
+    const rightX = W - ML - 200;
+    
+    doc.fontSize(10);
+    doc.font('Helvetica-Bold').text('Invoice No:', rightX, rightY, { width: 80, align: 'right' });
+    doc.font('Helvetica').text(data.invoice_no || '—', rightX + 85, rightY, { width: 115, align: 'left' });
+    rightY += 14;
+    doc.font('Helvetica-Bold').text('Date:', rightX, rightY, { width: 80, align: 'right' });
+    doc.font('Helvetica').text(fmtDate(data.issue_date), rightX + 85, rightY, { width: 115, align: 'left' });
+    
+    const isTax = data.invoice_type === 'tax';
+    if (isTax) {
+      rightY += 16;
+      doc.fillColor('#b45309').fontSize(8).font('Helvetica-Bold')
+         .text('TAX INVOICE', rightX + 85, rightY, { width: 115, align: 'left' });
+    }
+    
+    doc.fillColor(BLACK).fontSize(10);
+    if (isTax && co.gst_number) {
+      doc.font('Helvetica-Bold').text('GSTIN:', rightX, y, { width: 80, align: 'right' });
+      doc.font('Helvetica').text(co.gst_number, rightX + 85, y, { width: 115, align: 'left' });
+    }
 
-    const addrRows = data.address ? 4 : 3;
-    const cardH = addrRows * 18 + 14;
-    doc.rect(ML, y, CW, cardH).fill(LIGHT);
-    doc.rect(ML, y, CW, cardH).stroke(BORDER);
+    y += 30;
 
-    const row = (lbl: string, val: string, lx: number, lbx: number, ry: number) => {
-      doc.fillColor(SLATE).fontSize(8).font('Helvetica').text(lbl, lx, ry);
-      doc.fillColor(DARK).fontSize(8.5).font('Helvetica-Bold').text(val, lbx, ry - 0.5, { width: CW / 2 - 20 });
+    // ── Buyer & Payment Details Block ─────────────────────
+    const blockH = 120;
+    doc.rect(ML, y, CW, blockH).fill(LIGHT_GRAY);
+    
+    const half = ML + CW / 2;
+    
+    // Buyer Details
+    let by = y + 10;
+    doc.fillColor(BLACK).fontSize(14).font('Helvetica-Bold').text('Buyer Details', ML + 10, by);
+    by += 20;
+    
+    const drawRow = (lbl: string, val: string, startX: string | number, startY: number) => {
+      doc.fontSize(10).font('Helvetica-Bold').text(lbl + ':', startX as number, startY);
+      doc.font('Helvetica').text(val || '—', (startX as number) + 105, startY, { width: (CW/2) - 120 });
     };
 
-    const half = ML + CW / 2;
-    row('Client Name', data.client_name,  ML + 10, ML + 90,       y + 10);
-    row('Card Number', data.card_number,  half + 5, half + 82,    y + 10);
-    row('Email',       data.email,        ML + 10, ML + 90,       y + 26);
-    row('Phone',       data.phone,        half + 5, half + 82,    y + 26);
-    if (data.address) {
-      doc.fillColor(SLATE).fontSize(8).font('Helvetica').text('Address', ML + 10, y + 42);
-      doc.fillColor(DARK).fontSize(8.5).font('Helvetica').text(data.address, ML + 90, y + 42, { width: CW - 100 });
+    drawRow('Name', data.client_name, ML + 10, by); by += 12;
+    drawRow('Email ID', data.email, ML + 10, by); by += 12;
+    drawRow('Address', data.address, ML + 10, by); by += 12;
+    drawRow('Customer ID', data.card_number, ML + 10, by); by += 12;
+    drawRow('Mobile No', data.phone, ML + 10, by); by += 12;
+    drawRow('State', data.state, ML + 10, by); by += 12;
+    if (isTax) {
+      drawRow('GST No', data.client_gst || '—', ML + 10, by);
     }
 
-    y += cardH + 16;
+    // Payment Details
+    let py = y + 10;
+    doc.fontSize(14).font('Helvetica-Bold').text('Payment Details', half + 10, py);
+    py += 20;
+    
+    const amtStr = fmtAmt(data.amount);
+    drawRow('Pay Mode', data.payment_mode, half + 10, py); py += 12;
+    drawRow('Payment Type', data.payment_type, half + 10, py); py += 12;
+    drawRow('Transaction ID', data.transaction_id || 'NONE', half + 10, py); py += 12;
+    drawRow('Bank Name', data.bank || '—', half + 10, py); py += 12;
+    drawRow('Cheque/Card No', data.card_cheque_no || '—', half + 10, py); py += 12;
+    drawRow('Amount', amtStr, half + 10, py);
 
-    // ── Payment Details ──────────────────────────────────
-    doc.fillColor(SLATE).fontSize(7.5).font('Helvetica-Bold')
-      .text('PAYMENT DETAILS', ML, y, { characterSpacing: 1.2 });
-    y += 11;
+    y += blockH + 20;
 
-    // Table header
-    const cols = [
-      { lbl: 'Payment Mode',   w: CW * 0.20 },
-      { lbl: 'Payment Type',   w: CW * 0.19 },
-      { lbl: 'Transaction ID', w: CW * 0.22 },
-      { lbl: 'Bank',           w: CW * 0.17 },
-      { lbl: 'Card / Cheque',  w: CW * 0.22 },
-    ];
-    let cx = ML;
-    doc.rect(ML, y, CW, 19).fill(BLUE);
-    cols.forEach(c => {
-      doc.fillColor(WHITE).fontSize(8).font('Helvetica-Bold').text(c.lbl, cx + 4, y + 5, { width: c.w - 8 });
-      cx += c.w;
-    });
-    y += 19;
+    // ── Particulars Table ─────────────────────────────────
+    doc.fontSize(10).font('Helvetica-Bold');
+    doc.text('S.No.', ML, y);
+    doc.text('Particulars', ML + 50, y);
+    doc.text('Amount', ML + CW - 100, y, { width: 100, align: 'right' });
+    y += 15;
+    
+    const amt = parseFloat(data.amount as string) || 0;
+    const GST_RATE = 5;
+    const isInterState = data.state.trim().toLowerCase() !== co.state.trim().toLowerCase();
+    const base = isTax ? parseFloat((amt * 100 / (100 + GST_RATE)).toFixed(2)) : amt;
+    const gst  = parseFloat((amt - base).toFixed(2));
+    const halfGst = parseFloat((gst / 2).toFixed(2));
+    const tableAmount = fmtAmt(base);
 
-    // Data row
-    const vals = [
-      data.payment_mode,
-      data.payment_type,
-      data.transaction_id || 'NONE',
-      data.bank || '—',
-      data.card_cheque_no || '—',
-    ];
-    cx = ML;
-    doc.rect(ML, y, CW, 22).fill(LIGHT).stroke(BORDER);
-    cols.forEach((c, i) => {
-      doc.fillColor(DARK).fontSize(8.5).font('Helvetica').text(vals[i], cx + 4, y + 6, { width: c.w - 8 });
-      cx += c.w;
-    });
-    y += 28;
+    doc.font('Helvetica');
+    doc.text('1.', ML, y);
+    doc.text(data.description || 'Holiday Package (Sheet Attached For Details)', ML + 50, y);
+    doc.font('Helvetica-Bold').text(tableAmount, ML + CW - 100, y, { width: 100, align: 'right' });
+    y += 40;
 
-    // Amount row spanning full width
-    doc.rect(ML, y, CW, 20).fill('#eff6ff').stroke(BORDER);
-    doc.fillColor(SLATE).fontSize(8).font('Helvetica').text('Amount Paid', ML + 8, y + 5);
-    doc.fillColor(BLUE).fontSize(10).font('Helvetica-Bold')
-      .text(fmtAmt(data.amount), ML + 8, y + 4, { width: CW - 16, align: 'right' });
-    y += 26;
+    // ── Subtotals ─────────────────────────────────────────
+    const totalsW = 250;
+    const totalsX = ML + CW - totalsW;
+    
+    // Top line of subtotals
+    doc.moveTo(totalsX, y).lineTo(ML + CW, y).strokeColor(BLACK).lineWidth(1).stroke();
+    y += 5;
+    
+    doc.font('Helvetica-Bold').text(tableAmount, totalsX, y, { width: totalsW, align: 'right' });
+    y += 15;
 
-    // Description + State
-    doc.rect(ML, y, CW, 20).fill(LIGHT).stroke(BORDER);
-    doc.fillColor(SLATE).fontSize(8).font('Helvetica').text('Payment type:', ML + 8, y + 5);
-    doc.fillColor(DARK).fontSize(8.5).font('Helvetica').text(data.description, ML + 82, y + 5, { width: CW * 0.55 });
-    if (data.state) {
-      doc.fillColor(SLATE).fontSize(8).font('Helvetica').text('State:', ML + CW * 0.73, y + 5);
-      doc.fillColor(DARK).fontSize(8.5).font('Helvetica').text(data.state, ML + CW * 0.73 + 34, y + 5);
+    if (isTax) {
+      if (isInterState) {
+        doc.font('Helvetica-Bold').text('Add :', totalsX, y);
+        doc.text(`IGST @${GST_RATE}%`, totalsX + 40, y);
+        doc.text(fmtAmt(gst), totalsX, y, { width: totalsW, align: 'right' });
+        y += 15;
+      } else {
+        doc.font('Helvetica-Bold').text('Add :', totalsX, y);
+        doc.text(`CGST @${GST_RATE/2}%`, totalsX + 40, y);
+        doc.text(fmtAmt(halfGst), totalsX, y, { width: totalsW, align: 'right' });
+        y += 15;
+        doc.text(`SGST @${GST_RATE/2}%`, totalsX + 40, y);
+        doc.text(fmtAmt(halfGst), totalsX, y, { width: totalsW, align: 'right' });
+        y += 15;
+      }
     }
-    y += 28;
 
-    // ── Total box ────────────────────────────────────────
-    const boxW = 190;
-    const boxX = ML + CW - boxW;
-    doc.rect(boxX, y, boxW, 48).fill(BLUE);
-    doc.fillColor(WHITE).fontSize(7.5).font('Helvetica')
-      .text('TOTAL AMOUNT', boxX + 8, y + 10, { width: boxW - 16, align: 'right', characterSpacing: 0.8 });
-    doc.fillColor(WHITE).fontSize(16).font('Helvetica-Bold')
-      .text(fmtAmt(data.amount), boxX + 8, y + 22, { width: boxW - 16, align: 'right' });
-    y += 60;
+    // Double bottom line or thick line for total
+    doc.moveTo(totalsX, y).lineTo(ML + CW, y).strokeColor(BLACK).lineWidth(1).stroke();
+    y += 5;
+    doc.font('Helvetica-Bold').text('Total Amount', totalsX, y);
+    doc.text(fmtAmt(amt), totalsX, y, { width: totalsW, align: 'right' });
+    y += 15;
+    doc.moveTo(totalsX, y).lineTo(ML + CW, y).strokeColor(BLACK).lineWidth(1).stroke();
+    y += 2;
+    doc.moveTo(totalsX, y).lineTo(ML + CW, y).strokeColor(BLACK).lineWidth(1).stroke();
+    
+    y += 30;
 
-    // ── Signature lines ───────────────────────────────────
-    const sigY = Math.max(y + 30, 680);
-    doc.moveTo(ML, sigY + 44).lineTo(ML + 160, sigY + 44).strokeColor('#94a3b8').lineWidth(0.5).stroke();
-    doc.fillColor(SLATE).fontSize(8).font('Helvetica')
-      .text('Customer Signature', ML, sigY + 49, { width: 160, align: 'center' });
-
-    doc.moveTo(ML + CW - 160, sigY + 44).lineTo(ML + CW, sigY + 44).strokeColor('#94a3b8').lineWidth(0.5).stroke();
-    doc.fillColor(SLATE).fontSize(8).font('Helvetica')
-      .text('Authorized Signature', ML + CW - 160, sigY + 49, { width: 160, align: 'center' });
-
-    // ── Footer ───────────────────────────────────────────
-    doc.fillColor('#94a3b8').fontSize(8).font('Helvetica')
-      .text('Peltown Vacations  ·  Thank you for your business', ML, 785, { width: CW, align: 'center' });
+    // ── Terms & Conditions ────────────────────────────────
+    doc.rect(ML, y, CW, 20).fill(LIGHT_GRAY);
+    doc.fillColor(BLACK).fontSize(10).font('Helvetica-Bold').text('Terms and Conditions', ML + 10, y + 6);
+    y += 20;
+    
+    doc.rect(ML, y, CW, 50).strokeColor(BORDER).lineWidth(1).stroke();
+    doc.fontSize(9).font('Helvetica');
+    const terms = [
+      'All Cheques are subject to clearing from Bank.',
+      'Holiday Amount is Non-Refundable.',
+      'Sale of Holiday Package is Consider as "Sale" / "Supply of Service" under GST Act.'
+    ];
+    let ty = y + 8;
+    terms.forEach(t => {
+      doc.circle(ML + 14, ty + 3, 1.5).fill(BLACK);
+      doc.text(t, ML + 22, ty);
+      ty += 12;
+    });
 
     doc.end();
   });

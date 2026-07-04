@@ -29,6 +29,8 @@ export interface InvoiceData {
   amount: string;
   description: string;
   state: string;
+  invoice_type?: string;
+  client_gst?: string;
 }
 
 interface EmailTemplate {
@@ -40,11 +42,19 @@ interface TemplateFile {
   invoice: EmailTemplate;
 }
 
-const TEMPLATE_PATH = path.join(process.cwd(), 'data', 'email-templates.json');
+function getTemplatePath() {
+  const p1 = path.join(process.cwd(), 'data', 'email-templates.json');
+  const p2 = path.join(process.cwd(), 'backend', 'data', 'email-templates.json');
+  if (fs.existsSync(p1)) return p1;
+  if (fs.existsSync(p2)) return p2;
+  if (process.cwd().endsWith('backend')) return p1;
+  return p2;
+}
 
 export function getTemplates(): TemplateFile {
+  const p = getTemplatePath();
   try {
-    return JSON.parse(fs.readFileSync(TEMPLATE_PATH, 'utf-8'));
+    return JSON.parse(fs.readFileSync(p, 'utf-8'));
   } catch {
     return {
       invoice: {
@@ -56,7 +66,12 @@ export function getTemplates(): TemplateFile {
 }
 
 export function saveTemplates(templates: TemplateFile): void {
-  fs.writeFileSync(TEMPLATE_PATH, JSON.stringify(templates, null, 2), 'utf-8');
+  const p = getTemplatePath();
+  const dir = path.dirname(p);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(p, JSON.stringify(templates, null, 2), 'utf-8');
 }
 
 function interpolate(str: string, vars: Record<string, string>): string {
