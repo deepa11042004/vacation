@@ -82,8 +82,8 @@ export default function ContactForm() {
   return (
     <section className="relative min-h-[200vh] w-full flex items-center justify-center overflow-hidden bg-white py-36">
       {/* concentric rings */}
-      <div className="absolute w-150 h-150 md:w-220 md:h-220 border border-gray-300 rounded-full pointer-events-none animate-[pulse_6s_infinite]" />
-      <div className="absolute w-225 h-225 md:w-275 md:h-275 lg:w-300 lg:h-300 border border-gray-300 rounded-full pointer-events-none" />
+      <div className="absolute w-150 h-150 md:w-220 md:h-220 border border-blue-600 rounded-full pointer-events-none animate-[pulse_6s_infinite]" />
+      <div className="absolute w-225 h-225 md:w-275 md:h-275 lg:w-300 lg:h-300 border border-blue-600 rounded-full pointer-events-none" />
 
       <motion.div
         animate={{ rotate: 360 }}

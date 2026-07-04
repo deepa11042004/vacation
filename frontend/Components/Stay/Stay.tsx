@@ -830,8 +830,8 @@ export default function Stay() {
 
       {/* Phase 5: Rotating orbit gallery final base */}
       <section className="min-h-[150vh] w-full flex flex-col items-center justify-center relative bg-white overflow-hidden">
-        <div className="absolute w-200 h-200 md:w-212.5 md:h-212.5 border border-gray-300 rounded-full pointer-events-none animate-[pulse_6s_infinite]" />
-        <div className="absolute w-262.5 h-262.5 md:w-275 md:h-275 border border-gray-300 rounded-full pointer-events-none" />
+        <div className="absolute w-200 h-200 md:w-212.5 md:h-212.5 border border-blue-600 rounded-full pointer-events-none animate-[pulse_6s_infinite]" />
+        <div className="absolute w-262.5 h-262.5 md:w-275 md:h-275 border border-blue-600 rounded-full pointer-events-none" />
 
         <div className="text-center space-y-8 max-w-2xl px-6 z-10">
           <h2 className="font-bold text-5xl md:text-7xl tracking-wide leading-tight text-black">
