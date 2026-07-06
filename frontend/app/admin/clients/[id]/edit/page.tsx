@@ -27,15 +27,14 @@ export default function EditClientPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving,  setSaving]  = useState(false);
-  const [toast, setToast]     = useState<{ type: "success" | "error"; msg: string } | null>(null);
+  const [toast,   setToast]   = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
   const [form, setForm] = useState({
     first_name: "", middle_name: "", last_name: "",
     gender: "MALE", date_of_birth: "",
     country_code: "+91", mobile: "", alternate_mobile: "",
     email: "", spouse_name: "", marriage_anniversary: "",
-    sales_consultant: "", take_over_manager: "",
-    dsa: "", reference_by: "", status: "ACTIVE", remarks: "",
+    status: "ACTIVE",
   });
 
   const [addr, setAddr] = useState({
@@ -54,23 +53,18 @@ export default function EditClientPage() {
       const c = cr?.data;
       if (c) {
         setForm({
-          first_name:          c.first_name         ?? "",
-          middle_name:         c.middle_name        ?? "",
-          last_name:           c.last_name          ?? "",
-          gender:              c.gender             ?? "MALE",
-          date_of_birth:       c.date_of_birth      ? c.date_of_birth.slice(0, 10) : "",
-          country_code:        c.country_code       ?? "+91",
-          mobile:              c.mobile             ?? "",
-          alternate_mobile:    c.alternate_mobile   ?? "",
-          email:               c.email              ?? "",
-          spouse_name:         c.spouse_name        ?? "",
-          marriage_anniversary:c.marriage_anniversary ? c.marriage_anniversary.slice(0, 10) : "",
-          sales_consultant:    c.sales_consultant   ?? "",
-          take_over_manager:   c.take_over_manager  ?? "",
-          dsa:                 c.dsa                ?? "",
-          reference_by:        c.reference_by       ?? "",
-          status:              c.status             ?? "ACTIVE",
-          remarks:             c.remarks            ?? "",
+          first_name:           c.first_name           ?? "",
+          middle_name:          c.middle_name           ?? "",
+          last_name:            c.last_name             ?? "",
+          gender:               c.gender               ?? "MALE",
+          date_of_birth:        c.date_of_birth         ? c.date_of_birth.slice(0, 10) : "",
+          country_code:         c.country_code          ?? "+91",
+          mobile:               c.mobile               ?? "",
+          alternate_mobile:     c.alternate_mobile      ?? "",
+          email:                c.email                ?? "",
+          spouse_name:          c.spouse_name           ?? "",
+          marriage_anniversary: c.marriage_anniversary  ? c.marriage_anniversary.slice(0, 10) : "",
+          status:               c.status               ?? "ACTIVE",
         });
       }
       const a = (ar as { data: Record<string, string> | null })?.data;
@@ -89,23 +83,16 @@ export default function EditClientPage() {
   }, [id]);
 
   async function save() {
-    setSaving(true);
-    setToast(null);
+    setSaving(true); setToast(null);
     try {
       const payload: Record<string, string | null> = { ...form };
-      (["middle_name","date_of_birth","alternate_mobile","spouse_name",
-        "marriage_anniversary","sales_consultant","take_over_manager",
-        "dsa","reference_by","remarks"] as const).forEach(k => {
-        if (!payload[k]) payload[k] = null;
-      });
-      if (!payload.dsa) payload.dsa = null;
+      (["middle_name","date_of_birth","alternate_mobile","spouse_name","marriage_anniversary"] as const)
+        .forEach(k => { if (!payload[k]) payload[k] = null; });
 
       await api.put(`/clients/${id}`, payload);
 
       const anyAddr = Object.values(addr).some(v => v.trim());
-      if (anyAddr) {
-        await api.put(`/clients/${id}/address`, addr);
-      }
+      if (anyAddr) await api.put(`/clients/${id}/address`, addr);
 
       setToast({ type: "success", msg: "Client updated successfully." });
       setTimeout(() => router.push("/admin/clients"), 1200);
@@ -116,11 +103,7 @@ export default function EditClientPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-      </div>
-    );
+    return <div className="flex items-center justify-center h-64"><Loader2 className="w-6 h-6 animate-spin text-blue-600" /></div>;
   }
 
   return (
@@ -191,34 +174,11 @@ export default function EditClientPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <Field label="Sales Consultant">
-            <input className={inp} value={form.sales_consultant} onChange={e => setF("sales_consultant", e.target.value)} />
-          </Field>
-          <Field label="Take Over Manager">
-            <input className={inp} value={form.take_over_manager} onChange={e => setF("take_over_manager", e.target.value)} />
-          </Field>
-          <Field label="DSA">
-            <select className={sel} value={form.dsa} onChange={e => setF("dsa", e.target.value)}>
-              <option value="">—</option>
-              <option value="VENUE">Venue</option>
-              <option value="CSDO">CSDO</option>
-              <option value="OTHER">Other</option>
-            </select>
-          </Field>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4">
-          <Field label="Reference By">
-            <input className={inp} value={form.reference_by} onChange={e => setF("reference_by", e.target.value)} />
-          </Field>
           <Field label="Status" required>
             <select className={sel} value={form.status} onChange={e => setF("status", e.target.value)}>
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
             </select>
-          </Field>
-          <Field label="Remarks">
-            <input className={inp} value={form.remarks} onChange={e => setF("remarks", e.target.value)} />
           </Field>
         </div>
       </div>
@@ -239,7 +199,7 @@ export default function EditClientPage() {
           </Field>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-3 gap-4">
           <Field label="Secondary Address">
             <input className={inp} value={addr.secondary_address} onChange={e => setA("secondary_address", e.target.value)} placeholder="Street / flat / building" />
           </Field>
@@ -260,17 +220,12 @@ export default function EditClientPage() {
               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
               : "bg-red-50 text-red-700 border border-red-200"
           }`}>
-            {toast.type === "success"
-              ? <CheckCircle className="w-4 h-4 shrink-0" />
-              : <AlertCircle className="w-4 h-4 shrink-0" />}
+            {toast.type === "success" ? <CheckCircle className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
             {toast.msg}
           </div>
         )}
-        <button
-          onClick={save}
-          disabled={saving}
-          className="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-6 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors ml-auto"
-        >
+        <button onClick={save} disabled={saving}
+          className="flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-6 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors ml-auto">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? "Saving…" : "Save Changes"}
         </button>

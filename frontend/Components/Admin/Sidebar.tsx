@@ -11,6 +11,8 @@ import {
   LogOut,
   Hotel,
   Mail,
+  ReceiptText,
+  FilePlus,
 } from "lucide-react";
 import { clearAuth } from "@/lib/api";
 
@@ -23,7 +25,11 @@ const sections = [
   },
   {
     label: "Operations",
-    items: [{ href: "/admin/clients", label: "Clients", icon: Users }],
+    items: [
+      { href: "/admin/clients",        label: "Clients",        icon: Users },
+      { href: "/admin/create-invoice", label: "Create Invoice", icon: FilePlus },
+      { href: "/admin/invoices",       label: "Invoices",       icon: ReceiptText },
+    ],
   },
   {
     label: "Catalog",

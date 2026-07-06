@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { ArrowLeft, Loader2, User, CreditCard, FileText, IndianRupee } from "lucide-react";
+import { ArrowLeft, Loader2, User, CreditCard, FileText, IndianRupee, Tag, Plus, X } from "lucide-react";
 
 const inp = "w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white";
 const sel = inp;
@@ -38,14 +38,13 @@ const today = new Date().toISOString().slice(0, 10);
 export default function NewClientPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [error,  setError]  = useState("");
 
   const [personal, setPersonal] = useState({
     first_name: "", middle_name: "", last_name: "",
     gender: "MALE", date_of_birth: "", spouse_name: "",
     mobile: "", alternate_mobile: "", country_code: "+91",
     email: "", marriage_anniversary: "",
-    sales_consultant: "", take_over_manager: "", dsa: "", reference_by: "", remarks: "",
   });
 
   const [addr, setAddr] = useState({
@@ -56,14 +55,24 @@ export default function NewClientPage() {
 
   const [mem, setMem] = useState({
     package_name: "", validity_years: "1", nights_per_year: "0",
-    sale_date: today, start_date: today,
-    total_price: "", discount_amount: "0", down_payment: "0",
-    payment_mode: "CASH", dsa: "", reference_by: "", remarks: "",
+    sale_date: today,
+    total_price: "", discount_amount: "0", down_payment: "0", amc: "",
+    payment_mode: "CASH",
+    sales_consultant: "", take_over_manager: "",
+    dsa: "", reference_by: "", remarks: "",
   });
 
-  const [pay, setPay] = useState({
-    transaction_ref: "", bank_name: "",
-  });
+  const [pay, setPay] = useState({ transaction_ref: "", bank_name: "" });
+
+  const [offers, setOffers] = useState<{ offer_name: string; valid_until: string }[]>([
+    { offer_name: "", valid_until: "" },
+  ]);
+
+  function addOffer() { setOffers(o => [...o, { offer_name: "", valid_until: "" }]); }
+  function removeOffer(i: number) { setOffers(o => o.filter((_, idx) => idx !== i)); }
+  function setOffer(i: number, k: "offer_name" | "valid_until", v: string) {
+    setOffers(o => o.map((row, idx) => idx === i ? { ...row, [k]: v } : row));
+  }
 
   function setP(k: string, v: string) { setPersonal(f => ({ ...f, [k]: v })); }
   function setA(k: string, v: string) { setAddr(f => ({ ...f, [k]: v })); }
@@ -75,13 +84,13 @@ export default function NewClientPage() {
       setAddr(f => ({
         ...f,
         secondary_address: f.primary_address,
-        secondary_state: f.primary_state,
+        secondary_state:   f.primary_state,
         secondary_pincode: f.primary_pincode,
       }));
     }
   }
 
-  const netPrice = Math.max(0, Number(mem.total_price || 0) - Number(mem.discount_amount || 0));
+  const netPrice    = Math.max(0, Number(mem.total_price || 0) - Number(mem.discount_amount || 0));
   const outstanding = Math.max(0, netPrice - Number(mem.down_payment || 0));
   const hasDownPayment = Number(mem.down_payment) > 0;
 
@@ -89,41 +98,44 @@ export default function NewClientPage() {
     if (!personal.first_name || !personal.last_name || !personal.mobile || !personal.email || !personal.gender) {
       setError("First name, last name, mobile, email and gender are required."); return;
     }
-    if (!mem.package_name || !mem.sale_date || !mem.start_date || !mem.total_price) {
-      setError("Package name, sale date, start date and total price are required."); return;
+    if (!mem.package_name || !mem.sale_date || !mem.total_price) {
+      setError("Package name, sale date and total price are required."); return;
     }
 
     setSaving(true); setError("");
     try {
-      // Build client payload (skip empty strings)
       const clientPayload: Record<string, string> = {};
       Object.entries(personal).forEach(([k, v]) => { if (v) clientPayload[k] = v; });
 
-      // Build address payload (only if something is filled)
       const hasAddress = addr.primary_address || addr.primary_state || addr.primary_pincode;
       const addrPayload = hasAddress ? { ...addr } : undefined;
 
-      // Build membership payload
       const memPayload = {
-        package_name: mem.package_name,
-        validity_years: Number(mem.validity_years || 1),
-        nights_per_year: Number(mem.nights_per_year || 0),
-        sale_date: mem.sale_date,
-        start_date: mem.start_date,
-        total_price: Number(mem.total_price),
-        discount_amount: Number(mem.discount_amount || 0),
-        down_payment: Number(mem.down_payment || 0),
-        payment_mode: mem.payment_mode,
-        transaction_ref: pay.transaction_ref || null,
-        bank_name: pay.bank_name || null,
-        dsa: mem.dsa || null,
-        reference_by: mem.reference_by || null,
-        remarks: mem.remarks || null,
+        package_name:      mem.package_name,
+        validity_years:    Number(mem.validity_years || 1),
+        nights_per_year:   Number(mem.nights_per_year || 0),
+        sale_date:         mem.sale_date,
+        total_price:       Number(mem.total_price),
+        discount_amount:   Number(mem.discount_amount || 0),
+        down_payment:      Number(mem.down_payment || 0),
+        amc:               mem.amc ? Number(mem.amc) : null,
+        payment_mode:      mem.payment_mode,
+        transaction_ref:   pay.transaction_ref || null,
+        bank_name:         pay.bank_name || null,
+        sales_consultant:  mem.sales_consultant || null,
+        take_over_manager: mem.take_over_manager || null,
+        dsa:               mem.dsa || null,
+        reference_by:      mem.reference_by || null,
+        remarks:           mem.remarks || null,
       };
+
+      const offersPayload = offers
+        .filter(o => o.offer_name.trim())
+        .map(o => ({ offer_name: o.offer_name.trim(), valid_until: o.valid_until || null }));
 
       const res = await api.post<{ success: boolean; data?: { client_id: number }; message?: string }>(
         "/clients/onboard",
-        { client: clientPayload, address: addrPayload, membership: memPayload },
+        { client: clientPayload, address: addrPayload, membership: memPayload, offers: offersPayload },
       );
 
       if (!res?.success) throw new Error(res?.message ?? "Onboarding failed.");
@@ -136,7 +148,6 @@ export default function NewClientPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <button onClick={() => router.back()} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500">
           <ArrowLeft className="w-5 h-5" />
@@ -230,40 +241,11 @@ export default function NewClientPage() {
             </div>
           )}
         </div>
-
-        {/* Other Details */}
-        <div className="mt-6 pt-5 border-t border-slate-100">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Other Details</p>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Sales Consultant">
-              <input className={inp} value={personal.sales_consultant} onChange={e => setP("sales_consultant", e.target.value)} placeholder="Consultant name" />
-            </Field>
-            <Field label="Take Over Manager">
-              <input className={inp} value={personal.take_over_manager} onChange={e => setP("take_over_manager", e.target.value)} placeholder="Manager name" />
-            </Field>
-            <Field label="DSA">
-              <select className={sel} value={personal.dsa} onChange={e => setP("dsa", e.target.value)}>
-                <option value="">None</option>
-                <option value="VENUE">Venue</option>
-                <option value="CSDO">CSDO</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </Field>
-            <Field label="Reference By">
-              <input className={inp} value={personal.reference_by} onChange={e => setP("reference_by", e.target.value)} placeholder="Referred by" />
-            </Field>
-            <div className="col-span-2">
-              <Field label="Remarks">
-                <textarea rows={2} className={inp} value={personal.remarks} onChange={e => setP("remarks", e.target.value)} placeholder="Any notes…" />
-              </Field>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* ── Section 2: Membership Details ──────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <SectionHeader icon={CreditCard} title="Membership Details" subtitle="Package and pricing" />
+        <SectionHeader icon={CreditCard} title="Membership Details" subtitle="Package, pricing and sales information" />
 
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2">
@@ -272,27 +254,29 @@ export default function NewClientPage() {
             </Field>
           </div>
           <Field label="Validity (Years)">
-            <input type="number" min="1" className={inp} value={mem.validity_years} onChange={e => setM("validity_years", e.target.value)} placeholder="1" />
+            <input type="number" min="1" className={inp} value={mem.validity_years} onChange={e => setM("validity_years", e.target.value)} />
           </Field>
 
           <Field label="Nights Per Year">
-            <input type="number" min="0" className={inp} value={mem.nights_per_year} onChange={e => setM("nights_per_year", e.target.value)} placeholder="0" />
+            <input type="number" min="0" className={inp} value={mem.nights_per_year} onChange={e => setM("nights_per_year", e.target.value)} />
           </Field>
-          <Field label="Sale Date (Joining Date)" required>
+          <Field label="Sale / Joining Date" required>
             <input type="date" className={inp} value={mem.sale_date} onChange={e => setM("sale_date", e.target.value)} />
           </Field>
-          <Field label="Start Date" required>
-            <input type="date" className={inp} value={mem.start_date} onChange={e => setM("start_date", e.target.value)} />
-          </Field>
+          <div /> {/* spacer to keep grid alignment */}
 
           <Field label="Total Price (₹)" required>
-            <input type="number" min="0" className={inp} value={mem.total_price} onChange={e => setM("total_price", e.target.value)} placeholder="0" />
+            <input type="number" min="0" className={inp} value={mem.total_price} onChange={e => setM("total_price", e.target.value)} />
           </Field>
           <Field label="Discount (₹)">
-            <input type="number" min="0" className={inp} value={mem.discount_amount} onChange={e => setM("discount_amount", e.target.value)} placeholder="0" />
+            <input type="number" min="0" className={inp} value={mem.discount_amount} onChange={e => setM("discount_amount", e.target.value)} />
           </Field>
           <Field label="Down Payment (₹)">
-            <input type="number" min="0" className={inp} value={mem.down_payment} onChange={e => setM("down_payment", e.target.value)} placeholder="0" />
+            <input type="number" min="0" className={inp} value={mem.down_payment} onChange={e => setM("down_payment", e.target.value)} />
+          </Field>
+
+          <Field label="AMC / Annual Maintenance Charge (₹)">
+            <input type="number" min="0" className={inp} value={mem.amc} onChange={e => setM("amc", e.target.value)} placeholder="0" />
           </Field>
 
           <Field label="Payment Mode" required>
@@ -313,12 +297,6 @@ export default function NewClientPage() {
           <Field label="Reference By">
             <input className={inp} value={mem.reference_by} onChange={e => setM("reference_by", e.target.value)} placeholder="Referred by" />
           </Field>
-
-          <div className="col-span-3">
-            <Field label="Remarks">
-              <textarea rows={2} className={inp} value={mem.remarks} onChange={e => setM("remarks", e.target.value)} placeholder="Membership notes…" />
-            </Field>
-          </div>
         </div>
 
         {mem.total_price && (
@@ -341,9 +319,75 @@ export default function NewClientPage() {
             </div>
           </div>
         )}
+
+        {/* Sales / Other Details — after membership pricing */}
+        <div className="mt-6 pt-5 border-t border-slate-100">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Sales Details</p>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Sales Consultant">
+              <input className={inp} value={mem.sales_consultant} onChange={e => setM("sales_consultant", e.target.value)} placeholder="Consultant name" />
+            </Field>
+            <Field label="Take Over Manager">
+              <input className={inp} value={mem.take_over_manager} onChange={e => setM("take_over_manager", e.target.value)} placeholder="Manager name" />
+            </Field>
+            <div className="col-span-2">
+              <Field label="Remarks">
+                <textarea rows={2} className={inp} value={mem.remarks} onChange={e => setM("remarks", e.target.value)} placeholder="Membership notes…" />
+              </Field>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* ── Section 3: Payment Details (only when down payment > 0) */}
+      {/* ── Section 3: Offers ─────────────────────────────────── */}
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <SectionHeader icon={Tag} title="Offers" subtitle="Add one or more offers for this client (optional)" />
+
+        <div className="space-y-2">
+          {/* Header row */}
+          <div className="grid grid-cols-[1fr_180px_36px] gap-3 mb-1">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Offer Name</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Valid Until</span>
+            <span />
+          </div>
+
+          {offers.map((row, i) => (
+            <div key={i} className="grid grid-cols-[1fr_180px_36px] gap-3 items-center">
+              <input
+                className={inp}
+                value={row.offer_name}
+                onChange={e => setOffer(i, "offer_name", e.target.value)}
+                placeholder="e.g. Free Room Upgrade, Complimentary Breakfast…"
+              />
+              <input
+                type="date"
+                className={inp}
+                value={row.valid_until}
+                onChange={e => setOffer(i, "valid_until", e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => removeOffer(i)}
+                disabled={offers.length === 1}
+                className="flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={addOffer}
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Add one more offer
+        </button>
+      </div>
+
+      {/* ── Section 4: Payment Details (only when down payment > 0) */}
       {hasDownPayment && (
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <SectionHeader icon={IndianRupee} title="Payment Details" subtitle="Additional details for the down payment record" />
@@ -400,9 +444,7 @@ export default function NewClientPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
       <div className="flex items-center justify-between pb-8">
