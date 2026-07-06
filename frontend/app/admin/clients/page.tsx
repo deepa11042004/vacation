@@ -179,9 +179,21 @@ export default function ClientsPage() {
                     <td className={`px-4 py-3 text-xs ${deleted ? "text-blue-400" : "text-slate-600"}`}>{c.email}</td>
                     <td className={`px-4 py-3 text-xs ${deleted ? "text-blue-400" : "text-slate-600"}`}>{c.country_code} {c.mobile}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${deleted ? "bg-blue-100 text-blue-400" : c.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
-                        {deleted ? "DELETED" : c.status}
-                      </span>
+                      {deleted ? (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-400">DELETED</span>
+                      ) : c.status === "INACTIVE" ? (
+                        <div className="flex flex-col items-start gap-0.5">
+                          <button
+                            onClick={() => router.push(`/admin/clients/new?activate=${c.client_id}`)}
+                            className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors"
+                          >
+                            INACTIVE
+                          </button>
+                          <span className="text-[10px] text-slate-400 pl-0.5">Click to activate</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">ACTIVE</span>
+                      )}
                     </td>
                     <td className={`px-4 py-3 text-xs ${deleted ? "text-blue-400" : "text-slate-400"}`}>{new Date(c.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3">

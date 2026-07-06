@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
+  UserPlus,
   Package,
   Building2,
   MapPin,
@@ -20,33 +21,30 @@ const sections = [
   {
     label: null,
     items: [
-      { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, subtitle: null },
     ],
   },
   {
     label: "Operations",
     items: [
-      { href: "/admin/clients",        label: "Clients",        icon: Users },
-      { href: "/admin/create-invoice", label: "Create Invoice", icon: FilePlus },
-      { href: "/admin/invoices",       label: "Invoices",       icon: ReceiptText },
+      { href: "/admin/clients/create", label: "Create New Client",  icon: UserPlus,     subtitle: null },
+      { href: "/admin/clients",        label: "All Clients Details",        icon: Users,        subtitle: null },
+      { href: "/admin/create-invoice", label: "Create New Invoice", icon: FilePlus,     subtitle: "For existing clients" },
+      { href: "/admin/invoices",       label: "All Invoices",       icon: ReceiptText,  subtitle: null },
     ],
   },
   {
     label: "Catalog",
     items: [
-      { href: "/admin/packages", label: "Packages", icon: Package },
-      { href: "/admin/hotels", label: "Hotels", icon: Hotel },
-      { href: "/admin/locations", label: "Locations", icon: MapPin },
+      { href: "/admin/packages", label: "Packages",   icon: Package, subtitle: null },
+      { href: "/admin/hotels",   label: "Hotels",     icon: Hotel,   subtitle: null },
+      { href: "/admin/locations", label: "Locations", icon: MapPin,  subtitle: null },
     ],
   },
   {
     label: "Settings",
     items: [
-      {
-        href: "/admin/settings/email-template",
-        label: "Email Template",
-        icon: Mail,
-      },
+      { href: "/admin/settings/email-template", label: "Email Template", icon: Mail, subtitle: null },
     ],
   },
 ];
@@ -61,7 +59,10 @@ export default function Sidebar() {
   }
 
   function isActive(href: string) {
-    return pathname === href || pathname.startsWith(href + "/");
+    if (pathname === href) return true;
+    if (!pathname.startsWith(href + "/")) return false;
+    const sub = pathname.slice(href.length + 1);
+    return /^\d/.test(sub);
   }
 
   return (
@@ -85,20 +86,27 @@ export default function Sidebar() {
               </p>
             )}
             <div className="space-y-0.5">
-              {section.items.map(({ href, label, icon: Icon }) => {
+              {section.items.map(({ href, label, icon: Icon, subtitle }) => {
                 const active = isActive(href);
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       active
                         ? "bg-blue-600 text-white"
                         : "text-slate-400 hover:bg-slate-800 hover:text-white"
                     }`}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
-                    {label}
+                    <span className="flex flex-col leading-tight">
+                      <span>{label}</span>
+                      {subtitle && (
+                        <span className={`text-[10px] font-normal mt-0.5 ${active ? "text-blue-200" : "text-slate-600"}`}>
+                          {subtitle}
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 );
               })}

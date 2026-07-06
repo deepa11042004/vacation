@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
-import { ArrowLeft, Loader2, User, CreditCard, FileText, IndianRupee, Tag, Plus, X } from "lucide-react";
+import { ArrowLeft, Loader2, User, CreditCard, FileText, Tag, Plus, X, Zap } from "lucide-react";
 
 const inp = "w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white";
 const sel = inp;
@@ -35,8 +35,14 @@ function SectionHeader({ icon: Icon, title, subtitle }: { icon: React.ElementTyp
 
 const today = new Date().toISOString().slice(0, 10);
 
-export default function NewClientPage() {
+function NewClientForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const activateClientId = searchParams.get("activate");
+
+  const [prefillLoading, setPrefillLoading] = useState(false);
+  const [prefillName,    setPrefillName]    = useState("");
+
   const [saving, setSaving] = useState(false);
   const [error,  setError]  = useState("");
 
@@ -60,13 +66,51 @@ export default function NewClientPage() {
     payment_mode: "CASH",
     sales_consultant: "", take_over_manager: "",
     dsa: "", reference_by: "", remarks: "",
+    transaction_ref: "", bank_name: "",
   });
-
-  const [pay, setPay] = useState({ transaction_ref: "", bank_name: "" });
 
   const [offers, setOffers] = useState<{ offer_name: string; valid_until: string }[]>([
     { offer_name: "", valid_until: "" },
   ]);
+
+  // Prefill when activating an existing client
+  useEffect(() => {
+    if (!activateClientId) return;
+    setPrefillLoading(true);
+    Promise.all([
+      api.get<{ data: Record<string, string> }>(`/clients/${activateClientId}`),
+      api.get<{ data: Record<string, string> | null }>(`/clients/${activateClientId}/address`).catch(() => null),
+    ]).then(([cr, ar]) => {
+      const c = cr?.data;
+      if (c) {
+        setPersonal({
+          first_name:           c.first_name           ?? "",
+          middle_name:          c.middle_name           ?? "",
+          last_name:            c.last_name             ?? "",
+          gender:               c.gender               ?? "MALE",
+          date_of_birth:        c.date_of_birth        ? c.date_of_birth.slice(0, 10) : "",
+          spouse_name:          c.spouse_name           ?? "",
+          mobile:               c.mobile               ?? "",
+          alternate_mobile:     c.alternate_mobile      ?? "",
+          country_code:         c.country_code          ?? "+91",
+          email:                c.email                ?? "",
+          marriage_anniversary: c.marriage_anniversary ? c.marriage_anniversary.slice(0, 10) : "",
+        });
+        setPrefillName(`${c.first_name ?? ""} ${c.last_name ?? ""}`.trim());
+      }
+      const a = ar?.data;
+      if (a) {
+        setAddr({
+          primary_address:   a.primary_address   ?? "",
+          primary_state:     a.primary_state     ?? "",
+          primary_pincode:   a.primary_pincode   ?? "",
+          secondary_address: a.secondary_address ?? "",
+          secondary_state:   a.secondary_state   ?? "",
+          secondary_pincode: a.secondary_pincode ?? "",
+        });
+      }
+    }).finally(() => setPrefillLoading(false));
+  }, [activateClientId]);
 
   function addOffer() { setOffers(o => [...o, { offer_name: "", valid_until: "" }]); }
   function removeOffer(i: number) { setOffers(o => o.filter((_, idx) => idx !== i)); }
@@ -92,7 +136,29 @@ export default function NewClientPage() {
 
   const netPrice    = Math.max(0, Number(mem.total_price || 0) - Number(mem.discount_amount || 0));
   const outstanding = Math.max(0, netPrice - Number(mem.down_payment || 0));
-  const hasDownPayment = Number(mem.down_payment) > 0;
+
+  const memPayload = {
+    package_name:      mem.package_name,
+    validity_years:    Number(mem.validity_years || 1),
+    nights_per_year:   Number(mem.nights_per_year || 0),
+    sale_date:         mem.sale_date,
+    total_price:       Number(mem.total_price),
+    discount_amount:   Number(mem.discount_amount || 0),
+    down_payment:      Number(mem.down_payment || 0),
+    amc:               mem.amc ? Number(mem.amc) : null,
+    payment_mode:      mem.payment_mode,
+    transaction_ref:   mem.transaction_ref || null,
+    bank_name:         mem.bank_name || null,
+    sales_consultant:  mem.sales_consultant || null,
+    take_over_manager: mem.take_over_manager || null,
+    dsa:               mem.dsa || null,
+    reference_by:      mem.reference_by || null,
+    remarks:           mem.remarks || null,
+  };
+
+  const offersPayload = offers
+    .filter(o => o.offer_name.trim())
+    .map(o => ({ offer_name: o.offer_name.trim(), valid_until: o.valid_until || null }));
 
   async function handleSubmit() {
     if (!personal.first_name || !personal.last_name || !personal.mobile || !personal.email || !personal.gender) {
@@ -104,46 +170,54 @@ export default function NewClientPage() {
 
     setSaving(true); setError("");
     try {
-      const clientPayload: Record<string, string> = {};
-      Object.entries(personal).forEach(([k, v]) => { if (v) clientPayload[k] = v; });
+      if (activateClientId) {
+        // ── Activation flow: existing client ────────────────────────
+        const clientPayload: Record<string, string> = { status: "ACTIVE" };
+        Object.entries(personal).forEach(([k, v]) => { if (v) clientPayload[k] = v; });
 
-      const hasAddress = addr.primary_address || addr.primary_state || addr.primary_pincode;
-      const addrPayload = hasAddress ? { ...addr } : undefined;
+        await api.put(`/clients/${activateClientId}`, clientPayload);
 
-      const memPayload = {
-        package_name:      mem.package_name,
-        validity_years:    Number(mem.validity_years || 1),
-        nights_per_year:   Number(mem.nights_per_year || 0),
-        sale_date:         mem.sale_date,
-        total_price:       Number(mem.total_price),
-        discount_amount:   Number(mem.discount_amount || 0),
-        down_payment:      Number(mem.down_payment || 0),
-        amc:               mem.amc ? Number(mem.amc) : null,
-        payment_mode:      mem.payment_mode,
-        transaction_ref:   pay.transaction_ref || null,
-        bank_name:         pay.bank_name || null,
-        sales_consultant:  mem.sales_consultant || null,
-        take_over_manager: mem.take_over_manager || null,
-        dsa:               mem.dsa || null,
-        reference_by:      mem.reference_by || null,
-        remarks:           mem.remarks || null,
-      };
+        const hasAddress = addr.primary_address || addr.primary_state || addr.primary_pincode;
+        if (hasAddress) await api.put(`/clients/${activateClientId}/address`, addr);
 
-      const offersPayload = offers
-        .filter(o => o.offer_name.trim())
-        .map(o => ({ offer_name: o.offer_name.trim(), valid_until: o.valid_until || null }));
+        const memRes = await api.post<{ success: boolean; message?: string }>(
+          "/memberships",
+          { ...memPayload, client_id: Number(activateClientId) },
+        );
+        if (!memRes?.success) throw new Error(memRes?.message ?? "Failed to create membership.");
 
-      const res = await api.post<{ success: boolean; data?: { client_id: number }; message?: string }>(
-        "/clients/onboard",
-        { client: clientPayload, address: addrPayload, membership: memPayload, offers: offersPayload },
-      );
+        for (const offer of offersPayload) {
+          await api.post(`/clients/${activateClientId}/offers`, offer);
+        }
 
-      if (!res?.success) throw new Error(res?.message ?? "Onboarding failed.");
-      router.push(`/admin/clients/${res.data?.client_id}`);
+        router.push(`/admin/clients/${activateClientId}`);
+      } else {
+        // ── New client onboarding flow ───────────────────────────────
+        const clientPayload: Record<string, string> = {};
+        Object.entries(personal).forEach(([k, v]) => { if (v) clientPayload[k] = v; });
+
+        const hasAddress = addr.primary_address || addr.primary_state || addr.primary_pincode;
+        const addrPayload = hasAddress ? { ...addr } : undefined;
+
+        const res = await api.post<{ success: boolean; data?: { client_id: number }; message?: string }>(
+          "/clients/onboard",
+          { client: clientPayload, address: addrPayload, membership: memPayload, offers: offersPayload },
+        );
+        if (!res?.success) throw new Error(res?.message ?? "Onboarding failed.");
+        router.push(`/admin/clients/${res.data?.client_id}`);
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong. Nothing was saved.");
       setSaving(false);
     }
+  }
+
+  if (prefillLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+      </div>
+    );
   }
 
   return (
@@ -153,10 +227,26 @@ export default function NewClientPage() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-slate-800">New Client Onboarding</h1>
-          <p className="text-sm text-slate-500 mt-0.5">All data is saved atomically — nothing is stored unless everything succeeds</p>
+          <h1 className="text-xl font-bold text-slate-800">
+            {activateClientId ? "Activate Client" : "New Client Onboarding"}
+          </h1>
+          <p className="text-sm text-slate-500 mt-0.5">
+            {activateClientId
+              ? "Complete membership details to activate this client"
+              : "All data is saved atomically — nothing is stored unless everything succeeds"}
+          </p>
         </div>
       </div>
+
+      {/* Activation banner */}
+      {activateClientId && prefillName && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <Zap className="w-4 h-4 text-amber-600 shrink-0" />
+          <p className="text-sm text-amber-800">
+            Activating <span className="font-semibold">{prefillName}</span> — personal details are prefilled. Fill in membership details below to activate.
+          </p>
+        </div>
+      )}
 
       {/* ── Section 1: Personal Details ─────────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
@@ -263,7 +353,7 @@ export default function NewClientPage() {
           <Field label="Sale / Joining Date" required>
             <input type="date" className={inp} value={mem.sale_date} onChange={e => setM("sale_date", e.target.value)} />
           </Field>
-          <div /> {/* spacer to keep grid alignment */}
+          <div />
 
           <Field label="Total Price (₹)" required>
             <input type="number" min="0" className={inp} value={mem.total_price} onChange={e => setM("total_price", e.target.value)} />
@@ -278,7 +368,6 @@ export default function NewClientPage() {
           <Field label="AMC / Annual Maintenance Charge (₹)">
             <input type="number" min="0" className={inp} value={mem.amc} onChange={e => setM("amc", e.target.value)} placeholder="0" />
           </Field>
-
           <Field label="Payment Mode" required>
             <select className={sel} value={mem.payment_mode} onChange={e => setM("payment_mode", e.target.value)}>
               {["CASH","CHEQUE","ONLINE","BANK_TRANSFER","CARD"].map(m => (
@@ -294,8 +383,15 @@ export default function NewClientPage() {
               <option value="OTHER">Other</option>
             </select>
           </Field>
+
           <Field label="Reference By">
             <input className={inp} value={mem.reference_by} onChange={e => setM("reference_by", e.target.value)} placeholder="Referred by" />
+          </Field>
+          <Field label="Transaction Ref / Cheque No.">
+            <input className={inp} value={mem.transaction_ref} onChange={e => setM("transaction_ref", e.target.value)} placeholder="Ref / cheque number" />
+          </Field>
+          <Field label="Bank Name">
+            <input className={inp} value={mem.bank_name} onChange={e => setM("bank_name", e.target.value)} placeholder="Bank name" />
           </Field>
         </div>
 
@@ -320,7 +416,6 @@ export default function NewClientPage() {
           </div>
         )}
 
-        {/* Sales / Other Details — after membership pricing */}
         <div className="mt-6 pt-5 border-t border-slate-100">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Sales Details</p>
           <div className="grid grid-cols-2 gap-4">
@@ -342,65 +437,28 @@ export default function NewClientPage() {
       {/* ── Section 3: Offers ─────────────────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <SectionHeader icon={Tag} title="Offers" subtitle="Add one or more offers for this client (optional)" />
-
         <div className="space-y-2">
-          {/* Header row */}
           <div className="grid grid-cols-[1fr_180px_36px] gap-3 mb-1">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Offer Name</span>
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Valid Until</span>
             <span />
           </div>
-
           {offers.map((row, i) => (
             <div key={i} className="grid grid-cols-[1fr_180px_36px] gap-3 items-center">
-              <input
-                className={inp}
-                value={row.offer_name}
-                onChange={e => setOffer(i, "offer_name", e.target.value)}
-                placeholder="e.g. Free Room Upgrade, Complimentary Breakfast…"
-              />
-              <input
-                type="date"
-                className={inp}
-                value={row.valid_until}
-                onChange={e => setOffer(i, "valid_until", e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => removeOffer(i)}
-                disabled={offers.length === 1}
-                className="flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              >
+              <input className={inp} value={row.offer_name} onChange={e => setOffer(i, "offer_name", e.target.value)} placeholder="e.g. Free Room Upgrade…" />
+              <input type="date" className={inp} value={row.valid_until} onChange={e => setOffer(i, "valid_until", e.target.value)} />
+              <button type="button" onClick={() => removeOffer(i)} disabled={offers.length === 1}
+                className="flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
           ))}
         </div>
-
-        <button
-          type="button"
-          onClick={addOffer}
-          className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add one more offer
+        <button type="button" onClick={addOffer}
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors">
+          <Plus className="w-4 h-4" /> Add one more offer
         </button>
       </div>
-
-      {/* ── Section 4: Payment Details (only when down payment > 0) */}
-      {hasDownPayment && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <SectionHeader icon={IndianRupee} title="Payment Details" subtitle="Additional details for the down payment record" />
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Transaction Ref / Cheque No.">
-              <input className={inp} value={pay.transaction_ref} onChange={e => setPay(f => ({ ...f, transaction_ref: e.target.value }))} placeholder="Ref / cheque number" />
-            </Field>
-            <Field label="Bank Name">
-              <input className={inp} value={pay.bank_name} onChange={e => setPay(f => ({ ...f, bank_name: e.target.value }))} placeholder="Bank name" />
-            </Field>
-          </div>
-        </div>
-      )}
 
       {/* ── Summary ──────────────────────────────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
@@ -452,11 +510,23 @@ export default function NewClientPage() {
           Cancel
         </button>
         <button onClick={handleSubmit} disabled={saving}
-          className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-60 shadow-sm shadow-blue-200">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          {saving ? "Creating…" : "Activate Membership & Create Client"}
+          className={`flex items-center gap-2 px-8 py-2.5 text-sm font-semibold rounded-xl disabled:opacity-60 shadow-sm ${
+            activateClientId
+              ? "bg-amber-500 text-white hover:bg-amber-600 shadow-amber-200"
+              : "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200"
+          }`}>
+          {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+          {saving ? "Saving…" : activateClientId ? "Activate Client" : "Activate Membership & Create Client"}
         </button>
       </div>
     </div>
+  );
+}
+
+export default function NewClientPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-64"><Loader2 className="w-6 h-6 animate-spin text-blue-600" /></div>}>
+      <NewClientForm />
+    </Suspense>
   );
 }
