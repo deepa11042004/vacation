@@ -11,6 +11,9 @@ import { Payment } from '../../modules/payments/models/Payment.model';
 import { Invoice } from '../../modules/invoices/models/Invoice.model';
 import { ClientOffer } from '../../modules/client-offers/models/ClientOffer.model';
 import { Booking } from '../../modules/bookings/models/Booking.model';
+import { AmcPayment } from '../../modules/amc-payments/models/AmcPayment.model';
+import { CallRecording } from '../../modules/call-recordings/models/CallRecording.model';
+import { KycDocument } from '../../modules/kyc-documents/models/KycDocument.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -35,6 +38,9 @@ export const sequelize = new Sequelize({
     Invoice,
     ClientOffer,
     Booking,
+    AmcPayment,
+    CallRecording,
+    KycDocument,
   ],
 });
 

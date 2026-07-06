@@ -1,57 +1,35 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PaymentController } from '@/modules/payments/controllers/payment.controller';
+import { PaymentService } from '@/modules/payments/services/payment.service';
+import { CreatePaymentSchema } from '@/modules/payments/validators/payment.validator';
+import { ResponseUtil } from '@/shared/utils/response.util';
+import { errorHandler } from '@/shared/middlewares/error.middleware';
+import { authenticateRequest, requireRoles } from '@/shared/middlewares/auth.middleware';
+import { UserRole } from '@/modules/users/types/user.types';
+import { connectDB } from '@/shared/database/sequelize';
 
-/**
- * @swagger
- * /api/clients/{id}/payments:
- *   get:
- *     summary: Get all payments for a client
- *     description: |
- *       Returns the complete payment history for a specific client across all their memberships.
- *       - **CLIENT** role may only fetch their own payment history
- *       - Admin and Manager can fetch for any client
- *     tags: [Payments]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Client ID
- *     responses:
- *       200:
- *         description: Client payments retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Client payments retrieved successfully"
- *                 data:
- *                   type: object
- *                   properties:
- *                     payments:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/Payment'
- *                     total:
- *                       type: integer
- *                       example: 8
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden — CLIENT attempting to view another client's payments
- *       404:
- *         description: Client not found
- */
+const paymentService = new PaymentService();
+
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   return PaymentController.getByClientId(request, params.id);
+}
+
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  try {
+    await connectDB();
+    const currentUser = await authenticateRequest(request);
+    requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
+
+    const { id } = await props.params;
+    const clientId = parseInt(id, 10);
+    if (isNaN(clientId)) return NextResponse.json(ResponseUtil.failure('Invalid client id'), { status: 400 });
+
+    const body = await request.json();
+    const validated = CreatePaymentSchema.parse({ ...body, client_id: clientId });
+    const result = await paymentService.createPayment(validated);
+    return NextResponse.json(ResponseUtil.success('Payment recorded successfully', result), { status: 201 });
+  } catch (error) {
+    return errorHandler(error);
+  }
 }
