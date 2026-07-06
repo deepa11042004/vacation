@@ -50,7 +50,6 @@ export class MembershipController {
       const filters: MembershipFilterOptions = {
         search: searchParams.get('search') || undefined,
         client_id: searchParams.get('client_id') ? parseInt(searchParams.get('client_id')!, 10) : undefined,
-        package_id: searchParams.get('package_id') ? parseInt(searchParams.get('package_id')!, 10) : undefined,
         status: searchParams.get('status') as MembershipStatus | undefined,
         page: parseInt(searchParams.get('page') || '1', 10),
         limit: parseInt(searchParams.get('limit') || '10', 10),

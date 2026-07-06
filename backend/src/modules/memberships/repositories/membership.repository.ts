@@ -4,14 +4,12 @@ import { UpdateMembershipDTO } from '../dto/membership.dto';
 import { MembershipFilterOptions, MembershipStatus } from '../types/membership.types';
 import { IMembership } from '../interfaces/membership.interface';
 import { Client } from '../../clients/models/Client.model';
-import { Package } from '../../packages/models/Package.model';
 import { User } from '../../users/models/User.model';
 
 const MAX_LIMIT = 100;
 
 const INCLUDE_ASSOCIATIONS = [
   { model: Client, as: 'client', attributes: ['client_id', 'first_name', 'last_name', 'email', 'mobile'] },
-  { model: Package, as: 'package', attributes: ['package_id', 'name', 'category', 'unit_type'] },
   { model: User, as: 'salesConsultant', attributes: ['user_id', 'email'] },
   { model: User, as: 'takeOverManager', attributes: ['user_id', 'email'] },
 ];
@@ -38,20 +36,19 @@ export class MembershipRepository {
   }
 
   async findAll(filters: MembershipFilterOptions = {}): Promise<{ rows: Membership[]; count: number }> {
-    const { search, client_id, package_id, status, page = 1, limit = 10 } = filters;
+    const { search, client_id, status, page = 1, limit = 10 } = filters;
     const cappedLimit = Math.min(limit, MAX_LIMIT);
     const offset = (page - 1) * cappedLimit;
 
     const where: any = {};
 
     if (client_id) where.client_id = client_id;
-    if (package_id) where.package_id = package_id;
-    if (status) where.status = status;
+    if (status)    where.status    = status;
 
     if (search) {
       where[Op.or] = [
         { membership_number: { [Op.like]: `%${search}%` } },
-        { reference_by: { [Op.like]: `%${search}%` } },
+        { reference_by:      { [Op.like]: `%${search}%` } },
       ];
     }
 

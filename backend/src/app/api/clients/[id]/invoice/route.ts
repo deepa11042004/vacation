@@ -7,8 +7,10 @@ import { ResponseUtil } from '@/shared/utils/response.util';
 import { ClientService } from '@/modules/clients/services/client.service';
 import { UserRole } from '@/modules/users/types/user.types';
 import { sendInvoiceEmail } from '@/shared/utils/email.service';
+import { InvoiceService } from '@/modules/invoices/services/invoice.service';
 
 const clientService = new ClientService();
+const invoiceService = new InvoiceService();
 
 const InvoiceSchema = z.object({
   invoice_no:     z.string().min(1),
@@ -26,70 +28,10 @@ const InvoiceSchema = z.object({
   amount:         z.string().default('0'),
   description:    z.string().default('Holiday Package (Sheet Attached For Details)'),
   state:          z.string().default(''),
+  invoice_type:   z.enum(['invoice', 'tax']).default('invoice'),
+  client_gst:     z.string().optional(),
 });
 
-/**
- * @swagger
- * /api/clients/{id}/invoice:
- *   post:
- *     summary: Send an invoice PDF to a client by email
- *     description: |
- *       Generates a professional A4 invoice PDF and emails it to the specified address using
- *       the configured invoice email template. Variables in the template (`{{invoice_no}}`,
- *       `{{client_name}}`, `{{amount}}`, `{{issue_date}}`) are interpolated automatically.
- *     tags: [Clients]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: integer }
- *         description: Client ID (used to verify the client exists)
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [invoice_no, issue_date, client_name, email, amount]
- *             properties:
- *               invoice_no:     { type: string, example: "2627/001" }
- *               issue_date:     { type: string, format: date, example: "2026-07-03" }
- *               client_name:    { type: string, example: "Rahul Sharma" }
- *               card_number:    { type: string, example: "MEM-000001" }
- *               email:          { type: string, format: email, example: "rahul@example.com" }
- *               phone:          { type: string, example: "+91 9876543210" }
- *               address:        { type: string, example: "123 Main St, Delhi" }
- *               payment_mode:   { type: string, enum: [CASH, CHEQUE, ONLINE, BANK_TRANSFER, CARD], example: "ONLINE" }
- *               payment_type:   { type: string, example: "Debit Card" }
- *               transaction_id: { type: string, example: "TXN123456" }
- *               bank:           { type: string, example: "HDFC Bank" }
- *               card_cheque_no: { type: string, example: "XXXX1234" }
- *               amount:         { type: string, example: "50000" }
- *               description:    { type: string, example: "Holiday Package (Sheet Attached For Details)" }
- *               state:          { type: string, example: "Delhi" }
- *     responses:
- *       200:
- *         description: Invoice emailed successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean, example: true }
- *                 message: { type: string, example: "Invoice 2627/001 sent to rahul@example.com" }
- *       400:
- *         description: Validation error or invalid client ID
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden — Admin or Manager only
- *       404:
- *         description: Client not found
- *       500:
- *         description: Email delivery failed (SMTP error)
- */
 export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
@@ -107,8 +49,30 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
 
     await sendInvoiceEmail(data.email, data);
 
+    const invoice = await invoiceService.createInvoice({
+      invoice_no:     data.invoice_no,
+      invoice_type:   data.invoice_type,
+      client_id,
+      client_name:    data.client_name,
+      card_number:    data.card_number,
+      email:          data.email,
+      phone:          data.phone,
+      address:        data.address,
+      state:          data.state,
+      client_gst:     data.client_gst || null,
+      payment_mode:   data.payment_mode,
+      payment_type:   data.payment_type,
+      transaction_id: data.transaction_id,
+      bank:           data.bank,
+      card_cheque_no: data.card_cheque_no,
+      amount:         data.amount,
+      description:    data.description,
+      issue_date:     data.issue_date,
+      created_by:     currentUser.user_id ?? null,
+    });
+
     return NextResponse.json(
-      ResponseUtil.success(`Invoice ${data.invoice_no} sent to ${data.email}`, null),
+      ResponseUtil.success(`Invoice ${data.invoice_no} sent to ${data.email}`, { invoice_id: invoice.invoice_id }),
       { status: 200 },
     );
   } catch (error) {

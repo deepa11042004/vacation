@@ -15,7 +15,6 @@ import {
   AllowNull,
 } from 'sequelize-typescript';
 import { Client } from '../../clients/models/Client.model';
-import { Package } from '../../packages/models/Package.model';
 import { User } from '../../users/models/User.model';
 import { IMembership } from '../interfaces/membership.interface';
 import { MembershipDSA, MembershipStatus, PaymentMode } from '../types/membership.types';
@@ -45,14 +44,6 @@ export class Membership extends Model<IMembership, Partial<IMembership>> impleme
   @BelongsTo(() => Client, { foreignKey: 'client_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   client?: Client;
 
-  @ForeignKey(() => Package)
-  @AllowNull(true)
-  @Column(DataType.INTEGER)
-  package_id?: number | null;
-
-  @BelongsTo(() => Package, { foreignKey: 'package_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
-  package?: Package;
-
   @AllowNull(true)
   @Column(DataType.STRING(255))
   package_name?: string | null;
@@ -64,10 +55,6 @@ export class Membership extends Model<IMembership, Partial<IMembership>> impleme
   @AllowNull(false)
   @Column(DataType.DATEONLY)
   sale_date!: Date;
-
-  @AllowNull(false)
-  @Column(DataType.DATEONLY)
-  start_date!: Date;
 
   @AllowNull(false)
   @Column(DataType.DATEONLY)
@@ -107,6 +94,11 @@ export class Membership extends Model<IMembership, Partial<IMembership>> impleme
   @Column(DataType.DECIMAL(12, 2))
   outstanding_balance!: number;
 
+  @AllowNull(true)
+  @Default(null)
+  @Column(DataType.DECIMAL(12, 2))
+  amc?: number | null;
+
   @ForeignKey(() => User)
   @AllowNull(true)
   @Column(DataType.INTEGER)
@@ -122,6 +114,16 @@ export class Membership extends Model<IMembership, Partial<IMembership>> impleme
 
   @BelongsTo(() => User, { foreignKey: 'take_over_manager_id', as: 'takeOverManager', onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   takeOverManager?: User | null;
+
+  @AllowNull(true)
+  @Default(null)
+  @Column(DataType.STRING(100))
+  sales_consultant?: string | null;
+
+  @AllowNull(true)
+  @Default(null)
+  @Column(DataType.STRING(100))
+  take_over_manager?: string | null;
 
   @AllowNull(true)
   @Default(null)

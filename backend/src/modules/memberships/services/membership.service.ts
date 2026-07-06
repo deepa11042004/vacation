@@ -8,16 +8,8 @@ import { AppError } from '../../../shared/middlewares/error.middleware';
 import { IMembership } from '../interfaces/membership.interface';
 import { sequelize } from '../../../shared/database/sequelize';
 import { Client } from '../../clients/models/Client.model';
-import { Package } from '../../packages/models/Package.model';
 import { Payment } from '../../payments/models/Payment.model';
 import { PaymentMode, PaymentStatus, PaymentType } from '../../payments/types/payment.types';
-import { PackageCategory, PackageStatus } from '../../packages/types/package.types';
-
-const CARD_PREFIX: Record<PackageCategory, string> = {
-  [PackageCategory.SILVER]: 'SIL',
-  [PackageCategory.GOLD]: 'GLD',
-  [PackageCategory.PLATINUM]: 'PLT',
-};
 
 function round2(n: number): number {
   return parseFloat(n.toFixed(2));
@@ -39,33 +31,19 @@ export class MembershipService {
     const client = await Client.findByPk(data.client_id);
     if (!client) throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.CLIENT_NOT_FOUND, 404);
 
-    let membershipPrefix: string;
-    let validityYears: number;
-    let nightsPerYear: number;
-    let totalNights: number;
-
-    if (data.package_id) {
-      const pkg = await Package.findByPk(data.package_id);
-      if (!pkg || pkg.status !== PackageStatus.ACTIVE) {
-        throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.PACKAGE_NOT_FOUND, 404);
-      }
-      membershipPrefix = CARD_PREFIX[pkg.category];
-      validityYears = pkg.validity_years;
-      nightsPerYear = pkg.nights_per_year;
-      totalNights = pkg.total_nights;
-    } else if (data.package_name) {
-      validityYears = data.validity_years ?? 1;
-      nightsPerYear = data.nights_per_year ?? 0;
-      totalNights = nightsPerYear * validityYears;
-      const clean = data.package_name.replace(/[^A-Za-z]/g, '').toUpperCase();
-      membershipPrefix = (clean.slice(0, 3) || 'MEM').padEnd(3, 'X');
-    } else {
-      throw new AppError('Provide package_id or package_name with validity details', 400);
+    if (!data.package_name) {
+      throw new AppError('package_name is required', 400);
     }
 
-    const total_price = round2(data.total_price);
+    const validityYears = data.validity_years ?? 1;
+    const nightsPerYear = data.nights_per_year ?? 0;
+    const totalNights   = nightsPerYear * validityYears;
+    const clean         = data.package_name.replace(/[^A-Za-z]/g, '').toUpperCase();
+    const membershipPrefix = (clean.slice(0, 3) || 'MEM').padEnd(3, 'X');
+
+    const total_price    = round2(data.total_price);
     const discount_amount = round2(data.discount_amount ?? 0);
-    const down_payment = round2(data.down_payment ?? 0);
+    const down_payment   = round2(data.down_payment ?? 0);
 
     if (discount_amount > total_price) {
       throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.DISCOUNT_EXCEEDS_PRICE, 400);
@@ -79,8 +57,8 @@ export class MembershipService {
 
     const outstanding_balance = round2(net_price - down_payment);
 
-    const start_date = new Date(data.start_date);
-    const end_date = new Date(start_date);
+    const ref_date = new Date(data.sale_date);
+    const end_date = new Date(ref_date);
     end_date.setFullYear(end_date.getFullYear() + validityYears);
 
     const t = await sequelize.transaction();
@@ -89,7 +67,6 @@ export class MembershipService {
 
       const membershipData: Partial<IMembership> = {
         ...(data as any),
-        package_id: data.package_id ?? null,
         membership_number: tempNumber,
         end_date,
         nights_remaining: totalNights,
@@ -100,6 +77,7 @@ export class MembershipService {
         net_price,
         down_payment,
         outstanding_balance,
+        amc: data.amc ?? null,
         status: MembershipStatus.ACTIVE,
       };
 
@@ -170,7 +148,7 @@ export class MembershipService {
     const updatedData: any = { ...data };
 
     if (data.total_price !== undefined || data.discount_amount !== undefined) {
-      const total_price = round2(data.total_price ?? membership.total_price);
+      const total_price    = round2(data.total_price    ?? membership.total_price);
       const discount_amount = round2(data.discount_amount ?? membership.discount_amount);
 
       if (discount_amount > total_price) {
@@ -183,14 +161,9 @@ export class MembershipService {
       updatedData.outstanding_balance = round2(Math.max(0, net_price - paid));
     }
 
-    // Recalculate end_date if start_date changes — works for both package and free-text memberships
-    if (data.start_date) {
-      let validity = membership.validity_years ?? 1;
-      if (membership.package_id) {
-        const pkg = await Package.findByPk(membership.package_id);
-        if (pkg) validity = pkg.validity_years;
-      }
-      const end_date = new Date(data.start_date);
+    if (data.sale_date) {
+      const validity = membership.validity_years ?? 1;
+      const end_date = new Date(data.sale_date);
       end_date.setFullYear(end_date.getFullYear() + validity);
       updatedData.end_date = end_date;
     }

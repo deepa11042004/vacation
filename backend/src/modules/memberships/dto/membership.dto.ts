@@ -2,18 +2,19 @@ import { MembershipDSA, MembershipStatus, PaymentMode } from '../types/membershi
 
 export interface CreateMembershipDTO {
   client_id: number;
-  package_id?: number | null;
   package_name?: string | null;
   validity_years?: number | null;
   nights_per_year?: number | null;
   sale_date: Date;
-  start_date: Date;
   total_price: number;
   discount_amount?: number;
   payment_mode: PaymentMode;
   down_payment?: number;
+  amc?: number | null;
   sales_consultant_id?: number | null;
   take_over_manager_id?: number | null;
+  sales_consultant?: string | null;
+  take_over_manager?: string | null;
   dsa?: MembershipDSA | null;
   reference_by?: string | null;
   remarks?: string | null;
@@ -22,17 +23,20 @@ export interface CreateMembershipDTO {
 
 export interface UpdateMembershipDTO {
   sale_date?: Date;
-  start_date?: Date;
   end_date?: Date;
   total_price?: number;
   discount_amount?: number;
   net_price?: number;
   payment_mode?: PaymentMode;
+  amc?: number | null;
   sales_consultant_id?: number | null;
   take_over_manager_id?: number | null;
+  sales_consultant?: string | null;
+  take_over_manager?: string | null;
   dsa?: MembershipDSA | null;
   reference_by?: string | null;
   remarks?: string | null;
   status?: MembershipStatus;
+  outstanding_balance?: number;
   updated_by?: number | null;
 }

@@ -14,7 +14,7 @@ import {
   Unique,
 } from 'sequelize-typescript';
 import { IClient } from '../interfaces/client.interface';
-import { ClientStatus, DSAType, Gender } from '../types/client.types';
+import { ClientStatus, Gender } from '../types/client.types';
 import type { ClientAddress } from './ClientAddress.model';
 
 @Table({
@@ -78,33 +78,12 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   status!: ClientStatus;
 
   @AllowNull(true)
-  @Column(DataType.STRING(100))
-  sales_consultant?: string | null;
-
-  @AllowNull(true)
-  @Column(DataType.STRING(100))
-  take_over_manager?: string | null;
-
-  @AllowNull(true)
-  @Default(null)
-  @Column(DataType.ENUM(...Object.values(DSAType)))
-  dsa?: DSAType | null;
-
-  @AllowNull(true)
-  @Column(DataType.STRING(100))
-  reference_by?: string | null;
-
-  @AllowNull(true)
   @Column(DataType.DATEONLY)
   marriage_anniversary?: Date | null;
 
   @AllowNull(true)
   @Column(DataType.STRING(100))
   spouse_name?: string | null;
-
-  @AllowNull(true)
-  @Column(DataType.TEXT)
-  remarks?: string | null;
 
   @AllowNull(true)
   @Column(DataType.INTEGER)

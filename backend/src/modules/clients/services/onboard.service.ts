@@ -11,19 +11,22 @@ import { MembershipDSA, MembershipStatus, PaymentMode as MembershipPaymentMode }
 import { PaymentType, PaymentStatus, PaymentMode } from '../../payments/types/payment.types';
 import { IClient } from '../interfaces/client.interface';
 import { IClientAddress } from '../interfaces/client-address.interface';
+import { ClientOfferService, CreateOfferInput } from '../../client-offers/services/client-offer.service';
 
 export interface OnboardMembershipInput {
   package_name: string;
   validity_years: number;
   nights_per_year: number;
   sale_date: string;
-  start_date: string;
   total_price: number;
   discount_amount: number;
   down_payment: number;
   payment_mode: MembershipPaymentMode;
+  amc?: number | null;
   transaction_ref?: string | null;
   bank_name?: string | null;
+  sales_consultant?: string | null;
+  take_over_manager?: string | null;
   dsa?: MembershipDSA | null;
   reference_by?: string | null;
   remarks?: string | null;
@@ -33,6 +36,7 @@ export interface OnboardClientDTO {
   client: Partial<IClient>;
   address?: Partial<IClientAddress>;
   membership: OnboardMembershipInput;
+  offers?: CreateOfferInput[];
 }
 
 function round2(n: number): number {
@@ -46,13 +50,15 @@ function uniqueTemp(prefix: string, maxLen: number): string {
 
 export class OnboardService {
   private userService: UserService;
+  private offerService: ClientOfferService;
 
   constructor() {
     this.userService = new UserService();
+    this.offerService = new ClientOfferService();
   }
 
   async onboardClient(data: OnboardClientDTO) {
-    const { client: clientData, address: addrData, membership: memData } = data;
+    const { client: clientData, address: addrData, membership: memData, offers: offersData = [] } = data;
 
     // Pre-validate uniqueness before opening transaction
     const existingEmail = await Client.findOne({ where: { email: clientData.email } });
@@ -62,16 +68,16 @@ export class OnboardService {
     if (existingMobile) throw new AppError(CLIENT_CONSTANTS.ERRORS.MOBILE_EXISTS, 400);
 
     // Pre-calculate membership values (fail fast before opening transaction)
-    const validityYears = memData.validity_years ?? 1;
-    const nightsPerYear = memData.nights_per_year ?? 0;
-    const totalNights = nightsPerYear * validityYears;
+    const validityYears  = memData.validity_years ?? 1;
+    const nightsPerYear  = memData.nights_per_year ?? 0;
+    const totalNights    = nightsPerYear * validityYears;
 
     const clean = memData.package_name.replace(/[^A-Za-z]/g, '').toUpperCase();
     const membershipPrefix = (clean.slice(0, 3) || 'MEM').padEnd(3, 'X');
 
-    const total_price = round2(memData.total_price);
+    const total_price     = round2(memData.total_price);
     const discount_amount = round2(memData.discount_amount ?? 0);
-    const down_payment = round2(memData.down_payment ?? 0);
+    const down_payment    = round2(memData.down_payment ?? 0);
 
     if (discount_amount > total_price) {
       throw new AppError('Discount amount exceeds total price', 400);
@@ -82,8 +88,8 @@ export class OnboardService {
     }
     const outstanding_balance = round2(net_price - down_payment);
 
-    const start_date = new Date(memData.start_date);
-    const end_date = new Date(start_date);
+    const ref_date = new Date(memData.sale_date);
+    const end_date = new Date(ref_date);
     end_date.setFullYear(end_date.getFullYear() + validityYears);
 
     const t = await sequelize.transaction();
@@ -117,26 +123,27 @@ export class OnboardService {
       const tempMembershipNumber = uniqueTemp('T', 20);
       const newMembership = await Membership.create(
         {
-          client_id: newClient.client_id,
-          package_id: null,
-          package_name: memData.package_name,
-          membership_number: tempMembershipNumber,
-          sale_date: memData.sale_date,
-          start_date: memData.start_date,
+          client_id:          newClient.client_id,
+          package_name:       memData.package_name,
+          membership_number:  tempMembershipNumber,
+          sale_date:          memData.sale_date,
           end_date,
-          nights_remaining: totalNights,
-          nights_per_year: nightsPerYear,
-          validity_years: validityYears,
+          nights_remaining:   totalNights,
+          nights_per_year:    nightsPerYear,
+          validity_years:     validityYears,
           total_price,
           discount_amount,
           net_price,
-          payment_mode: memData.payment_mode,
+          payment_mode:       memData.payment_mode,
           down_payment,
           outstanding_balance,
-          dsa: memData.dsa ?? null,
-          reference_by: memData.reference_by ?? null,
-          remarks: memData.remarks ?? null,
-          status: MembershipStatus.ACTIVE,
+          amc:                memData.amc ?? null,
+          sales_consultant:   memData.sales_consultant ?? null,
+          take_over_manager:  memData.take_over_manager ?? null,
+          dsa:                memData.dsa ?? null,
+          reference_by:       memData.reference_by ?? null,
+          remarks:            memData.remarks ?? null,
+          status:             MembershipStatus.ACTIVE,
         } as any,
         { transaction: t },
       );
@@ -150,16 +157,16 @@ export class OnboardService {
         const newPayment = await Payment.create(
           {
             payment_number: tempPayNum,
-            membership_id: newMembership.membership_id,
-            client_id: newClient.client_id,
-            payment_type: PaymentType.DOWN_PAYMENT,
-            amount: down_payment,
-            payment_date: memData.sale_date,
-            payment_mode: memData.payment_mode as unknown as PaymentMode,
+            membership_id:  newMembership.membership_id,
+            client_id:      newClient.client_id,
+            payment_type:   PaymentType.DOWN_PAYMENT,
+            amount:         down_payment,
+            payment_date:   memData.sale_date,
+            payment_mode:   memData.payment_mode as unknown as PaymentMode,
             transaction_ref: memData.transaction_ref ?? null,
-            bank_name: memData.bank_name ?? null,
-            status: PaymentStatus.PAID,
-            remarks: 'Down payment at onboarding',
+            bank_name:      memData.bank_name ?? null,
+            status:         PaymentStatus.PAID,
+            remarks:        'Down payment at onboarding',
           } as any,
           { transaction: t },
         );
@@ -168,25 +175,30 @@ export class OnboardService {
         await newPayment.update({ payment_number }, { transaction: t });
       }
 
+      // ── Step 6: Bulk-create offers (if any) ───────────────────
+      const validOffers = offersData.filter(o => o.offer_name?.trim());
+      if (validOffers.length) {
+        await this.offerService.bulkAdd(newClient.client_id, validOffers, t);
+      }
+
       // ── All steps succeeded — commit ───────────────────────────
       await t.commit();
 
       return {
-        client_id: newClient.client_id,
-        membership_id: newMembership.membership_id,
+        client_id:         newClient.client_id,
+        membership_id:     newMembership.membership_id,
         membership_number,
       };
     } catch (error) {
       await t.rollback();
 
-      // Convert DB unique constraint violations into friendly AppErrors
       if (error instanceof UniqueConstraintError) {
         const field = error.errors?.[0]?.path ?? 'field';
         const label =
-          field === 'email' ? 'email address' :
-          field === 'mobile' ? 'mobile number' :
+          field === 'email'             ? 'email address' :
+          field === 'mobile'            ? 'mobile number' :
           field === 'membership_number' ? 'membership number' :
-          field === 'payment_number' ? 'payment number' : field;
+          field === 'payment_number'    ? 'payment number' : field;
         throw new AppError(`A record with this ${label} already exists.`, 409);
       }
 

@@ -8,6 +8,9 @@ import { HotelImage } from '../../modules/hotels/models/HotelImage.model';
 import { Package } from '../../modules/packages/models/Package.model';
 import { Membership } from '../../modules/memberships/models/Membership.model';
 import { Payment } from '../../modules/payments/models/Payment.model';
+import { Invoice } from '../../modules/invoices/models/Invoice.model';
+import { ClientOffer } from '../../modules/client-offers/models/ClientOffer.model';
+import { Booking } from '../../modules/bookings/models/Booking.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -29,6 +32,9 @@ export const sequelize = new Sequelize({
     Package,
     Membership,
     Payment,
+    Invoice,
+    ClientOffer,
+    Booking,
   ],
 });
 

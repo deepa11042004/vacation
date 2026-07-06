@@ -22,7 +22,6 @@ export enum MembershipDSA {
 export type MembershipFilterOptions = {
   search?: string;
   client_id?: number;
-  package_id?: number;
   status?: MembershipStatus;
   page?: number;
   limit?: number;
