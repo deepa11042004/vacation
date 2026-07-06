@@ -74,6 +74,10 @@ export class User extends Model<IUser, Partial<IUser>> implements IUser {
   refresh_token?: string | null;
 
   @AllowNull(true)
+  @Column(DataType.TEXT)
+  allowed_sections?: string | null;
+
+  @AllowNull(true)
   @Column(DataType.INTEGER)
   created_by?: number | null;
 

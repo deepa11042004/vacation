@@ -38,8 +38,8 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
  * @swagger
  * /api/users/{id}:
  *   put:
- *     summary: Update User Details
- *     description: Updates a user's details. Normal users can only update their own profile and cannot change role/status.
+ *     summary: Update Panel User
+ *     description: Updates a panel user's details (Admin only). To reset a password use POST /api/users/{id}/reset-password instead.
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
@@ -56,10 +56,16 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
  *             type: object
  *             properties:
  *               email: { type: string, format: email, example: "updated@example.com" }
- *               password: { type: string, example: "newpassword123" }
- *               role: { type: string, enum: [ADMIN, AGENT, MANAGER, CLIENT], example: "AGENT" }
+ *               first_name: { type: string, nullable: true, example: "John" }
+ *               last_name: { type: string, nullable: true, example: "Doe" }
+ *               role: { type: string, enum: [ADMIN, MANAGER, AGENT], example: "MANAGER" }
  *               status: { type: string, enum: [ACTIVE, INACTIVE], example: "ACTIVE" }
- *               client_id: { type: integer, example: null }
+ *               allowed_sections:
+ *                 type: array
+ *                 nullable: true
+ *                 description: "Section keys to grant access. Pass null for full access (ADMIN). Pass [] to deny all."
+ *                 items: { type: string }
+ *                 example: ["dashboard", "clients"]
  *     responses:
  *       200:
  *         description: User updated successfully

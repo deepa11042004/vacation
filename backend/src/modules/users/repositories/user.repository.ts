@@ -1,7 +1,6 @@
 import { Op, Transaction } from 'sequelize';
 import { User } from '../models/User.model';
 import { Client } from '../../clients/models/Client.model';
-import { UpdateUserDTO } from '../dto/user.dto';
 import { UserFilterOptions } from '../types/user.types';
 import { IUser } from '../interfaces/user.interface';
 
@@ -59,8 +58,8 @@ export class UserRepository {
     });
   }
 
-  async update(user_id: number, data: UpdateUserDTO): Promise<[number, User[]]> {
-    return await User.update(data, {
+  async update(user_id: number, data: Partial<IUser>): Promise<[number, User[]]> {
+    return await User.update(data as any, {
       where: { user_id },
       returning: true,
     });

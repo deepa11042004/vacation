@@ -9,6 +9,7 @@ export interface CreateUserDTO {
   role?: UserRole;
   status?: UserStatus;
   client_id?: number | null;
+  allowed_sections?: string[] | null;
   created_by?: number | null;
 }
 
@@ -21,6 +22,7 @@ export interface UpdateUserDTO {
   role?: UserRole;
   status?: UserStatus;
   client_id?: number | null;
+  allowed_sections?: string[] | null;
   refresh_token?: string | null;
   updated_by?: number | null;
 }

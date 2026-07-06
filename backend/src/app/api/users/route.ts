@@ -19,14 +19,29 @@ import { UserController } from '@/modules/users/controllers/user.controller';
  *           type: string
  *           format: email
  *           example: "agent@example.com"
+ *         first_name:
+ *           type: string
+ *           nullable: true
+ *           example: "John"
+ *         last_name:
+ *           type: string
+ *           nullable: true
+ *           example: "Doe"
  *         role:
  *           type: string
- *           enum: [ADMIN, AGENT, MANAGER, CLIENT]
+ *           enum: [ADMIN, MANAGER, AGENT, CLIENT]
  *           example: "AGENT"
  *         status:
  *           type: string
  *           enum: [ACTIVE, INACTIVE]
  *           example: "ACTIVE"
+ *         allowed_sections:
+ *           type: array
+ *           nullable: true
+ *           description: "Sections this user can access. null = unrestricted (ADMIN). Empty array = no access. Only relevant for MANAGER/AGENT roles."
+ *           items:
+ *             type: string
+ *           example: ["dashboard", "clients", "invoices"]
  *         created_by:
  *           type: integer
  *           nullable: true
@@ -88,8 +103,8 @@ import { UserController } from '@/modules/users/controllers/user.controller';
  * @swagger
  * /api/users:
  *   post:
- *     summary: Create a User
- *     description: Creates a user account in the system (Admin only).
+ *     summary: Create a Panel User
+ *     description: Creates a panel staff account (Admin only). CLIENT role cannot be created through this endpoint.
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
@@ -102,10 +117,17 @@ import { UserController } from '@/modules/users/controllers/user.controller';
  *             required: [email, password]
  *             properties:
  *               email: { type: string, format: email, example: "newagent@example.com" }
- *               password: { type: string, example: "password123" }
- *               role: { type: string, enum: [ADMIN, AGENT, MANAGER, CLIENT], example: "AGENT" }
- *               status: { type: string, enum: [ACTIVE, INACTIVE], example: "ACTIVE" }
- *               client_id: { type: integer, example: null }
+ *               password: { type: string, minLength: 6, example: "password123" }
+ *               first_name: { type: string, nullable: true, example: "John" }
+ *               last_name: { type: string, nullable: true, example: "Doe" }
+ *               role: { type: string, enum: [ADMIN, MANAGER, AGENT], default: "AGENT", example: "AGENT" }
+ *               status: { type: string, enum: [ACTIVE, INACTIVE], default: "ACTIVE", example: "ACTIVE" }
+ *               allowed_sections:
+ *                 type: array
+ *                 nullable: true
+ *                 description: "Section keys to grant access. Pass null for ADMIN (full access). Pass [] to deny all for MANAGER/AGENT."
+ *                 items: { type: string }
+ *                 example: ["dashboard", "clients", "invoices"]
  *     responses:
  *       201:
  *         description: User created successfully
@@ -132,8 +154,8 @@ export async function POST(request: NextRequest) {
  * @swagger
  * /api/users:
  *   get:
- *     summary: Get Users List
- *     description: Retrieves users list (Admin/Manager only).
+ *     summary: List Panel Users
+ *     description: Returns a paginated list of panel staff accounts (Admin only).
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
@@ -141,10 +163,11 @@ export async function POST(request: NextRequest) {
  *       - in: query
  *         name: search
  *         schema: { type: string }
- *         description: Search by email
+ *         description: Search by email, first name, or last name
  *       - in: query
  *         name: role
- *         schema: { type: string, enum: [ADMIN, AGENT, MANAGER, CLIENT] }
+ *         schema: { type: string, enum: [ADMIN, MANAGER, AGENT] }
+ *         description: Filter by role
  *       - in: query
  *         name: status
  *         schema: { type: string, enum: [ACTIVE, INACTIVE] }

@@ -8,6 +8,7 @@ export interface TokenPayload {
   email: string;
   role: string;
   client_id?: number | null;
+  allowed_sections?: string[] | null;
 }
 
 export class JwtUtil {

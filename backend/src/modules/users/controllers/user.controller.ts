@@ -119,6 +119,30 @@ export class UserController {
     }
   }
 
+  static async resetPassword(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN]);
+
+      const id = this.parseId(idStr);
+      const body = await req.json();
+
+      if (!body.password || body.password.length < 6) {
+        throw new AppError('Password must be at least 6 characters', 400);
+      }
+
+      const result = await userService.resetPassword(id, body.password);
+
+      return NextResponse.json(
+        ResponseUtil.success('Password reset successfully', result),
+        { status: 200 }
+      );
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
+
   static async delete(req: NextRequest, idStr: string) {
     try {
       await connectDB();

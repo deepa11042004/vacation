@@ -11,6 +11,7 @@ export interface IUser {
   role: UserRole;
   status: UserStatus;
   refresh_token?: string | null;
+  allowed_sections?: string | null;
   created_by?: number | null;
   updated_by?: number | null;
   created_at: Date;

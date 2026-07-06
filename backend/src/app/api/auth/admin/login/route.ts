@@ -5,8 +5,8 @@ import { AuthController } from '@/modules/auth/controllers/auth.controller';
  * @swagger
  * /api/auth/admin/login:
  *   post:
- *     summary: Admin Login
- *     description: Authenticates admin credentials and returns tokens. Fails if user is not an ADMIN.
+ *     summary: Panel Login
+ *     description: Authenticates panel staff credentials and returns tokens. Accessible to ADMIN, MANAGER, and AGENT roles. CLIENT accounts are rejected with 403.
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -27,7 +27,7 @@ import { AuthController } from '@/modules/auth/controllers/auth.controller';
  *               type: object
  *               properties:
  *                 success: { type: boolean, example: true }
- *                 message: { type: string, example: "Admin logged in successfully" }
+ *                 message: { type: string, example: "Logged in successfully" }
  *                 data:
  *                   type: object
  *                   properties:
@@ -38,7 +38,7 @@ import { AuthController } from '@/modules/auth/controllers/auth.controller';
  *       401:
  *         description: Invalid credentials
  *       403:
- *         description: Access denied (Not an ADMIN)
+ *         description: Forbidden — CLIENT accounts cannot access the panel
  *         content:
  *           application/json:
  *             schema:

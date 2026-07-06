@@ -10,6 +10,7 @@ export const CreateUserSchema = z.object({
   role: z.nativeEnum(UserRole).optional(),
   status: z.nativeEnum(UserStatus).optional(),
   client_id: z.number().int().positive().optional().nullable(),
+  allowed_sections: z.array(z.string()).nullable().optional(),
   created_by: z.number().int().optional().nullable(),
 }).refine((data) => {
   if (data.role === UserRole.CLIENT && !data.client_id) {
@@ -30,6 +31,7 @@ export const UpdateUserSchema = z.object({
   role: z.nativeEnum(UserRole).optional(),
   status: z.nativeEnum(UserStatus).optional(),
   client_id: z.number().int().positive().optional().nullable(),
+  allowed_sections: z.array(z.string()).nullable().optional(),
   updated_by: z.number().int().optional().nullable(),
 }).refine((data) => {
   if (data.role === UserRole.CLIENT && !data.client_id) {

@@ -17,9 +17,6 @@ import { MembershipController } from '@/modules/memberships/controllers/membersh
  *         client_id:
  *           type: integer
  *           example: 1
- *         package_id:
- *           type: integer
- *           example: 2
  *         sale_date:
  *           type: string
  *           format: date
@@ -114,15 +111,6 @@ import { MembershipController } from '@/modules/memberships/controllers/membersh
  *             last_name: { type: string, example: "Doe" }
  *             email: { type: string, example: "john.doe@example.com" }
  *             mobile: { type: string, example: "9876543210" }
- *         package:
- *           type: object
- *           nullable: true
- *           properties:
- *             package_id: { type: integer, example: 2 }
- *             package_code: { type: string, example: "PKG-000002" }
- *             name: { type: string, example: "Gold 5-Year 1BHK Premium" }
- *             category: { type: string, enum: [SILVER, GOLD, PLATINUM], example: "GOLD" }
- *             unit_type: { type: string, enum: [STUDIO, 1BHK, 2BHK, SUITE], example: "1BHK" }
  *         salesConsultant:
  *           type: object
  *           nullable: true
@@ -179,9 +167,7 @@ import { MembershipController } from '@/modules/memberships/controllers/membersh
  *   post:
  *     summary: Create a new membership
  *     description: |
- *       Records a membership when a client purchases a package.
- *       - `end_date` is **auto-calculated** from `start_date + package.validity_years`
- *       - `nights_remaining` is **copied** from `package.total_nights`
+ *       Records a membership for a client.
  *       - `net_price = total_price − discount_amount`
  *       - `outstanding_balance = net_price − down_payment`
  *       - If `down_payment > 0`, a **DOWN_PAYMENT payment record** (`PAY-XXXXXX`) is auto-created in the same DB transaction
@@ -194,14 +180,11 @@ import { MembershipController } from '@/modules/memberships/controllers/membersh
  *         application/json:
  *           schema:
  *             type: object
- *             required: [client_id, package_id, sale_date, start_date, total_price, payment_mode]
+ *             required: [client_id, sale_date, total_price, payment_mode]
  *             properties:
  *               client_id:
  *                 type: integer
  *                 example: 1
- *               package_id:
- *                 type: integer
- *                 example: 2
  *               sale_date:
  *                 type: string
  *                 format: date
@@ -266,7 +249,7 @@ import { MembershipController } from '@/modules/memberships/controllers/membersh
  *       403:
  *         description: Forbidden — Admin or Manager only
  *       404:
- *         description: Client not found or Package not found / inactive
+ *         description: Client not found
  *         content:
  *           application/json:
  *             schema:
@@ -281,7 +264,7 @@ export async function POST(request: NextRequest) {
  * /api/memberships:
  *   get:
  *     summary: List memberships
- *     description: Returns a paginated list of memberships. Filter by client, package, status, or search by membership number.
+ *     description: Returns a paginated list of memberships. Filter by client, status, or search by membership number.
  *     tags: [Memberships]
  *     security:
  *       - BearerAuth: []
@@ -291,11 +274,6 @@ export async function POST(request: NextRequest) {
  *         schema:
  *           type: integer
  *         description: Filter by client ID
- *       - in: query
- *         name: package_id
- *         schema:
- *           type: integer
- *         description: Filter by package ID
  *       - in: query
  *         name: status
  *         schema:

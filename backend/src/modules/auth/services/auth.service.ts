@@ -15,6 +15,20 @@ export class AuthService {
     this.userService = new UserService();
   }
 
+  private parseAllowedSections(raw: string | null | undefined): string[] | null {
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
+  }
+
+  private sanitizeUserJson(userJson: any): any {
+    delete userJson.password;
+    delete userJson.refresh_token;
+    if (typeof userJson.allowed_sections === 'string') {
+      userJson.allowed_sections = this.parseAllowedSections(userJson.allowed_sections);
+    }
+    return userJson;
+  }
+
   async login(data: LoginDTO) {
     const user = await this.authRepository.findByEmail(data.email);
     if (!user) {
@@ -35,6 +49,7 @@ export class AuthService {
       email: user.email,
       role: user.role,
       client_id: user.client_id || null,
+      allowed_sections: this.parseAllowedSections(user.allowed_sections ?? null),
     };
 
     const accessToken = JwtUtil.generateAccessToken(tokenPayload);
@@ -42,11 +57,7 @@ export class AuthService {
 
     await this.authRepository.updateRefreshToken(user.user_id, refreshToken);
 
-    const userJson = user.toJSON();
-    delete userJson.password;
-    delete userJson.refresh_token;
-
-    return { accessToken, refreshToken, user: userJson };
+    return { accessToken, refreshToken, user: this.sanitizeUserJson(user.toJSON()) };
   }
 
   async adminLogin(data: LoginDTO) {
@@ -55,8 +66,9 @@ export class AuthService {
       throw new AppError('Invalid email or password', 401);
     }
 
-    if (user.role !== UserRole.ADMIN) {
-      throw new AppError('Access denied. Admin privileges required.', 403);
+    // Allow ADMIN, MANAGER, AGENT — deny CLIENT accounts
+    if (user.role === UserRole.CLIENT) {
+      throw new AppError('Access denied. Panel access only.', 403);
     }
 
     if (user.status !== UserStatus.ACTIVE) {
@@ -73,6 +85,7 @@ export class AuthService {
       email: user.email,
       role: user.role,
       client_id: user.client_id || null,
+      allowed_sections: this.parseAllowedSections(user.allowed_sections ?? null),
     };
 
     const accessToken = JwtUtil.generateAccessToken(tokenPayload);
@@ -80,11 +93,7 @@ export class AuthService {
 
     await this.authRepository.updateRefreshToken(user.user_id, refreshToken);
 
-    const userJson = user.toJSON();
-    delete userJson.password;
-    delete userJson.refresh_token;
-
-    return { accessToken, refreshToken, user: userJson };
+    return { accessToken, refreshToken, user: this.sanitizeUserJson(user.toJSON()) };
   }
 
   async refresh(refreshToken: string) {
@@ -105,6 +114,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         client_id: user.client_id || null,
+        allowed_sections: this.parseAllowedSections(user.allowed_sections ?? null),
       };
 
       const accessToken = JwtUtil.generateAccessToken(tokenPayload);

@@ -17,6 +17,10 @@ export class UserService {
   private sanitizeUser(userJson: any) {
     delete userJson.password;
     delete userJson.refresh_token;
+    if (typeof userJson.allowed_sections === 'string') {
+      try { userJson.allowed_sections = JSON.parse(userJson.allowed_sections); }
+      catch { userJson.allowed_sections = null; }
+    }
     return userJson;
   }
 
@@ -32,6 +36,9 @@ export class UserService {
     const userData: Partial<IUser> = {
       ...data,
       password: hashedPassword,
+      allowed_sections: data.allowed_sections !== undefined
+        ? (data.allowed_sections ? JSON.stringify(data.allowed_sections) : null)
+        : undefined,
     };
 
     const newUser = await this.userRepository.create(userData, transaction);
@@ -76,8 +83,27 @@ export class UserService {
       data.password = await bcrypt.hash(data.password, salt);
     }
 
-    await this.userRepository.update(user_id, data);
+    const updateData: any = { ...data };
+    if (data.allowed_sections !== undefined) {
+      updateData.allowed_sections = data.allowed_sections
+        ? JSON.stringify(data.allowed_sections)
+        : null;
+    }
+
+    await this.userRepository.update(user_id, updateData);
     return await this.getUserById(user_id);
+  }
+
+  async resetPassword(user_id: number, newPassword: string) {
+    const user = await this.userRepository.findById(user_id);
+    if (!user) {
+      throw new AppError(USER_CONSTANTS.ERRORS.NOT_FOUND, 404);
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(newPassword, salt);
+    await this.userRepository.update(user_id, { password: hashed } as any);
+    return { message: 'Password reset successfully' };
   }
 
   async deleteUser(user_id: number) {
