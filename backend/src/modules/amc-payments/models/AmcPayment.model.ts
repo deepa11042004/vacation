@@ -29,6 +29,11 @@ export class AmcPayment extends Model<IAmcPayment, Partial<IAmcPayment>> impleme
   @Column(DataType.INTEGER)
   year_number!: number;
 
+  @AllowNull(true)
+  @Default(null)
+  @Column(DataType.DECIMAL(12, 2))
+  amount?: number | null;
+
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)

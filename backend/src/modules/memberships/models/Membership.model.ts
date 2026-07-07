@@ -94,11 +94,6 @@ export class Membership extends Model<IMembership, Partial<IMembership>> impleme
   @Column(DataType.DECIMAL(12, 2))
   outstanding_balance!: number;
 
-  @AllowNull(true)
-  @Default(null)
-  @Column(DataType.DECIMAL(12, 2))
-  amc?: number | null;
-
   @ForeignKey(() => User)
   @AllowNull(true)
   @Column(DataType.INTEGER)

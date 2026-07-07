@@ -12,6 +12,7 @@ const service = new AmcPaymentService();
 const UpsertSchema = z.object({
   membership_id: z.number().int().positive(),
   year_number:   z.number().int().positive(),
+  amount:        z.number().min(0).optional().nullable(),
   is_received:   z.boolean(),
   payment_date:  z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
   payment_mode:  z.string().max(100).optional().nullable(),

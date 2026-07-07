@@ -3,6 +3,7 @@ export interface IAmcPayment {
   client_id: number;
   membership_id: number;
   year_number: number;
+  amount?: number | null;
   is_received: boolean;
   payment_date?: string | null;
   payment_mode?: string | null;

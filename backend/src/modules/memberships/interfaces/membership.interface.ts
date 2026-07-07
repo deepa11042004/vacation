@@ -16,7 +16,6 @@ export interface IMembership {
   payment_mode: PaymentMode;
   down_payment: number;
   outstanding_balance: number;
-  amc?: number | null;
   sales_consultant_id?: number | null;
   take_over_manager_id?: number | null;
   sales_consultant?: string | null;

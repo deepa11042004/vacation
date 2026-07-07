@@ -77,7 +77,6 @@ export class MembershipService {
         net_price,
         down_payment,
         outstanding_balance,
-        amc: data.amc ?? null,
         status: MembershipStatus.ACTIVE,
       };
 

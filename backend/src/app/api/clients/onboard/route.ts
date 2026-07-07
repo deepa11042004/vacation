@@ -19,7 +19,6 @@ const MembershipSchema = z.object({
   discount_amount:   z.number().min(0).optional().default(0),
   down_payment:      z.number().min(0).optional().default(0),
   payment_mode:      z.nativeEnum(PaymentMode, { errorMap: () => ({ message: 'Invalid payment mode' }) }),
-  amc:               z.number().min(0).optional().nullable(),
   transaction_ref:   z.string().max(100).optional().nullable(),
   bank_name:         z.string().max(100).optional().nullable(),
   sales_consultant:  z.string().max(100).optional().nullable(),

@@ -22,7 +22,6 @@ export interface OnboardMembershipInput {
   discount_amount: number;
   down_payment: number;
   payment_mode: MembershipPaymentMode;
-  amc?: number | null;
   transaction_ref?: string | null;
   bank_name?: string | null;
   sales_consultant?: string | null;
@@ -137,7 +136,6 @@ export class OnboardService {
           payment_mode:       memData.payment_mode,
           down_payment,
           outstanding_balance,
-          amc:                memData.amc ?? null,
           sales_consultant:   memData.sales_consultant ?? null,
           take_over_manager:  memData.take_over_manager ?? null,
           dsa:                memData.dsa ?? null,
