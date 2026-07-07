@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { getStoredUser } from "@/lib/api";
-import { UserCircle } from "lucide-react";
+import { getStoredUser, logout } from "@/lib/api";
+import { UserCircle, LogOut } from "lucide-react";
 
 const titles: Record<string, string> = {
   "/admin/dashboard": "Dashboard",
@@ -37,14 +37,23 @@ export default function Topbar() {
       <h1 className="text-slate-800 font-bold text-base">
         {getTitle(pathname)}
       </h1>
-      <div className="flex items-center gap-2 text-sm text-slate-600">
-        <UserCircle className="w-5 h-5 text-slate-400" />
-        <span className="font-medium">{user?.email ?? "Admin"}</span>
-        {user?.role && (
-          <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
-            {user.role}
-          </span>
-        )}
+      <div className="flex items-center gap-3 text-sm text-slate-600">
+        <div className="flex items-center gap-2">
+          <UserCircle className="w-5 h-5 text-slate-400" />
+          <span className="font-medium">{user?.email ?? "Admin"}</span>
+          {user?.role && (
+            <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
+              {user.role}
+            </span>
+          )}
+        </div>
+        <button
+          onClick={logout}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          Logout
+        </button>
       </div>
     </header>
   );

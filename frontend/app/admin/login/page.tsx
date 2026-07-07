@@ -26,11 +26,11 @@ export default function LoginPage() {
     try {
       const res = await api.post<{
         success: boolean;
-        data?: { accessToken: string; user: unknown };
+        data?: { accessToken: string; refreshToken: string; user: unknown };
         message?: string;
       }>("/auth/admin/login", { email, password });
       if (res?.success && res.data?.accessToken) {
-        saveAuth(res.data.accessToken, res.data.user);
+        saveAuth(res.data.accessToken, res.data.refreshToken ?? "", res.data.user);
         router.replace("/admin/dashboard");
       } else {
         setError(res?.message ?? "Invalid credentials");
