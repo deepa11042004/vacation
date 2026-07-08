@@ -36,6 +36,7 @@ const navItems: NavItem[] = [
     ],
   },
   { label: "Contact", url: "/contact" },
+  { label: "Login", url: "/login" },
 ];
 
 /*  Component */
@@ -49,6 +50,9 @@ export default function Navbar() {
     pathname === "/stays" ||
     pathname === "/contact" ||
     pathname === "/join" ||
+    pathname === "/terms-conditions" ||
+    pathname === "/privacy-policy" ||
+    pathname === "/refund-policy" ||
     pathname.startsWith("/destination") ||
     pathname.startsWith("/hotels");
 

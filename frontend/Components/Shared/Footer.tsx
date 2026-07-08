@@ -88,12 +88,12 @@ export default function Footer() {
                 Facebook
               </a>
               <a
-                href="https://x.com"
+                href="https://youtube.com"
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-white transition-colors"
               >
-                X
+                Youtube
               </a>
             </nav>
           </div>
@@ -135,6 +135,12 @@ export default function Footer() {
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-neutral-300 select-none">
           <p>© {currentYear} Tourvia. All Rights Reserved.</p>
           <div className="flex items-center gap-6">
+            <Link
+              href="/refund-policy"
+              className="hover:text-white transition-colors"
+            >
+              Refund Policy
+            </Link>
             <Link
               href="/privacy-policy"
               className="hover:text-white transition-colors"

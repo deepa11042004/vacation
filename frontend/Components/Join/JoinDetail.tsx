@@ -43,28 +43,28 @@ const TIER_DATA: Record<string, TierGroup> = {
     cards: [
       {
         id: "e1",
-        duration: "25 Years",
+        duration: "20 Years",
         roomType: "Studio Suite",
         emiStarts: "₹29,850/-",
         totalCost: "₹13,50,000/-",
       },
       {
         id: "e2",
-        duration: "20 Years",
+        duration: "15 Years",
         roomType: "Studio Suite",
         emiStarts: "₹26,414/-",
         totalCost: "₹11,65,000/-",
       },
       {
         id: "e3",
-        duration: "15 Years",
+        duration: "10 Years",
         roomType: "Studio Suite",
         emiStarts: "₹22,106/-",
         totalCost: "₹9,75,000/-",
       },
       {
         id: "e4",
-        duration: "10 Years",
+        duration: "5 Years",
         roomType: "Studio Suite",
         emiStarts: "₹28,704/-",
         totalCost: "₹7,40,000/-",
