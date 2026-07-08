@@ -276,7 +276,7 @@ function EditDrawer({ user, onClose, onSaved }: { user: PanelUser; onClose: () =
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <div className="w-[440px] bg-white shadow-2xl flex flex-col overflow-hidden">
+      <div className="w-\[440px\] bg-white shadow-2xl flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <div>
             <h2 className="text-base font-semibold text-slate-800">Edit Panel User</h2>
