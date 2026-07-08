@@ -16,7 +16,7 @@ export default function Footer() {
           {/* Left Column: Main Page Directory */}
           <div className="md:col-span-3 flex flex-col gap-3 text-left md:text-left order-2 md:order-1">
             <h4 className="text-sm font-bold tracking-wider text-white uppercase">
-              Main Page
+              Quick Links
             </h4>
             <nav className="flex flex-col gap-2 text-sm font-medium text-neutral-300">
               <Link href="/" className="hover:text-white transition-colors">
@@ -45,6 +45,12 @@ export default function Footer() {
                 className="hover:text-white transition-colors"
               >
                 Contact
+              </Link>
+              <Link
+                href="/login"
+                className="hover:text-white transition-colors"
+              >
+                Login
               </Link>
             </nav>
           </div>
@@ -88,12 +94,12 @@ export default function Footer() {
                 Facebook
               </a>
               <a
-                href="https://x.com"
+                href="https://youtube.com"
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-white transition-colors"
               >
-                X
+                Youtube
               </a>
             </nav>
           </div>
@@ -129,12 +135,35 @@ export default function Footer() {
             </span>
             <span>123 Expedition Way, Adventure City, NY 10001</span>
           </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-white font-bold uppercase tracking-wider text-xs">
+              Payment
+            </span>
+            <Link
+              href="/"
+              className="hover:text-white transition-colors"
+            >
+              Pay Now (PhonePe)
+            </Link>
+            <Link
+              href="/"
+              className="hover:text-white transition-colors"
+            >
+              Pay Now (PayU)
+            </Link>
+          </div>
         </div>
 
         {/* Bottom Row: Legalities & Metadata Lockup */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-neutral-300 select-none">
           <p>© {currentYear} Tourvia. All Rights Reserved.</p>
           <div className="flex items-center gap-6">
+            <Link
+              href="/refund-policy"
+              className="hover:text-white transition-colors"
+            >
+              Refund Policy
+            </Link>
             <Link
               href="/privacy-policy"
               className="hover:text-white transition-colors"

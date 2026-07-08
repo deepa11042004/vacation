@@ -849,28 +849,39 @@ export default function ClientDetailPage() {
                             </tr>
                             {yearBookings.map(b => (
                               <tr key={b.booking_id} className={`border-b border-slate-100 border-l-4 transition-colors ${
-                                b.status === "CANCELLED" ? "border-l-red-200 bg-slate-50/50 opacity-50" : "border-l-orange-300 bg-orange-50/20 hover:bg-orange-50/40"
+                                b.status === "CANCELLED" ? "border-l-red-200 bg-slate-50/50 opacity-50" :
+                                b.status === "CONFIRMED" ? "border-l-orange-500 bg-orange-100 hover:bg-orange-200" :
+                                "border-l-orange-300 bg-orange-50/20 hover:bg-orange-50/40"
                               }`}>
                                 <td className="pl-8 pr-4 py-2.5">
-                                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-400 text-sm font-light">↳</span>
+                                  <div className="flex items-center gap-2">
+                                    {b.status === "CONFIRMED" && (
+                                      <span className="px-1.5 py-0.5 rounded bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">Used</span>
+                                    )}
+                                    <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-sm font-light ${
+                                      b.status === "CONFIRMED" ? "bg-orange-200 text-orange-700" :
+                                      "bg-orange-100 text-orange-400"
+                                    }`}>↳</span>
+                                  </div>
                                 </td>
                                 <td className="px-4 py-2.5 text-slate-600">
                                   <span className="font-medium text-xs">{fmtDate(b.check_in)}</span>
                                   <span className="text-slate-400 mx-1.5">→</span>
                                   <span className="font-medium text-xs">{fmtDate(b.check_out)}</span>
                                 </td>
-                                <td colSpan={2} className="px-4 py-2.5">
-                                  <span className="text-xs font-medium text-slate-500">{b.hotel_name}</span>
+                                <td className="px-4 py-2.5">
+                                  <span className="text-xs font-medium text-slate-700">{b.hotel_name}</span>
                                   {b.hotel_address && <span className="text-xs text-slate-400 ml-1">· {b.hotel_address}</span>}
                                 </td>
                                 <td className="px-4 py-2.5">
                                   <span className="text-xs font-bold text-orange-600">{b.nights} night{b.nights !== 1 ? "s" : ""}</span>
                                 </td>
+                                <td className="px-4 py-2.5"></td>
                                 <td className="px-4 py-2.5">
                                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                                    b.status === "CONFIRMED"  ? "bg-emerald-50 text-emerald-700" :
-                                    b.status === "COMPLETED"  ? "bg-slate-100 text-slate-600" :
-                                    "bg-red-50 text-red-500"
+                                    b.status === "CONFIRMED"  ? "bg-emerald-100 text-emerald-700" :
+                                    b.status === "COMPLETED"  ? "bg-slate-200 text-slate-700" :
+                                    "bg-red-100 text-red-600"
                                   }`}>{b.status}</span>
                                 </td>
                               </tr>
@@ -892,13 +903,7 @@ export default function ClientDetailPage() {
                 <p className="text-slate-500 font-medium text-sm">No membership found</p>
               </div>
             );
-            if (!membership.amc) return (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <Wrench className="w-10 h-10 text-slate-200 mb-3" />
-                <p className="text-slate-600 font-medium text-sm">No AMC configured</p>
-                <p className="text-slate-400 text-xs mt-1">AMC was not set for this membership</p>
-              </div>
-            );
+
             const rows = buildYearRows(membership);
             return (
               <div className="space-y-4">

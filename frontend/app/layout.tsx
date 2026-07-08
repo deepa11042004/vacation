@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Marcellus } from "next/font/google";
 import "./globals.css";
-import PublicShell from "@/Components/PublicShell";
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${marcellus.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <PublicShell>{children}</PublicShell>
+        {children}
       </body>
     </html>
   );
