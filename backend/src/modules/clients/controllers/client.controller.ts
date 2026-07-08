@@ -143,7 +143,7 @@ export class ClientController {
     try {
       await connectDB();
       const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN]);
+      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
 
       const id = this.parseId(idStr);
       const client = await clientService.getClientById(id);

@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { z } from "zod";
-import { ArrowLeft, Loader2, User, CreditCard, FileText, Tag, Plus, X, Zap } from "lucide-react";
+import { ArrowLeft, Loader2, User, CreditCard, FileText, Tag, Plus, X, Zap, Mail } from "lucide-react";
 
 const inp = (err?: string) => `w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${err ? "border-red-500 bg-red-50 text-red-900" : "border-slate-300 bg-white"}`;
 const sel = inp;
@@ -35,52 +35,52 @@ function SectionHeader({ icon: Icon, title, subtitle }: { icon: React.ElementTyp
   );
 }
 
-
 const dateRegex = /^(19|20)\d{2}-\d{2}-\d{2}$/;
+const pincodeRegex = /^\d{6}$/;
 
 const FormSchema = z.object({
   personal: z.object({
-    first_name: z.string().min(2, "First name must be at least 2 characters").max(50, "Too long").regex(/^[A-Za-z\s]+$/, "Only letters are allowed"),
-    middle_name: z.string().max(50).regex(/^[A-Za-z\s]*$/, "Only letters are allowed").optional().or(z.literal("")),
-    last_name: z.string().min(1, "Last name is required").max(50, "Too long").regex(/^[A-Za-z\s]+$/, "Only letters are allowed"),
-    gender: z.enum(["MALE", "FEMALE", "OTHER"]),
-    date_of_birth: z.string().regex(dateRegex, "Invalid year").optional().or(z.literal("")),
-    spouse_name: z.string().max(100).regex(/^[A-Za-z\s]*$/, "Only letters are allowed").optional().or(z.literal("")),
-    country_code: z.string().min(1, "Country code required"),
-    mobile: z.string().min(10, "Mobile must be at least 10 digits").max(15, "Too long").regex(/^\d+$/, "Only numbers are allowed"),
-    alternate_mobile: z.string().max(15).regex(/^\d*$/, "Only numbers are allowed").optional().or(z.literal("")),
-    email: z.string().email("Please enter a valid email address"),
-    marriage_anniversary: z.string().regex(dateRegex, "Invalid year").optional().or(z.literal("")),
+    first_name:           z.string().min(2, "Min 2 characters").max(50, "Too long").regex(/^[A-Za-z\s]+$/, "Only letters allowed"),
+    middle_name:          z.string().max(50, "Too long").regex(/^[A-Za-z\s]*$/, "Only letters allowed").optional().or(z.literal("")),
+    last_name:            z.string().min(1, "Last name is required").max(50, "Too long").regex(/^[A-Za-z\s]+$/, "Only letters allowed"),
+    gender:               z.enum(["MALE", "FEMALE", "OTHER"]),
+    date_of_birth:        z.string().regex(dateRegex, "Invalid date").optional().or(z.literal("")),
+    spouse_name:          z.string().max(100, "Too long").regex(/^[A-Za-z\s]*$/, "Only letters allowed").optional().or(z.literal("")),
+    country_code:         z.string().min(1, "Country code is required").max(10, "Too long"),
+    mobile:               z.string().min(10, "At least 10 digits").max(15, "Too long").regex(/^\d+$/, "Only digits allowed"),
+    alternate_mobile:     z.string().max(15, "Too long").regex(/^\d*$/, "Only digits allowed").optional().or(z.literal("")),
+    email:                z.string().min(1, "Email is required").email("Enter a valid email address"),
+    marriage_anniversary: z.string().regex(dateRegex, "Invalid date").optional().or(z.literal("")),
   }),
   addr: z.object({
-    primary_address: z.string().optional().or(z.literal("")),
-    primary_state: z.string().optional().or(z.literal("")),
-    primary_pincode: z.string().optional().or(z.literal("")),
-    secondary_address: z.string().optional().or(z.literal("")),
-    secondary_state: z.string().optional().or(z.literal("")),
-    secondary_pincode: z.string().optional().or(z.literal("")),
+    primary_address:   z.string().max(500, "Too long").optional().or(z.literal("")),
+    primary_state:     z.string().max(100, "Too long").optional().or(z.literal("")),
+    primary_pincode:   z.string().regex(pincodeRegex, "Must be 6 digits").optional().or(z.literal("")),
+    secondary_address: z.string().max(500, "Too long").optional().or(z.literal("")),
+    secondary_state:   z.string().max(100, "Too long").optional().or(z.literal("")),
+    secondary_pincode: z.string().regex(pincodeRegex, "Must be 6 digits").optional().or(z.literal("")),
   }),
   mem: z.object({
-    package_name: z.string().min(1, "Package name is required"),
-    validity_years: z.coerce.number().min(1, "At least 1 year"),
-    nights_per_year: z.coerce.number().min(0, "Cannot be negative").optional(),
-    sale_date: z.string().min(1, "Sale date is required").regex(dateRegex, "Invalid year"),
-    total_price: z.coerce.number().positive("Total price must be greater than 0"),
-    discount_amount: z.coerce.number().min(0).optional(),
-    down_payment: z.coerce.number().min(0).optional(),
-    payment_mode: z.enum(["CASH","CHEQUE","ONLINE","BANK_TRANSFER","CARD"]),
-    dsa: z.string().optional().or(z.literal("")),
-    reference_by: z.string().optional().or(z.literal("")),
-    transaction_ref: z.string().optional().or(z.literal("")),
-    bank_name: z.string().optional().or(z.literal("")),
-    sales_consultant: z.string().optional().or(z.literal("")),
-    take_over_manager: z.string().optional().or(z.literal("")),
-    remarks: z.string().optional().or(z.literal("")),
+    package_name:      z.string().min(1, "Package name is required").max(200, "Too long"),
+    validity_years:    z.coerce.number().int("Must be a whole number").min(1, "At least 1 year").max(99, "Too long"),
+    nights_per_year:   z.coerce.number().int("Must be a whole number").min(0, "Cannot be negative").optional(),
+    sale_date:         z.string().min(1, "Sale date is required").regex(dateRegex, "Invalid date"),
+    total_price:       z.coerce.number().positive("Total price must be greater than 0"),
+    discount_amount:   z.coerce.number().min(0, "Cannot be negative").optional(),
+    down_payment:      z.coerce.number().min(0, "Cannot be negative").optional(),
+    payment_mode:      z.enum(["CASH", "CHEQUE", "ONLINE", "BANK_TRANSFER", "CARD"], { error: "Select a payment mode" }),
+    dsa:               z.string().optional().or(z.literal("")),
+    reference_by:      z.string().max(100, "Too long").optional().or(z.literal("")),
+    transaction_ref:   z.string().max(100, "Too long").optional().or(z.literal("")),
+    bank_name:         z.string().max(100, "Too long").optional().or(z.literal("")),
+    sales_consultant:  z.string().max(100, "Too long").optional().or(z.literal("")),
+    take_over_manager: z.string().max(100, "Too long").optional().or(z.literal("")),
+    remarks:           z.string().max(1000, "Too long").optional().or(z.literal("")),
   }),
   offers: z.array(z.object({
-    offer_name: z.string().optional().or(z.literal("")),
-    valid_until: z.string().regex(dateRegex, "Invalid year").optional().or(z.literal(""))
-  }))
+    offer_name:  z.string().max(255, "Too long").optional().or(z.literal("")),
+    valid_until: z.string().regex(dateRegex, "Invalid date").optional().or(z.literal("")),
+  })),
 });
 
 const today = new Date().toISOString().slice(0, 10);
@@ -93,9 +93,10 @@ function NewClientForm() {
   const [prefillLoading, setPrefillLoading] = useState(false);
   const [prefillName,    setPrefillName]    = useState("");
 
-  const [saving, setSaving] = useState(false);
-  const [error,  setError]  = useState("");
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [saving,       setSaving]       = useState(false);
+  const [error,        setError]        = useState("");
+  const [fieldErrors,  setFieldErrors]  = useState<Record<string, string>>({});
+  const [sendWelcome,  setSendWelcome]  = useState(true);
 
   const [personal, setPersonal] = useState({
     first_name: "", middle_name: "", last_name: "",
@@ -124,7 +125,6 @@ function NewClientForm() {
     { offer_name: "", valid_until: "" },
   ]);
 
-  // Prefill when activating an existing client
   useEffect(() => {
     if (!activateClientId) return;
     setPrefillLoading(true);
@@ -135,17 +135,17 @@ function NewClientForm() {
       const c = cr?.data;
       if (c) {
         setPersonal({
-          first_name:           c.first_name           ?? "",
-          middle_name:          c.middle_name           ?? "",
-          last_name:            c.last_name             ?? "",
-          gender:               c.gender               ?? "MALE",
-          date_of_birth:        c.date_of_birth        ? c.date_of_birth.slice(0, 10) : "",
-          spouse_name:          c.spouse_name           ?? "",
-          mobile:               c.mobile               ?? "",
-          alternate_mobile:     c.alternate_mobile      ?? "",
-          country_code:         c.country_code          ?? "+91",
-          email:                c.email                ?? "",
-          marriage_anniversary: c.marriage_anniversary ? c.marriage_anniversary.slice(0, 10) : "",
+          first_name:           c.first_name            ?? "",
+          middle_name:          c.middle_name            ?? "",
+          last_name:            c.last_name              ?? "",
+          gender:               c.gender                ?? "MALE",
+          date_of_birth:        c.date_of_birth         ? c.date_of_birth.slice(0, 10) : "",
+          spouse_name:          c.spouse_name            ?? "",
+          mobile:               c.mobile                ?? "",
+          alternate_mobile:     c.alternate_mobile       ?? "",
+          country_code:         c.country_code           ?? "+91",
+          email:                c.email                 ?? "",
+          marriage_anniversary: c.marriage_anniversary  ? c.marriage_anniversary.slice(0, 10) : "",
         });
         setPrefillName(`${c.first_name ?? ""} ${c.last_name ?? ""}`.trim());
       }
@@ -163,7 +163,7 @@ function NewClientForm() {
     }).finally(() => setPrefillLoading(false));
   }, [activateClientId]);
 
-  function addOffer() { setOffers(o => [...o, { offer_name: "", valid_until: "" }]); }
+  function addOffer()    { setOffers(o => [...o, { offer_name: "", valid_until: "" }]); }
   function removeOffer(i: number) { setOffers(o => o.filter((_, idx) => idx !== i)); }
   function setOffer(i: number, k: "offer_name" | "valid_until", v: string) {
     setOffers(o => o.map((row, idx) => idx === i ? { ...row, [k]: v } : row));
@@ -185,37 +185,45 @@ function NewClientForm() {
     }
   }
 
-  const netPrice    = Math.max(0, Number(mem.total_price || 0) - Number(mem.discount_amount || 0));
-  const outstanding = Math.max(0, netPrice - Number(mem.down_payment || 0));
+  const totalPrice    = Number(mem.total_price  || 0);
+  const discountAmt   = Number(mem.discount_amount || 0);
+  const downPayment   = Number(mem.down_payment || 0);
+  const netPrice      = Math.max(0, totalPrice - discountAmt);
+  const outstanding   = Math.max(0, netPrice - downPayment);
 
   const memPayload = {
     package_name:      mem.package_name,
     validity_years:    Number(mem.validity_years || 1),
     nights_per_year:   Number(mem.nights_per_year || 0),
     sale_date:         mem.sale_date,
-    total_price:       Number(mem.total_price),
-    discount_amount:   Number(mem.discount_amount || 0),
-    down_payment:      Number(mem.down_payment || 0),
+    total_price:       totalPrice,
+    discount_amount:   discountAmt,
+    down_payment:      downPayment,
     payment_mode:      mem.payment_mode,
-    transaction_ref:   mem.transaction_ref || null,
-    bank_name:         mem.bank_name || null,
-    sales_consultant:  mem.sales_consultant || null,
+    transaction_ref:   mem.transaction_ref   || null,
+    bank_name:         mem.bank_name         || null,
+    sales_consultant:  mem.sales_consultant  || null,
     take_over_manager: mem.take_over_manager || null,
-    dsa:               mem.dsa || null,
-    reference_by:      mem.reference_by || null,
-    remarks:           mem.remarks || null,
+    dsa:               mem.dsa               || null,
+    reference_by:      mem.reference_by      || null,
+    remarks:           mem.remarks           || null,
   };
 
   const offersPayload = offers
     .filter(o => o.offer_name.trim())
     .map(o => ({ offer_name: o.offer_name.trim(), valid_until: o.valid_until || null }));
 
+  async function sendWelcomeMail(clientId: number) {
+    const clientName = [personal.first_name, personal.last_name].filter(Boolean).join(" ");
+    const subject  = `Welcome to Peltown Vacations, ${clientName}!`;
+    const bodyText = `Dear ${clientName},\n\nWelcome to the Peltown Vacations family! We are delighted to have you as a valued member.\n\nYour membership has been successfully activated. Our team is here to assist you in making the most of your vacation experiences.\n\nIf you have any questions or need assistance, please do not hesitate to reach out to us.\n\nWarm regards,\nPeltown Vacations Team`;
+    await api.post(`/clients/${clientId}/send-welcome-mail`, { subject, bodyText });
+  }
+
   async function handleSubmit() {
-
-
-
     setSaving(true); setError(""); setFieldErrors({});
     try {
+      // Schema validation
       const parsed = FormSchema.safeParse({ personal, addr, mem, offers });
       if (!parsed.success) {
         const errors: Record<string, string> = {};
@@ -228,11 +236,25 @@ function NewClientForm() {
         return;
       }
 
+      // Business logic validation
+      const businessErrors: Record<string, string> = {};
+      if (discountAmt > totalPrice) {
+        businessErrors["mem.discount_amount"] = "Discount cannot exceed total price";
+      }
+      if (downPayment > netPrice) {
+        businessErrors["mem.down_payment"] = "Down payment cannot exceed net price after discount";
+      }
+      if (Object.keys(businessErrors).length > 0) {
+        setFieldErrors(businessErrors);
+        setError("Please fix the validation errors in the form before submitting.");
+        setSaving(false);
+        return;
+      }
+
       if (activateClientId) {
-        // ── Activation flow: existing client ────────────────────────
+        const clientId = Number(activateClientId);
         const clientPayload: Record<string, string> = { status: "ACTIVE" };
         Object.entries(personal).forEach(([k, v]) => { if (v) clientPayload[k] = v; });
-
         await api.put(`/clients/${activateClientId}`, clientPayload);
 
         const hasAddress = addr.primary_address || addr.primary_state || addr.primary_pincode;
@@ -240,7 +262,7 @@ function NewClientForm() {
 
         const memRes = await api.post<{ success: boolean; message?: string }>(
           "/memberships",
-          { ...memPayload, client_id: Number(activateClientId) },
+          { ...memPayload, client_id: clientId },
         );
         if (!memRes?.success) throw new Error(memRes?.message ?? "Failed to create membership.");
 
@@ -248,9 +270,12 @@ function NewClientForm() {
           await api.post(`/clients/${activateClientId}/offers`, offer);
         }
 
+        if (sendWelcome && personal.email) {
+          await sendWelcomeMail(clientId).catch(() => {});
+        }
+
         router.push(`/admin/clients/${activateClientId}`);
       } else {
-        // ── New client onboarding flow ───────────────────────────────
         const clientPayload: Record<string, string> = {};
         Object.entries(personal).forEach(([k, v]) => { if (v) clientPayload[k] = v; });
 
@@ -262,7 +287,13 @@ function NewClientForm() {
           { client: clientPayload, address: addrPayload, membership: memPayload, offers: offersPayload },
         );
         if (!res?.success) throw new Error(res?.message ?? "Onboarding failed.");
-        router.push(`/admin/clients/${res.data?.client_id}`);
+
+        const newClientId = res.data?.client_id;
+        if (sendWelcome && personal.email && newClientId) {
+          await sendWelcomeMail(newClientId).catch(() => {});
+        }
+
+        router.push(`/admin/clients/${newClientId}`);
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong. Nothing was saved.");
@@ -296,7 +327,6 @@ function NewClientForm() {
         </div>
       </div>
 
-      {/* Activation banner */}
       {activateClientId && prefillName && (
         <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           <Zap className="w-4 h-4 text-amber-600 shrink-0" />
@@ -334,14 +364,14 @@ function NewClientForm() {
             <input className={inp(fieldErrors["personal.spouse_name"])} value={personal.spouse_name} onChange={e => setP("spouse_name", e.target.value)} placeholder="Spouse name" />
           </Field>
 
-          <Field error={fieldErrors["personal.country_code"]} label="Country Code">
+          <Field error={fieldErrors["personal.country_code"]} label="Country Code" required>
             <input className={inp(fieldErrors["personal.country_code"])} value={personal.country_code} onChange={e => setP("country_code", e.target.value)} placeholder="+91" />
           </Field>
           <Field error={fieldErrors["personal.mobile"]} label="Mobile" required>
-            <input className={inp(fieldErrors["personal.mobile"])} value={personal.mobile} onChange={e => setP("mobile", e.target.value)} placeholder="Primary mobile" />
+            <input className={inp(fieldErrors["personal.mobile"])} value={personal.mobile} onChange={e => setP("mobile", e.target.value.replace(/\D/g, ""))} placeholder="10-digit mobile" maxLength={15} />
           </Field>
           <Field error={fieldErrors["personal.alternate_mobile"]} label="Alternate Mobile">
-            <input className={inp(fieldErrors["personal.alternate_mobile"])} value={personal.alternate_mobile} onChange={e => setP("alternate_mobile", e.target.value)} placeholder="Secondary mobile" />
+            <input className={inp(fieldErrors["personal.alternate_mobile"])} value={personal.alternate_mobile} onChange={e => setP("alternate_mobile", e.target.value.replace(/\D/g, ""))} placeholder="Alternate mobile" maxLength={15} />
           </Field>
 
           <div className="col-span-2">
@@ -365,7 +395,7 @@ function NewClientForm() {
               <input className={inp(fieldErrors["addr.primary_state"])} value={addr.primary_state} onChange={e => setA("primary_state", e.target.value)} placeholder="State" />
             </Field>
             <Field error={fieldErrors["addr.primary_pincode"]} label="Pin Code">
-              <input className={inp(fieldErrors["addr.primary_pincode"])} value={addr.primary_pincode} onChange={e => setA("primary_pincode", e.target.value)} placeholder="Pin code" />
+              <input className={inp(fieldErrors["addr.primary_pincode"])} value={addr.primary_pincode} onChange={e => setA("primary_pincode", e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="6-digit pin code" maxLength={6} />
             </Field>
           </div>
 
@@ -384,7 +414,7 @@ function NewClientForm() {
                 <input className={inp(fieldErrors["addr.secondary_state"])} value={addr.secondary_state} onChange={e => setA("secondary_state", e.target.value)} placeholder="State" />
               </Field>
               <Field error={fieldErrors["addr.secondary_pincode"]} label="Pin Code">
-                <input className={inp(fieldErrors["addr.secondary_pincode"])} value={addr.secondary_pincode} onChange={e => setA("secondary_pincode", e.target.value)} placeholder="Pin code" />
+                <input className={inp(fieldErrors["addr.secondary_pincode"])} value={addr.secondary_pincode} onChange={e => setA("secondary_pincode", e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="6-digit pin code" maxLength={6} />
               </Field>
             </div>
           )}
@@ -401,8 +431,8 @@ function NewClientForm() {
               <input className={inp(fieldErrors["mem.package_name"])} value={mem.package_name} onChange={e => setM("package_name", e.target.value)} placeholder="e.g. Gold Package, Silver 3 Year…" />
             </Field>
           </div>
-          <Field error={fieldErrors["mem.validity_years"]} label="Validity (Years)">
-            <input type="number" min="1" className={inp(fieldErrors["mem.validity_years"])} value={mem.validity_years} onChange={e => setM("validity_years", e.target.value)} />
+          <Field error={fieldErrors["mem.validity_years"]} label="Validity (Years)" required>
+            <input type="number" min="1" max="99" className={inp(fieldErrors["mem.validity_years"])} value={mem.validity_years} onChange={e => setM("validity_years", e.target.value)} />
           </Field>
 
           <Field error={fieldErrors["mem.nights_per_year"]} label="Nights Per Year">
@@ -414,7 +444,7 @@ function NewClientForm() {
           <div />
 
           <Field error={fieldErrors["mem.total_price"]} label="Total Price (₹)" required>
-            <input type="number" min="0" className={inp(fieldErrors["mem.total_price"])} value={mem.total_price} onChange={e => setM("total_price", e.target.value)} />
+            <input type="number" min="1" className={inp(fieldErrors["mem.total_price"])} value={mem.total_price} onChange={e => setM("total_price", e.target.value)} placeholder="e.g. 150000" />
           </Field>
           <Field error={fieldErrors["mem.discount_amount"]} label="Discount (₹)">
             <input type="number" min="0" className={inp(fieldErrors["mem.discount_amount"])} value={mem.discount_amount} onChange={e => setM("discount_amount", e.target.value)} />
@@ -425,7 +455,7 @@ function NewClientForm() {
 
           <Field error={fieldErrors["mem.payment_mode"]} label="Payment Mode" required>
             <select className={sel(fieldErrors["mem.payment_mode"])} value={mem.payment_mode} onChange={e => setM("payment_mode", e.target.value)}>
-              {["CASH","CHEQUE","ONLINE","BANK_TRANSFER","CARD"].map(m => (
+              {["CASH", "CHEQUE", "ONLINE", "BANK_TRANSFER", "CARD"].map(m => (
                 <option key={m} value={m}>{m.replace("_", " ")}</option>
               ))}
             </select>
@@ -438,10 +468,10 @@ function NewClientForm() {
               <option value="OTHER">Other</option>
             </select>
           </Field>
-
           <Field error={fieldErrors["mem.reference_by"]} label="Reference By">
             <input className={inp(fieldErrors["mem.reference_by"])} value={mem.reference_by} onChange={e => setM("reference_by", e.target.value)} placeholder="Referred by" />
           </Field>
+
           <Field error={fieldErrors["mem.transaction_ref"]} label="Transaction Ref / Cheque No.">
             <input className={inp(fieldErrors["mem.transaction_ref"])} value={mem.transaction_ref} onChange={e => setM("transaction_ref", e.target.value)} placeholder="Ref / cheque number" />
           </Field>
@@ -454,7 +484,7 @@ function NewClientForm() {
           <div className="mt-4 flex gap-4 bg-blue-50 rounded-xl p-4">
             <div className="flex-1 text-center border-r border-blue-200">
               <p className="text-xs text-blue-600 font-medium">Total Price</p>
-              <p className="text-lg font-bold text-blue-800 mt-0.5">₹{Number(mem.total_price).toLocaleString()}</p>
+              <p className="text-lg font-bold text-blue-800 mt-0.5">₹{totalPrice.toLocaleString()}</p>
             </div>
             <div className="flex-1 text-center border-r border-blue-200">
               <p className="text-xs text-blue-600 font-medium">Net Price</p>
@@ -462,11 +492,11 @@ function NewClientForm() {
             </div>
             <div className="flex-1 text-center border-r border-blue-200">
               <p className="text-xs text-blue-600 font-medium">Down Payment</p>
-              <p className="text-lg font-bold text-blue-800 mt-0.5">₹{Number(mem.down_payment || 0).toLocaleString()}</p>
+              <p className="text-lg font-bold text-blue-800 mt-0.5">₹{downPayment.toLocaleString()}</p>
             </div>
             <div className="flex-1 text-center">
               <p className="text-xs text-blue-600 font-medium">Outstanding</p>
-              <p className="text-lg font-bold text-blue-800 mt-0.5">₹{outstanding.toLocaleString()}</p>
+              <p className={`text-lg font-bold mt-0.5 ${outstanding > 0 ? "text-red-600" : "text-green-600"}`}>₹{outstanding.toLocaleString()}</p>
             </div>
           </div>
         )}
@@ -499,9 +529,15 @@ function NewClientForm() {
             <span />
           </div>
           {offers.map((row, i) => (
-            <div key={i} className="grid grid-cols-[1fr_180px_36px] gap-3 items-center">
-              <input className={inp(fieldErrors[`offers.${i}.offer_name`])} value={row.offer_name} onChange={e => setOffer(i, "offer_name", e.target.value)} placeholder="e.g. Free Room Upgrade…" />
-              <input type="date" className={inp(fieldErrors[`offers.${i}.valid_until`])} value={row.valid_until} onChange={e => setOffer(i, "valid_until", e.target.value)} />
+            <div key={i} className="grid grid-cols-[1fr_180px_36px] gap-3 items-start">
+              <div>
+                <input className={inp(fieldErrors[`offers.${i}.offer_name`])} value={row.offer_name} onChange={e => setOffer(i, "offer_name", e.target.value)} placeholder="e.g. Free Room Upgrade…" />
+                {fieldErrors[`offers.${i}.offer_name`] && <p className="mt-1 text-[11px] font-semibold text-red-500">{fieldErrors[`offers.${i}.offer_name`]}</p>}
+              </div>
+              <div>
+                <input type="date" className={inp(fieldErrors[`offers.${i}.valid_until`])} value={row.valid_until} onChange={e => setOffer(i, "valid_until", e.target.value)} />
+                {fieldErrors[`offers.${i}.valid_until`] && <p className="mt-1 text-[11px] font-semibold text-red-500">{fieldErrors[`offers.${i}.valid_until`]}</p>}
+              </div>
               <button type="button" onClick={() => removeOffer(i)} disabled={offers.length === 1}
                 className="flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                 <X className="w-4 h-4" />
@@ -515,7 +551,7 @@ function NewClientForm() {
         </button>
       </div>
 
-      {/* ── Summary ──────────────────────────────────────────────── */}
+      {/* ── Section 4: Summary ──────────────────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <SectionHeader icon={FileText} title="Summary" subtitle="Review before activating membership" />
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
@@ -551,8 +587,31 @@ function NewClientForm() {
           </div>
           <div className="flex justify-between py-1 border-b border-slate-100">
             <span className="text-slate-500">Outstanding</span>
-            <span className="font-semibold text-red-600">₹{outstanding.toLocaleString()}</span>
+            <span className={`font-semibold ${outstanding > 0 ? "text-red-600" : "text-green-600"}`}>₹{outstanding.toLocaleString()}</span>
           </div>
+        </div>
+
+        {/* Welcome email checkbox */}
+        <div className="mt-5 pt-4 border-t border-slate-100">
+          <label className="flex items-start gap-3 cursor-pointer select-none group">
+            <input
+              type="checkbox"
+              checked={sendWelcome}
+              onChange={e => setSendWelcome(e.target.checked)}
+              className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-slate-400" />
+                <span className="text-sm font-medium text-slate-700">Send welcome email to client</span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {personal.email
+                  ? `A welcome message will be sent to ${personal.email} after onboarding.`
+                  : "No email address provided — welcome email will be skipped."}
+              </p>
+            </div>
+          </label>
         </div>
       </div>
 
