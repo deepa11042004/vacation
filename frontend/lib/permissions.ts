@@ -7,11 +7,11 @@ export interface SectionDef {
 
 export const SECTIONS: SectionDef[] = [
   { key: 'dashboard',        label: 'Dashboard',           href: '/admin/dashboard' },
-  { key: 'create_client',    label: 'Create New Client',   href: '/admin/clients/create' },
+
   { key: 'clients',          label: 'All Clients Details', href: '/admin/clients' },
   { key: 'create_invoice',   label: 'Create New Invoice',  href: '/admin/create-invoice' },
   { key: 'invoices',         label: 'All Invoices',        href: '/admin/invoices' },
-  { key: 'packages',         label: 'Packages',            href: '/admin/packages' },
+
   { key: 'hotels',           label: 'Hotels',              href: '/admin/hotels' },
   { key: 'locations',        label: 'Locations',           href: '/admin/locations' },
   { key: 'email_template',   label: 'Email Template',      href: '/admin/settings/email-template' },
@@ -28,7 +28,7 @@ const ROUTE_MAP: { prefix: string; section: string }[] = [
   { prefix: '/admin/clients',                 section: 'clients' },
   { prefix: '/admin/create-invoice',          section: 'create_invoice' },
   { prefix: '/admin/invoices',                section: 'invoices' },
-  { prefix: '/admin/packages',                section: 'packages' },
+
   { prefix: '/admin/hotels',                  section: 'hotels' },
   { prefix: '/admin/locations',               section: 'locations' },
   { prefix: '/admin/dashboard',               section: 'dashboard' },

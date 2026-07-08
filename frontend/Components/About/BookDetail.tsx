@@ -82,11 +82,11 @@ export default function BookingDetail() {
             className="mb-5"
           />
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-3xl text-3xl font-bold leading-[1.1] tracking-tight text-black md:text-6xl">
+            <h2 className="max-w-3xl text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight text-black">
               Travel destinations <br />
               across the globe.
             </h2>
-            <CtaButton text="Explore Packages" variant="white" size="md" />
+            <CtaButton text="Explore Packages" variant="white" size="md" className="self-start" />
           </div>
         </div>
 
