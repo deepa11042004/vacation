@@ -33,7 +33,7 @@ export default function Topbar() {
   }, []);
 
   return (
-    <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
+    <header className="print:hidden h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
       <h1 className="text-slate-800 font-bold text-base">
         {getTitle(pathname)}
       </h1>
