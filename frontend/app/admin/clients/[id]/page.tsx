@@ -471,14 +471,14 @@ export default function ClientDetailPage() {
         card_number: membership?.membership_number || "",
         email: client.email,
         phone: client.mobile,
-        address: address ? [address.address_line1, address.city, address.state, address.country].filter(Boolean).join(", ") : "",
+        address: address ? [address.primary_address, address.primary_state, address.primary_pincode].filter(Boolean).join(", ") : "",
         payment_mode: lastPayment?.payment_mode || "CASH",
         payment_type: "Cash",
         transaction_id: lastPayment?.transaction_id || "",
         bank: lastPayment?.bank_name || "",
         amount: String(totalPaid),
         description: "Holiday Package (Sheet Attached For Details)",
-        state: address?.state || "",
+        state: address?.primary_state || "",
         invoice_type: "invoice"
       };
 
