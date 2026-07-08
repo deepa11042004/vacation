@@ -83,4 +83,18 @@ export class InvoiceController {
       return errorHandler(error);
     }
   }
+
+  static async restore(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN]);
+
+      const invoice_id = InvoiceController.parseId(idStr);
+      await invoiceService.restoreInvoice(invoice_id);
+      return NextResponse.json(ResponseUtil.success('Invoice restored', null));
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
 }
