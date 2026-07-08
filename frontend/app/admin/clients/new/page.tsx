@@ -65,10 +65,9 @@ const FormSchema = z.object({
     validity_years: z.coerce.number().min(1, "At least 1 year"),
     nights_per_year: z.coerce.number().min(0, "Cannot be negative").optional(),
     sale_date: z.string().min(1, "Sale date is required").regex(dateRegex, "Invalid year"),
-    total_price: z.coerce.number().min(0, "Price must be >= 0"),
+    total_price: z.coerce.number().positive("Total price must be greater than 0"),
     discount_amount: z.coerce.number().min(0).optional(),
     down_payment: z.coerce.number().min(0).optional(),
-    amc: z.coerce.number().min(0).optional(),
     payment_mode: z.enum(["CASH","CHEQUE","ONLINE","BANK_TRANSFER","CARD"]),
     dsa: z.string().optional().or(z.literal("")),
     reference_by: z.string().optional().or(z.literal("")),
@@ -114,7 +113,7 @@ function NewClientForm() {
   const [mem, setMem] = useState({
     package_name: "", validity_years: "1", nights_per_year: "0",
     sale_date: today,
-    total_price: "", discount_amount: "0", down_payment: "0", amc: "",
+    total_price: "", discount_amount: "0", down_payment: "0",
     payment_mode: "CASH",
     sales_consultant: "", take_over_manager: "",
     dsa: "", reference_by: "", remarks: "",
@@ -197,7 +196,6 @@ function NewClientForm() {
     total_price:       Number(mem.total_price),
     discount_amount:   Number(mem.discount_amount || 0),
     down_payment:      Number(mem.down_payment || 0),
-    amc:               mem.amc ? Number(mem.amc) : null,
     payment_mode:      mem.payment_mode,
     transaction_ref:   mem.transaction_ref || null,
     bank_name:         mem.bank_name || null,
@@ -221,7 +219,7 @@ function NewClientForm() {
       const parsed = FormSchema.safeParse({ personal, addr, mem, offers });
       if (!parsed.success) {
         const errors: Record<string, string> = {};
-        parsed.error.errors.forEach(e => {
+        parsed.error.issues.forEach(e => {
           if (e.path.length > 0) errors[e.path.join(".")] = e.message;
         });
         setFieldErrors(errors);
@@ -425,9 +423,6 @@ function NewClientForm() {
             <input type="number" min="0" className={inp(fieldErrors["mem.down_payment"])} value={mem.down_payment} onChange={e => setM("down_payment", e.target.value)} />
           </Field>
 
-          <Field error={fieldErrors["mem.amc"]} label="AMC / Annual Maintenance Charge (₹)">
-            <input type="number" min="0" className={inp(fieldErrors["mem.amc"])} value={mem.amc} onChange={e => setM("amc", e.target.value)} placeholder="0" />
-          </Field>
           <Field error={fieldErrors["mem.payment_mode"]} label="Payment Mode" required>
             <select className={sel(fieldErrors["mem.payment_mode"])} value={mem.payment_mode} onChange={e => setM("payment_mode", e.target.value)}>
               {["CASH","CHEQUE","ONLINE","BANK_TRANSFER","CARD"].map(m => (
@@ -505,8 +500,8 @@ function NewClientForm() {
           </div>
           {offers.map((row, i) => (
             <div key={i} className="grid grid-cols-[1fr_180px_36px] gap-3 items-center">
-              <input className={inp(fieldErrors["mem.remarks"])} value={row.offer_name} onChange={e => setOffer(i, "offer_name", e.target.value)} placeholder="e.g. Free Room Upgrade…" />
-              <input type="date" className={inp(fieldErrors["mem.remarks"])} value={row.valid_until} onChange={e => setOffer(i, "valid_until", e.target.value)} />
+              <input className={inp(fieldErrors[`offers.${i}.offer_name`])} value={row.offer_name} onChange={e => setOffer(i, "offer_name", e.target.value)} placeholder="e.g. Free Room Upgrade…" />
+              <input type="date" className={inp(fieldErrors[`offers.${i}.valid_until`])} value={row.valid_until} onChange={e => setOffer(i, "valid_until", e.target.value)} />
               <button type="button" onClick={() => removeOffer(i)} disabled={offers.length === 1}
                 className="flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                 <X className="w-4 h-4" />
