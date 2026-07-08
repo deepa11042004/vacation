@@ -3,18 +3,20 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
+import { z } from "zod";
 import { ArrowLeft, Loader2, User, CreditCard, FileText, Tag, Plus, X, Zap } from "lucide-react";
 
-const inp = "w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white";
+const inp = (err?: string) => `w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${err ? "border-red-500 bg-red-50 text-red-900" : "border-slate-300 bg-white"}`;
 const sel = inp;
 
-function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+function Field({ label, required, error, children }: { label: string; required?: boolean; error?: string; children: React.ReactNode }) {
   return (
     <div>
       <label className="block text-xs font-semibold text-slate-600 mb-1.5">
         {label}{required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       {children}
+      {error && <p className="mt-1 text-[11px] font-semibold text-red-500">{error}</p>}
     </div>
   );
 }
@@ -33,6 +35,55 @@ function SectionHeader({ icon: Icon, title, subtitle }: { icon: React.ElementTyp
   );
 }
 
+
+const dateRegex = /^(19|20)\d{2}-\d{2}-\d{2}$/;
+
+const FormSchema = z.object({
+  personal: z.object({
+    first_name: z.string().min(2, "First name must be at least 2 characters").max(50, "Too long").regex(/^[A-Za-z\s]+$/, "Only letters are allowed"),
+    middle_name: z.string().max(50).regex(/^[A-Za-z\s]*$/, "Only letters are allowed").optional().or(z.literal("")),
+    last_name: z.string().min(1, "Last name is required").max(50, "Too long").regex(/^[A-Za-z\s]+$/, "Only letters are allowed"),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"]),
+    date_of_birth: z.string().regex(dateRegex, "Invalid year").optional().or(z.literal("")),
+    spouse_name: z.string().max(100).regex(/^[A-Za-z\s]*$/, "Only letters are allowed").optional().or(z.literal("")),
+    country_code: z.string().min(1, "Country code required"),
+    mobile: z.string().min(10, "Mobile must be at least 10 digits").max(15, "Too long").regex(/^\d+$/, "Only numbers are allowed"),
+    alternate_mobile: z.string().max(15).regex(/^\d*$/, "Only numbers are allowed").optional().or(z.literal("")),
+    email: z.string().email("Please enter a valid email address"),
+    marriage_anniversary: z.string().regex(dateRegex, "Invalid year").optional().or(z.literal("")),
+  }),
+  addr: z.object({
+    primary_address: z.string().optional().or(z.literal("")),
+    primary_state: z.string().optional().or(z.literal("")),
+    primary_pincode: z.string().optional().or(z.literal("")),
+    secondary_address: z.string().optional().or(z.literal("")),
+    secondary_state: z.string().optional().or(z.literal("")),
+    secondary_pincode: z.string().optional().or(z.literal("")),
+  }),
+  mem: z.object({
+    package_name: z.string().min(1, "Package name is required"),
+    validity_years: z.coerce.number().min(1, "At least 1 year"),
+    nights_per_year: z.coerce.number().min(0, "Cannot be negative").optional(),
+    sale_date: z.string().min(1, "Sale date is required").regex(dateRegex, "Invalid year"),
+    total_price: z.coerce.number().min(0, "Price must be >= 0"),
+    discount_amount: z.coerce.number().min(0).optional(),
+    down_payment: z.coerce.number().min(0).optional(),
+    amc: z.coerce.number().min(0).optional(),
+    payment_mode: z.enum(["CASH","CHEQUE","ONLINE","BANK_TRANSFER","CARD"]),
+    dsa: z.string().optional().or(z.literal("")),
+    reference_by: z.string().optional().or(z.literal("")),
+    transaction_ref: z.string().optional().or(z.literal("")),
+    bank_name: z.string().optional().or(z.literal("")),
+    sales_consultant: z.string().optional().or(z.literal("")),
+    take_over_manager: z.string().optional().or(z.literal("")),
+    remarks: z.string().optional().or(z.literal("")),
+  }),
+  offers: z.array(z.object({
+    offer_name: z.string().optional().or(z.literal("")),
+    valid_until: z.string().regex(dateRegex, "Invalid year").optional().or(z.literal(""))
+  }))
+});
+
 const today = new Date().toISOString().slice(0, 10);
 
 function NewClientForm() {
@@ -45,6 +96,7 @@ function NewClientForm() {
 
   const [saving, setSaving] = useState(false);
   const [error,  setError]  = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [personal, setPersonal] = useState({
     first_name: "", middle_name: "", last_name: "",
@@ -161,15 +213,23 @@ function NewClientForm() {
     .map(o => ({ offer_name: o.offer_name.trim(), valid_until: o.valid_until || null }));
 
   async function handleSubmit() {
-    if (!personal.first_name || !personal.last_name || !personal.mobile || !personal.email || !personal.gender) {
-      setError("First name, last name, mobile, email and gender are required."); return;
-    }
-    if (!mem.package_name || !mem.sale_date || !mem.total_price) {
-      setError("Package name, sale date and total price are required."); return;
-    }
 
-    setSaving(true); setError("");
+
+
+    setSaving(true); setError(""); setFieldErrors({});
     try {
+      const parsed = FormSchema.safeParse({ personal, addr, mem, offers });
+      if (!parsed.success) {
+        const errors: Record<string, string> = {};
+        parsed.error.errors.forEach(e => {
+          if (e.path.length > 0) errors[e.path.join(".")] = e.message;
+        });
+        setFieldErrors(errors);
+        setError("Please fix the validation errors in the form before submitting.");
+        setSaving(false);
+        return;
+      }
+
       if (activateClientId) {
         // ── Activation flow: existing client ────────────────────────
         const clientPayload: Record<string, string> = { status: "ACTIVE" };
@@ -252,47 +312,47 @@ function NewClientForm() {
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <SectionHeader icon={User} title="Personal Details" subtitle="Client's contact and identity information" />
         <div className="grid grid-cols-3 gap-4">
-          <Field label="First Name" required>
-            <input className={inp} value={personal.first_name} onChange={e => setP("first_name", e.target.value)} placeholder="First name" />
+          <Field error={fieldErrors["personal.first_name"]} label="First Name" required>
+            <input className={inp(fieldErrors["personal.first_name"])} value={personal.first_name} onChange={e => setP("first_name", e.target.value)} placeholder="First name" />
           </Field>
-          <Field label="Middle Name">
-            <input className={inp} value={personal.middle_name} onChange={e => setP("middle_name", e.target.value)} placeholder="Middle name" />
+          <Field error={fieldErrors["personal.middle_name"]} label="Middle Name">
+            <input className={inp(fieldErrors["personal.middle_name"])} value={personal.middle_name} onChange={e => setP("middle_name", e.target.value)} placeholder="Middle name" />
           </Field>
-          <Field label="Last Name" required>
-            <input className={inp} value={personal.last_name} onChange={e => setP("last_name", e.target.value)} placeholder="Last name" />
+          <Field error={fieldErrors["personal.last_name"]} label="Last Name" required>
+            <input className={inp(fieldErrors["personal.last_name"])} value={personal.last_name} onChange={e => setP("last_name", e.target.value)} placeholder="Last name" />
           </Field>
 
-          <Field label="Gender" required>
-            <select className={sel} value={personal.gender} onChange={e => setP("gender", e.target.value)}>
+          <Field error={fieldErrors["personal.gender"]} label="Gender" required>
+            <select className={sel(fieldErrors["personal.gender"])} value={personal.gender} onChange={e => setP("gender", e.target.value)}>
               <option value="MALE">Male</option>
               <option value="FEMALE">Female</option>
               <option value="OTHER">Other</option>
             </select>
           </Field>
-          <Field label="Date of Birth">
-            <input type="date" className={inp} value={personal.date_of_birth} onChange={e => setP("date_of_birth", e.target.value)} />
+          <Field error={fieldErrors["personal.date_of_birth"]} label="Date of Birth">
+            <input type="date" className={inp(fieldErrors["personal.date_of_birth"])} value={personal.date_of_birth} onChange={e => setP("date_of_birth", e.target.value)} />
           </Field>
-          <Field label="Spouse Name">
-            <input className={inp} value={personal.spouse_name} onChange={e => setP("spouse_name", e.target.value)} placeholder="Spouse name" />
+          <Field error={fieldErrors["personal.spouse_name"]} label="Spouse Name">
+            <input className={inp(fieldErrors["personal.spouse_name"])} value={personal.spouse_name} onChange={e => setP("spouse_name", e.target.value)} placeholder="Spouse name" />
           </Field>
 
-          <Field label="Country Code">
-            <input className={inp} value={personal.country_code} onChange={e => setP("country_code", e.target.value)} placeholder="+91" />
+          <Field error={fieldErrors["personal.country_code"]} label="Country Code">
+            <input className={inp(fieldErrors["personal.country_code"])} value={personal.country_code} onChange={e => setP("country_code", e.target.value)} placeholder="+91" />
           </Field>
-          <Field label="Mobile" required>
-            <input className={inp} value={personal.mobile} onChange={e => setP("mobile", e.target.value)} placeholder="Primary mobile" />
+          <Field error={fieldErrors["personal.mobile"]} label="Mobile" required>
+            <input className={inp(fieldErrors["personal.mobile"])} value={personal.mobile} onChange={e => setP("mobile", e.target.value)} placeholder="Primary mobile" />
           </Field>
-          <Field label="Alternate Mobile">
-            <input className={inp} value={personal.alternate_mobile} onChange={e => setP("alternate_mobile", e.target.value)} placeholder="Secondary mobile" />
+          <Field error={fieldErrors["personal.alternate_mobile"]} label="Alternate Mobile">
+            <input className={inp(fieldErrors["personal.alternate_mobile"])} value={personal.alternate_mobile} onChange={e => setP("alternate_mobile", e.target.value)} placeholder="Secondary mobile" />
           </Field>
 
           <div className="col-span-2">
-            <Field label="Email" required>
-              <input type="email" className={inp} value={personal.email} onChange={e => setP("email", e.target.value)} placeholder="Email address" />
+            <Field error={fieldErrors["personal.email"]} label="Email" required>
+              <input type="email" className={inp(fieldErrors["personal.email"])} value={personal.email} onChange={e => setP("email", e.target.value)} placeholder="Email address" />
             </Field>
           </div>
-          <Field label="Marriage Anniversary">
-            <input type="date" className={inp} value={personal.marriage_anniversary} onChange={e => setP("marriage_anniversary", e.target.value)} />
+          <Field error={fieldErrors["personal.marriage_anniversary"]} label="Marriage Anniversary">
+            <input type="date" className={inp(fieldErrors["personal.marriage_anniversary"])} value={personal.marriage_anniversary} onChange={e => setP("marriage_anniversary", e.target.value)} />
           </Field>
         </div>
 
@@ -300,14 +360,14 @@ function NewClientForm() {
         <div className="mt-6 pt-5 border-t border-slate-100">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Address</p>
           <div className="grid grid-cols-3 gap-4">
-            <Field label="Primary Address">
-              <input className={inp} value={addr.primary_address} onChange={e => setA("primary_address", e.target.value)} placeholder="Street / flat / building" />
+            <Field error={fieldErrors["addr.primary_address"]} label="Primary Address">
+              <input className={inp(fieldErrors["addr.primary_address"])} value={addr.primary_address} onChange={e => setA("primary_address", e.target.value)} placeholder="Street / flat / building" />
             </Field>
-            <Field label="State">
-              <input className={inp} value={addr.primary_state} onChange={e => setA("primary_state", e.target.value)} placeholder="State" />
+            <Field error={fieldErrors["addr.primary_state"]} label="State">
+              <input className={inp(fieldErrors["addr.primary_state"])} value={addr.primary_state} onChange={e => setA("primary_state", e.target.value)} placeholder="State" />
             </Field>
-            <Field label="Pin Code">
-              <input className={inp} value={addr.primary_pincode} onChange={e => setA("primary_pincode", e.target.value)} placeholder="Pin code" />
+            <Field error={fieldErrors["addr.primary_pincode"]} label="Pin Code">
+              <input className={inp(fieldErrors["addr.primary_pincode"])} value={addr.primary_pincode} onChange={e => setA("primary_pincode", e.target.value)} placeholder="Pin code" />
             </Field>
           </div>
 
@@ -319,14 +379,14 @@ function NewClientForm() {
 
           {!sameAddress && (
             <div className="grid grid-cols-3 gap-4">
-              <Field label="Secondary Address">
-                <input className={inp} value={addr.secondary_address} onChange={e => setA("secondary_address", e.target.value)} placeholder="Street / flat / building" />
+              <Field error={fieldErrors["addr.secondary_address"]} label="Secondary Address">
+                <input className={inp(fieldErrors["addr.secondary_address"])} value={addr.secondary_address} onChange={e => setA("secondary_address", e.target.value)} placeholder="Street / flat / building" />
               </Field>
-              <Field label="State">
-                <input className={inp} value={addr.secondary_state} onChange={e => setA("secondary_state", e.target.value)} placeholder="State" />
+              <Field error={fieldErrors["addr.secondary_state"]} label="State">
+                <input className={inp(fieldErrors["addr.secondary_state"])} value={addr.secondary_state} onChange={e => setA("secondary_state", e.target.value)} placeholder="State" />
               </Field>
-              <Field label="Pin Code">
-                <input className={inp} value={addr.secondary_pincode} onChange={e => setA("secondary_pincode", e.target.value)} placeholder="Pin code" />
+              <Field error={fieldErrors["addr.secondary_pincode"]} label="Pin Code">
+                <input className={inp(fieldErrors["addr.secondary_pincode"])} value={addr.secondary_pincode} onChange={e => setA("secondary_pincode", e.target.value)} placeholder="Pin code" />
               </Field>
             </div>
           )}
@@ -339,44 +399,44 @@ function NewClientForm() {
 
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2">
-            <Field label="Package Name" required>
-              <input className={inp} value={mem.package_name} onChange={e => setM("package_name", e.target.value)} placeholder="e.g. Gold Package, Silver 3 Year…" />
+            <Field error={fieldErrors["mem.package_name"]} label="Package Name" required>
+              <input className={inp(fieldErrors["mem.package_name"])} value={mem.package_name} onChange={e => setM("package_name", e.target.value)} placeholder="e.g. Gold Package, Silver 3 Year…" />
             </Field>
           </div>
-          <Field label="Validity (Years)">
-            <input type="number" min="1" className={inp} value={mem.validity_years} onChange={e => setM("validity_years", e.target.value)} />
+          <Field error={fieldErrors["mem.validity_years"]} label="Validity (Years)">
+            <input type="number" min="1" className={inp(fieldErrors["mem.validity_years"])} value={mem.validity_years} onChange={e => setM("validity_years", e.target.value)} />
           </Field>
 
-          <Field label="Nights Per Year">
-            <input type="number" min="0" className={inp} value={mem.nights_per_year} onChange={e => setM("nights_per_year", e.target.value)} />
+          <Field error={fieldErrors["mem.nights_per_year"]} label="Nights Per Year">
+            <input type="number" min="0" className={inp(fieldErrors["mem.nights_per_year"])} value={mem.nights_per_year} onChange={e => setM("nights_per_year", e.target.value)} />
           </Field>
-          <Field label="Sale / Joining Date" required>
-            <input type="date" className={inp} value={mem.sale_date} onChange={e => setM("sale_date", e.target.value)} />
+          <Field error={fieldErrors["mem.sale_date"]} label="Sale / Joining Date" required>
+            <input type="date" className={inp(fieldErrors["mem.sale_date"])} value={mem.sale_date} onChange={e => setM("sale_date", e.target.value)} />
           </Field>
           <div />
 
-          <Field label="Total Price (₹)" required>
-            <input type="number" min="0" className={inp} value={mem.total_price} onChange={e => setM("total_price", e.target.value)} />
+          <Field error={fieldErrors["mem.total_price"]} label="Total Price (₹)" required>
+            <input type="number" min="0" className={inp(fieldErrors["mem.total_price"])} value={mem.total_price} onChange={e => setM("total_price", e.target.value)} />
           </Field>
-          <Field label="Discount (₹)">
-            <input type="number" min="0" className={inp} value={mem.discount_amount} onChange={e => setM("discount_amount", e.target.value)} />
+          <Field error={fieldErrors["mem.discount_amount"]} label="Discount (₹)">
+            <input type="number" min="0" className={inp(fieldErrors["mem.discount_amount"])} value={mem.discount_amount} onChange={e => setM("discount_amount", e.target.value)} />
           </Field>
-          <Field label="Down Payment (₹)">
-            <input type="number" min="0" className={inp} value={mem.down_payment} onChange={e => setM("down_payment", e.target.value)} />
+          <Field error={fieldErrors["mem.down_payment"]} label="Down Payment (₹)">
+            <input type="number" min="0" className={inp(fieldErrors["mem.down_payment"])} value={mem.down_payment} onChange={e => setM("down_payment", e.target.value)} />
           </Field>
 
-          <Field label="AMC / Annual Maintenance Charge (₹)">
-            <input type="number" min="0" className={inp} value={mem.amc} onChange={e => setM("amc", e.target.value)} placeholder="0" />
+          <Field error={fieldErrors["mem.amc"]} label="AMC / Annual Maintenance Charge (₹)">
+            <input type="number" min="0" className={inp(fieldErrors["mem.amc"])} value={mem.amc} onChange={e => setM("amc", e.target.value)} placeholder="0" />
           </Field>
-          <Field label="Payment Mode" required>
-            <select className={sel} value={mem.payment_mode} onChange={e => setM("payment_mode", e.target.value)}>
+          <Field error={fieldErrors["mem.payment_mode"]} label="Payment Mode" required>
+            <select className={sel(fieldErrors["mem.payment_mode"])} value={mem.payment_mode} onChange={e => setM("payment_mode", e.target.value)}>
               {["CASH","CHEQUE","ONLINE","BANK_TRANSFER","CARD"].map(m => (
                 <option key={m} value={m}>{m.replace("_", " ")}</option>
               ))}
             </select>
           </Field>
-          <Field label="DSA">
-            <select className={sel} value={mem.dsa} onChange={e => setM("dsa", e.target.value)}>
+          <Field error={fieldErrors["mem.dsa"]} label="DSA">
+            <select className={sel(fieldErrors["mem.dsa"])} value={mem.dsa} onChange={e => setM("dsa", e.target.value)}>
               <option value="">None</option>
               <option value="VENUE">Venue</option>
               <option value="CSDO">CSDO</option>
@@ -384,14 +444,14 @@ function NewClientForm() {
             </select>
           </Field>
 
-          <Field label="Reference By">
-            <input className={inp} value={mem.reference_by} onChange={e => setM("reference_by", e.target.value)} placeholder="Referred by" />
+          <Field error={fieldErrors["mem.reference_by"]} label="Reference By">
+            <input className={inp(fieldErrors["mem.reference_by"])} value={mem.reference_by} onChange={e => setM("reference_by", e.target.value)} placeholder="Referred by" />
           </Field>
-          <Field label="Transaction Ref / Cheque No.">
-            <input className={inp} value={mem.transaction_ref} onChange={e => setM("transaction_ref", e.target.value)} placeholder="Ref / cheque number" />
+          <Field error={fieldErrors["mem.transaction_ref"]} label="Transaction Ref / Cheque No.">
+            <input className={inp(fieldErrors["mem.transaction_ref"])} value={mem.transaction_ref} onChange={e => setM("transaction_ref", e.target.value)} placeholder="Ref / cheque number" />
           </Field>
-          <Field label="Bank Name">
-            <input className={inp} value={mem.bank_name} onChange={e => setM("bank_name", e.target.value)} placeholder="Bank name" />
+          <Field error={fieldErrors["mem.bank_name"]} label="Bank Name">
+            <input className={inp(fieldErrors["mem.bank_name"])} value={mem.bank_name} onChange={e => setM("bank_name", e.target.value)} placeholder="Bank name" />
           </Field>
         </div>
 
@@ -419,15 +479,15 @@ function NewClientForm() {
         <div className="mt-6 pt-5 border-t border-slate-100">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Sales Details</p>
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Sales Consultant">
-              <input className={inp} value={mem.sales_consultant} onChange={e => setM("sales_consultant", e.target.value)} placeholder="Consultant name" />
+            <Field error={fieldErrors["mem.sales_consultant"]} label="Sales Consultant">
+              <input className={inp(fieldErrors["mem.sales_consultant"])} value={mem.sales_consultant} onChange={e => setM("sales_consultant", e.target.value)} placeholder="Consultant name" />
             </Field>
-            <Field label="Take Over Manager">
-              <input className={inp} value={mem.take_over_manager} onChange={e => setM("take_over_manager", e.target.value)} placeholder="Manager name" />
+            <Field error={fieldErrors["mem.take_over_manager"]} label="Take Over Manager">
+              <input className={inp(fieldErrors["mem.take_over_manager"])} value={mem.take_over_manager} onChange={e => setM("take_over_manager", e.target.value)} placeholder="Manager name" />
             </Field>
             <div className="col-span-2">
-              <Field label="Remarks">
-                <textarea rows={2} className={inp} value={mem.remarks} onChange={e => setM("remarks", e.target.value)} placeholder="Membership notes…" />
+              <Field error={fieldErrors["mem.remarks"]} label="Remarks">
+                <textarea rows={2} className={inp(fieldErrors["mem.remarks"])} value={mem.remarks} onChange={e => setM("remarks", e.target.value)} placeholder="Membership notes…" />
               </Field>
             </div>
           </div>
@@ -445,8 +505,8 @@ function NewClientForm() {
           </div>
           {offers.map((row, i) => (
             <div key={i} className="grid grid-cols-[1fr_180px_36px] gap-3 items-center">
-              <input className={inp} value={row.offer_name} onChange={e => setOffer(i, "offer_name", e.target.value)} placeholder="e.g. Free Room Upgrade…" />
-              <input type="date" className={inp} value={row.valid_until} onChange={e => setOffer(i, "valid_until", e.target.value)} />
+              <input className={inp(fieldErrors["mem.remarks"])} value={row.offer_name} onChange={e => setOffer(i, "offer_name", e.target.value)} placeholder="e.g. Free Room Upgrade…" />
+              <input type="date" className={inp(fieldErrors["mem.remarks"])} value={row.valid_until} onChange={e => setOffer(i, "valid_until", e.target.value)} />
               <button type="button" onClick={() => removeOffer(i)} disabled={offers.length === 1}
                 className="flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                 <X className="w-4 h-4" />
