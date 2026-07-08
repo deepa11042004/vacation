@@ -138,4 +138,36 @@ export class ClientController {
       return errorHandler(error);
     }
   }
+
+  static async sendWelcomeMail(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN]);
+
+      const id = this.parseId(idStr);
+      const client = await clientService.getClientById(id);
+      
+      if (!client || !client.email) {
+        throw new AppError('Client not found or client has no email', 400);
+      }
+
+      const body = await req.json();
+      const { subject, bodyText } = body;
+
+      if (!subject || !bodyText) {
+        throw new AppError('Subject and bodyText are required', 400);
+      }
+
+      const { sendCustomEmail } = await import('../../../shared/utils/email.service');
+      await sendCustomEmail(client.email, subject, bodyText);
+
+      return NextResponse.json(
+        ResponseUtil.success('Welcome mail sent successfully', null),
+        { status: 200 }
+      );
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
 }

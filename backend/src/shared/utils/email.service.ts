@@ -117,3 +117,14 @@ export async function sendInvoiceEmail(to: string, data: InvoiceData): Promise<v
     ],
   });
 }
+
+export async function sendCustomEmail(to: string, subject: string, bodyText: string): Promise<void> {
+  const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM || '"Peltown Vacations" <peltowninfra@gmail.com>',
+    to,
+    subject,
+    text: bodyText,
+    html: bodyHtml,
+  });
+}
