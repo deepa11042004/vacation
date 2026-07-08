@@ -162,6 +162,9 @@ export class ClientController {
       const { sendCustomEmail } = await import('../../../shared/utils/email.service');
       await sendCustomEmail(client.email, subject, bodyText);
 
+      const { Client } = await import('../models/Client.model');
+      await Client.update({ is_welcome_mail_sent: true }, { where: { client_id: id } });
+
       return NextResponse.json(
         ResponseUtil.success('Welcome mail sent successfully', null),
         { status: 200 }

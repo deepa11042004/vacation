@@ -8,7 +8,7 @@ import Modal from "@/Components/Admin/Modal";
 import {
   ArrowLeft, Loader2, User, Pencil,
   LayoutList, CalendarDays, Wrench, Tag, CreditCard, PhoneCall, FileCheck,
-  Plus, Trash2, AlertCircle, Hotel, X, Mail,
+  Plus, Trash2, AlertCircle, Hotel, X, Mail, CheckCircle2, XCircle
 } from "lucide-react";
 
 interface Client {
@@ -17,6 +17,7 @@ interface Client {
   gender: string; date_of_birth?: string;
   mobile: string; alternate_mobile?: string; email: string; country_code: string;
   status: string;
+  is_welcome_mail_sent?: boolean;
   marriage_anniversary?: string; spouse_name?: string;
   created_at: string; updated_at?: string;
 }
@@ -424,9 +425,14 @@ export default function ClientDetailPage() {
     setWelcomeMailSending(true);
     setWelcomeMailError("");
     try {
-      await api.post(`/clients/${id}/send-welcome-mail`, welcomeMailForm);
+      const res: any = await api.post(`/clients/${id}/send-welcome-mail`, welcomeMailForm);
+      if (res && res.success === false) {
+        throw new Error(res.message || "Failed to send email");
+      }
       setShowWelcomeMailModal(false);
       setWelcomeMailForm({ subject: "", bodyText: "" });
+      setClient(prev => prev ? { ...prev, is_welcome_mail_sent: true } : null);
+      loadData();
       alert("Welcome mail sent successfully");
     } catch (err: any) {
       setWelcomeMailError(err.message || "Failed to send email");
@@ -701,7 +707,14 @@ export default function ClientDetailPage() {
               <User className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-slate-900 font-bold text-lg leading-tight">{fullName}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-slate-900 font-bold text-lg leading-tight">{fullName}</h2>
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  client.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
+                }`}>
+                  {client.status}
+                </span>
+              </div>
               <p className="text-slate-400 text-sm">{client.email}</p>
               {membership?.membership_number && (
                 <p className="text-xs font-mono text-blue-500 mt-0.5">{membership.membership_number}</p>
@@ -709,21 +722,23 @@ export default function ClientDetailPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => {
-                setWelcomeMailForm({ subject: "Welcome to Peltown Vacations!", bodyText: `Dear ${fullName},\n\nWelcome to Peltown Vacations!\n\nBest regards,\nPeltown Vacations Team` });
-                setWelcomeMailError("");
-                setShowWelcomeMailModal(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
-            >
-              <Mail className="w-3.5 h-3.5" /> Welcome Mail
-            </button>
-            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-              client.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
-            }`}>
-              {client.status}
-            </span>
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={() => {
+                  setWelcomeMailForm({ subject: "Welcome to Peltown Vacations!", bodyText: `Dear ${fullName},\n\nWelcome to Peltown Vacations!\n\nBest regards,\nPeltown Vacations Team` });
+                  setWelcomeMailError("");
+                  setShowWelcomeMailModal(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+              >
+                <Mail className="w-3.5 h-3.5" /> Welcome Mail
+              </button>
+              {client.is_welcome_mail_sent ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 ml-1" />
+              ) : (
+                <XCircle className="w-4 h-4 text-red-500 ml-1" />
+              )}
+            </div>
             <button onClick={openEdit} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-600">
               <Pencil className="w-3 h-3" /> Edit
             </button>
