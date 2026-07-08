@@ -474,7 +474,7 @@ export default function ClientDetailPage() {
         address: address ? [address.primary_address, address.primary_state, address.primary_pincode].filter(Boolean).join(", ") : "",
         payment_mode: lastPayment?.payment_mode || "CASH",
         payment_type: "Cash",
-        transaction_id: lastPayment?.transaction_id || "",
+        transaction_id: lastPayment?.transaction_ref || "",
         bank: lastPayment?.bank_name || "",
         amount: String(totalPaid),
         description: "Holiday Package (Sheet Attached For Details)",
