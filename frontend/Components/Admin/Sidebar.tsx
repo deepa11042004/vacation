@@ -38,7 +38,7 @@ const sections = [
   {
     label: "Catalog",
     items: [
-      { href: "/admin/packages",                  label: "Packages",           icon: Package,         subtitle: null, section: "packages" },
+
       { href: "/admin/hotels",                    label: "Hotels",             icon: Hotel,           subtitle: null, section: "hotels" },
       { href: "/admin/locations",                 label: "Locations",          icon: MapPin,          subtitle: null, section: "locations" },
     ],
