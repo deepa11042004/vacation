@@ -453,6 +453,47 @@ export default function ClientDetailPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, paymentsFetched]);
 
+  const [sendingInvoice, setSendingInvoice] = useState(false);
+
+  async function handleSendInvoice() {
+    if (!client) return;
+    setSendingInvoice(true);
+    try {
+      const activePayments = paymentRecords.filter(p => p.status !== "CANCELLED");
+      const totalAmc = membership ? amcPayments.filter(p => p.is_received).reduce((s, p) => s + Number((p.amount ?? membership.amc) || 0), 0) : 0;
+      const totalPaid = activePayments.reduce((s, p) => s + Number(p.amount), 0) + totalAmc;
+      const lastPayment = activePayments.length > 0 ? activePayments[0] : null;
+
+      const payload = {
+        invoice_no: `INV-${client.client_id}-${Math.floor(1000 + Math.random() * 9000)}`,
+        issue_date: new Date().toISOString().split('T')[0],
+        client_name: [client.first_name, client.last_name].filter(Boolean).join(" "),
+        card_number: membership?.membership_number || "",
+        email: client.email,
+        phone: client.mobile,
+        address: address ? [address.address_line1, address.city, address.state, address.country].filter(Boolean).join(", ") : "",
+        payment_mode: lastPayment?.payment_mode || "CASH",
+        payment_type: "Cash",
+        transaction_id: lastPayment?.transaction_id || "",
+        bank: lastPayment?.bank_name || "",
+        amount: String(totalPaid),
+        description: "Holiday Package (Sheet Attached For Details)",
+        state: address?.state || "",
+        invoice_type: "invoice"
+      };
+
+      const res: any = await api.post(`/clients/${id}/invoice`, payload);
+      if (res && res.success === false) {
+        throw new Error(res.message || "Failed to send invoice");
+      }
+      alert("Invoice sent successfully!");
+    } catch (err: any) {
+      alert(err.message || "Failed to send invoice");
+    } finally {
+      setSendingInvoice(false);
+    }
+  }
+
   useEffect(() => {
     if (tab === "call-recordings" && !callRecordingsFetched) loadCallRecordings();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1134,12 +1175,22 @@ export default function ClientDetailPage() {
               {/* Header */}
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-slate-800">Payment Chart</h3>
-                <button
-                  onClick={() => { setPaymentForm(emptyPaymentForm); setPaymentError(""); setShowPaymentModal(true); }}
-                  className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Plus className="w-4 h-4" /> Add Payment Record
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleSendInvoice}
+                    disabled={sendingInvoice}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 disabled:opacity-60 transition-colors"
+                  >
+                    {sendingInvoice ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                    {sendingInvoice ? "Sending..." : "Send Invoice"}
+                  </button>
+                  <button
+                    onClick={() => { setPaymentForm(emptyPaymentForm); setPaymentError(""); setShowPaymentModal(true); }}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" /> Add Payment Record
+                  </button>
+                </div>
               </div>
 
               {paymentsLoading ? (
