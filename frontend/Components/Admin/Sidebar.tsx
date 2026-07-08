@@ -74,7 +74,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className={`flex flex-col min-h-screen bg-slate-900 shrink-0 transition-all duration-300 ${isCollapsed ? "w-20" : "w-60"}`}>
+    <aside className={`print:hidden flex flex-col min-h-screen bg-slate-900 shrink-0 transition-all duration-300 ${isCollapsed ? "w-20" : "w-60"}`}>
       <div className={`flex items-center px-5 py-5 border-b border-slate-800 ${isCollapsed ? "justify-center" : "justify-between"}`}>
         {!isCollapsed && (
           <div className="flex items-center gap-2">

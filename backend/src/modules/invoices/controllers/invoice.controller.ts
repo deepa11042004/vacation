@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { InvoiceService } from '../services/invoice.service';
+import { sendInvoiceEmail } from '../../../shared/utils/email.service';
 import { ResponseUtil } from '../../../shared/utils/response.util';
 import { errorHandler, AppError } from '../../../shared/middlewares/error.middleware';
 import { connectDB } from '../../../shared/database/sequelize';
@@ -58,6 +59,40 @@ export class InvoiceController {
       const invoice_id = InvoiceController.parseId(idStr);
       await invoiceService.deleteInvoice(invoice_id);
       return NextResponse.json(ResponseUtil.success('Invoice deleted', null));
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
+
+  static async resendEmail(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
+
+      const invoice_id = InvoiceController.parseId(idStr);
+      const invoice = await invoiceService.getInvoiceById(invoice_id);
+      
+      if (!invoice.email) {
+        throw new AppError('Invoice has no email associated with it', 400);
+      }
+      
+      await sendInvoiceEmail(invoice.email, invoice as any);
+      return NextResponse.json(ResponseUtil.success('Invoice email resent', null));
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
+
+  static async restore(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN]);
+
+      const invoice_id = InvoiceController.parseId(idStr);
+      await invoiceService.restoreInvoice(invoice_id);
+      return NextResponse.json(ResponseUtil.success('Invoice restored', null));
     } catch (error) {
       return errorHandler(error);
     }

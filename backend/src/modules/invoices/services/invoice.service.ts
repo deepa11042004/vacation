@@ -37,4 +37,11 @@ export class InvoiceService {
     if (invoice.deleted_at) throw new AppError('Invoice already deleted', 400);
     await this.invoiceRepository.softDelete(invoice_id);
   }
+
+  async restoreInvoice(invoice_id: number) {
+    const invoice = await this.invoiceRepository.findById(invoice_id);
+    if (!invoice) throw new AppError('Invoice not found', 404);
+    if (!invoice.deleted_at) throw new AppError('Invoice is not deleted', 400);
+    await this.invoiceRepository.restore(invoice_id);
+  }
 }

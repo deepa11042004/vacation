@@ -77,6 +77,11 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   @Column(DataType.ENUM(...Object.values(ClientStatus)))
   status!: ClientStatus;
 
+  @Default(false)
+  @AllowNull(false)
+  @Column(DataType.BOOLEAN)
+  is_welcome_mail_sent!: boolean;
+
   @AllowNull(true)
   @Column(DataType.DATEONLY)
   marriage_anniversary?: Date | null;

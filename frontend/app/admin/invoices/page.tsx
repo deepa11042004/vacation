@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Loader2, Search, Eye, Trash2, FileText } from "lucide-react";
+import { Loader2, Search, Eye, Trash2, FileText, RotateCcw } from "lucide-react";
 
 interface Invoice {
   invoice_id: number;
@@ -77,6 +77,21 @@ export default function InvoicesPage() {
       alert("Failed to delete invoice.");
     } finally {
       setDeleting(null);
+    }
+  }
+
+  const [restoring, setRestoring] = useState<number | null>(null);
+
+  async function handleRestore(invoice_id: number) {
+    if (!confirm("Restore this invoice?")) return;
+    setRestoring(invoice_id);
+    try {
+      await api.post(`/invoices/${invoice_id}/restore`, {});
+      await load();
+    } catch {
+      alert("Failed to restore invoice.");
+    } finally {
+      setRestoring(null);
     }
   }
 
@@ -208,7 +223,16 @@ export default function InvoicesPage() {
                             Delete
                           </button>
                         ) : (
-                          <span className="text-xs text-slate-400">—</span>
+                          <button
+                            onClick={() => handleRestore(inv.invoice_id)}
+                            disabled={restoring === inv.invoice_id}
+                            className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-800 text-xs font-medium transition-colors disabled:opacity-50"
+                          >
+                            {restoring === inv.invoice_id
+                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              : <RotateCcw className="w-3.5 h-3.5" />}
+                            Restore
+                          </button>
                         )}
                       </td>
                     </tr>

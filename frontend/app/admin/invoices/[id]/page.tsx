@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { InvoiceTemplate, CompanySettings } from "@/Components/InvoiceTemplate";
-import { ArrowLeft, Loader2, Printer } from "lucide-react";
+import { ArrowLeft, Loader2, Printer, Mail } from "lucide-react";
 
 interface StoredInvoice {
   invoice_id: number;
@@ -46,6 +46,20 @@ export default function InvoiceViewPage() {
   const [co,      setCo]      = useState<CompanySettings>(CO_DEFAULTS);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState("");
+  const [resending, setResending] = useState(false);
+
+  const handleResend = async () => {
+    if (resending) return;
+    setResending(true);
+    try {
+      await api.post(`/invoices/${id}/resend-email`, {});
+      alert("Email resent successfully!");
+    } catch (err: any) {
+      alert(err.message || "Failed to resend email.");
+    } finally {
+      setResending(false);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -127,13 +141,23 @@ export default function InvoiceViewPage() {
             </span>
           )}
         </div>
-        <button
-          onClick={() => window.print()}
-          className="flex items-center gap-2 bg-slate-800 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-slate-900 transition-colors"
-        >
-          <Printer className="w-4 h-4" />
-          Print
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleResend}
+            disabled={resending}
+            className="flex items-center gap-2 bg-blue-50 text-blue-600 text-sm font-medium px-5 py-2 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
+          >
+            {resending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+            Resend Mail
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 bg-slate-800 text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-slate-900 transition-colors"
+          >
+            <Printer className="w-4 h-4" />
+            Print
+          </button>
+        </div>
       </div>
 
       <InvoiceTemplate form={form} isTax={isTax} co={co} />

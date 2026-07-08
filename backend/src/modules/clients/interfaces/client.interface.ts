@@ -13,6 +13,7 @@ export interface IClient {
   country_code: string;
   profile_photo?: string | null;
   status: ClientStatus;
+  is_welcome_mail_sent?: boolean;
   marriage_anniversary?: Date | null;
   spouse_name?: string | null;
   created_by?: number | null;
