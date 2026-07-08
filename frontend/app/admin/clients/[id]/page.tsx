@@ -903,13 +903,7 @@ export default function ClientDetailPage() {
                 <p className="text-slate-500 font-medium text-sm">No membership found</p>
               </div>
             );
-            if (!membership.amc) return (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <Wrench className="w-10 h-10 text-slate-200 mb-3" />
-                <p className="text-slate-600 font-medium text-sm">No AMC configured</p>
-                <p className="text-slate-400 text-xs mt-1">AMC was not set for this membership</p>
-              </div>
-            );
+
             const rows = buildYearRows(membership);
             return (
               <div className="space-y-4">
