@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Minus } from "lucide-react";
+import Badge from "@/UI/Badge";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,21 +27,15 @@ export default function LoginPage() {
       <div className="z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
         {/* Left Side Content */}
         <div className="text-white space-y-6">
-          <div className="flex items-center gap-3 font-marcellus tracking-widest text-lg uppercase mb-8">
-            <span className="font-bold">TOURVIA</span>
-            <span className="font-bold text-white">VACATION</span>
-          </div>
-
-          <h1 className="text-5xl md:text-7xl font-marcellus leading-tight">
-            EXPLORE
-            <br />
-            HORIZONS
+          <Badge text="Tourvia" size="lg" variant="white" icon={Minus} />
+          <h1 className="text-5xl md:text-7xl leading-tight">
+            Your Journey Continues
           </h1>
 
           <div className="space-y-4 pt-4">
             <p className="text-lg font-medium text-white">
-              Where Your Dream Destinations Become Reality. Embark on a journey
-              where every corner of the world is within your reach.
+              Sign in to unlock personalized travel experiences, premium
+              vacation packages, and seamless trip management—all in one place.
             </p>
           </div>
         </div>
@@ -97,7 +92,7 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl transition-colors mt-2 shadow-lg shadow-indigo-500/30"
               >
-                LOGIN
+                SIGN IN
               </button>
             </form>
           </div>
