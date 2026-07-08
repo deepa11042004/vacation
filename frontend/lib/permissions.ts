@@ -7,7 +7,7 @@ export interface SectionDef {
 
 export const SECTIONS: SectionDef[] = [
   { key: 'dashboard',        label: 'Dashboard',           href: '/admin/dashboard' },
-  { key: 'create_client',    label: 'Create New Client',   href: '/admin/clients/create' },
+
   { key: 'clients',          label: 'All Clients Details', href: '/admin/clients' },
   { key: 'create_invoice',   label: 'Create New Invoice',  href: '/admin/create-invoice' },
   { key: 'invoices',         label: 'All Invoices',        href: '/admin/invoices' },

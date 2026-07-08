@@ -29,7 +29,7 @@ const sections = [
   {
     label: "Operations",
     items: [
-      { href: "/admin/clients/create",            label: "Create New Client",  icon: UserPlus,        subtitle: null,                    section: "create_client" },
+
       { href: "/admin/clients",                   label: "All Clients Details", icon: Users,          subtitle: null,                    section: "clients" },
       { href: "/admin/create-invoice",            label: "Create New Invoice", icon: FilePlus,        subtitle: "For existing clients",   section: "create_invoice" },
       { href: "/admin/invoices",                  label: "All Invoices",       icon: ReceiptText,     subtitle: null,                    section: "invoices" },
