@@ -14,4 +14,6 @@ export interface LocationFilterOptions {
   status?: LocationStatus;
   page?: number;
   limit?: number;
+  deleted?: boolean;
+  includeDeleted?: boolean;
 }

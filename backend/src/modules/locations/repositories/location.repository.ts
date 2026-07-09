@@ -24,19 +24,19 @@ export class LocationRepository {
   }
 
   async findAll(filters: LocationFilterOptions = {}): Promise<{ rows: Location[]; count: number }> {
-    const { search, type, status, page = 1, limit = 10 } = filters;
+    const { search, type, status, deleted = false, includeDeleted = false, page = 1, limit = 10 } = filters;
     const cappedLimit = Math.min(limit, MAX_LIMIT);
     const offset = (page - 1) * cappedLimit;
 
     const where: any = {};
 
-    if (type) {
-      where.type = type;
-    }
+    // deleted=true → only soft-deleted rows
+    if (deleted) where.deleted_at = { [Op.ne]: null };
+    // includeDeleted=true → all rows (active + deleted), no extra where clause
+    // default → paranoid: true handles filtering out deleted rows automatically
 
-    if (status) {
-      where.status = status;
-    }
+    if (type) where.type = type;
+    if (status && !deleted && !includeDeleted) where.status = status;
 
     if (search) {
       where[Op.or] = [
@@ -47,6 +47,7 @@ export class LocationRepository {
 
     return await Location.findAndCountAll({
       where,
+      paranoid: !deleted && !includeDeleted,
       limit: cappedLimit,
       offset,
       order: [['created_at', 'DESC']],

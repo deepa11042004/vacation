@@ -31,6 +31,11 @@ export class Location extends Model<ILocation, Partial<ILocation>> implements IL
 
   @Unique
   @AllowNull(false)
+  @Column(DataType.STRING(20))
+  location_code!: string;
+
+  @Unique
+  @AllowNull(false)
   @Column(DataType.STRING(100))
   location_name!: string;
 
@@ -53,6 +58,15 @@ export class Location extends Model<ILocation, Partial<ILocation>> implements IL
   @AllowNull(true)
   @Column(DataType.TEXT)
   description?: string | null;
+
+  @AllowNull(true)
+  @Column(DataType.JSON)
+  famous_sightseens?: string[] | null;
+
+  @Default(false)
+  @AllowNull(false)
+  @Column(DataType.BOOLEAN)
+  is_online!: boolean;
 
   @Default(LocationStatus.ACTIVE)
   @AllowNull(false)

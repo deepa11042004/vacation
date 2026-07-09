@@ -51,10 +51,12 @@ export class LocationController {
       const search = searchParams.get('search') || undefined;
       const type = searchParams.get('type') as LocationType | undefined;
       const status = searchParams.get('status') as LocationStatus | undefined;
+      const deleted = searchParams.get('deleted') === 'true';
+      const includeDeleted = searchParams.get('includeDeleted') === 'true';
       const page = parseInt(searchParams.get('page') || '1', 10);
       const limit = parseInt(searchParams.get('limit') || '10', 10);
 
-      const result = await locationService.getAllLocations({ search, type, status, page, limit });
+      const result = await locationService.getAllLocations({ search, type, status, deleted, includeDeleted, page, limit });
 
       return NextResponse.json(
         ResponseUtil.success('Locations retrieved successfully', result),
