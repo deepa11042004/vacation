@@ -61,13 +61,14 @@ const FormSchema = z.object({
     secondary_pincode: z.string().regex(pincodeRegex, "Must be 6 digits").optional().or(z.literal("")),
   }),
   mem: z.object({
-    package_name:      z.string().min(1, "Package name is required").max(200, "Too long"),
+    package_name:      z.string().max(200, "Too long").optional().or(z.literal("")),
     validity_years:    z.coerce.number().int("Must be a whole number").min(1, "At least 1 year").max(99, "Too long"),
     nights_per_year:   z.coerce.number().int("Must be a whole number").min(0, "Cannot be negative").optional(),
     sale_date:         z.string().min(1, "Sale date is required").regex(dateRegex, "Invalid date"),
     total_price:       z.coerce.number().positive("Total price must be greater than 0"),
     discount_amount:   z.coerce.number().min(0, "Cannot be negative").optional(),
     down_payment:      z.coerce.number().min(0, "Cannot be negative").optional(),
+    amc:               z.coerce.number().min(0, "Cannot be negative").optional(),
     payment_mode:      z.enum(["CASH", "CHEQUE", "ONLINE", "BANK_TRANSFER", "CARD"], { error: "Select a payment mode" }),
     dsa:               z.string().optional().or(z.literal("")),
     reference_by:      z.string().max(100, "Too long").optional().or(z.literal("")),
@@ -114,7 +115,7 @@ function NewClientForm() {
   const [mem, setMem] = useState({
     package_name: "", validity_years: "1", nights_per_year: "0",
     sale_date: today,
-    total_price: "", discount_amount: "0", down_payment: "0",
+    total_price: "", discount_amount: "0", down_payment: "0", amc: "0",
     payment_mode: "CASH",
     sales_consultant: "", take_over_manager: "",
     dsa: "", reference_by: "", remarks: "",
@@ -191,6 +192,8 @@ function NewClientForm() {
   const netPrice      = Math.max(0, totalPrice - discountAmt);
   const outstanding   = Math.max(0, netPrice - downPayment);
 
+  const amcAmount = Number(mem.amc || 0);
+
   const memPayload = {
     package_name:      mem.package_name,
     validity_years:    Number(mem.validity_years || 1),
@@ -199,6 +202,7 @@ function NewClientForm() {
     total_price:       totalPrice,
     discount_amount:   discountAmt,
     down_payment:      downPayment,
+    amc:               amcAmount > 0 ? amcAmount : null,
     payment_mode:      mem.payment_mode,
     transaction_ref:   mem.transaction_ref   || null,
     bank_name:         mem.bank_name         || null,
@@ -427,7 +431,7 @@ function NewClientForm() {
 
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2">
-            <Field error={fieldErrors["mem.package_name"]} label="Package Name" required>
+            <Field error={fieldErrors["mem.package_name"]} label="Package Name">
               <input className={inp(fieldErrors["mem.package_name"])} value={mem.package_name} onChange={e => setM("package_name", e.target.value)} placeholder="e.g. Gold Package, Silver 3 Year…" />
             </Field>
           </div>
@@ -451,6 +455,10 @@ function NewClientForm() {
           </Field>
           <Field error={fieldErrors["mem.down_payment"]} label="Down Payment (₹)">
             <input type="number" min="0" className={inp(fieldErrors["mem.down_payment"])} value={mem.down_payment} onChange={e => setM("down_payment", e.target.value)} />
+          </Field>
+
+          <Field error={fieldErrors["mem.amc"]} label="AMC / Year (₹)">
+            <input type="number" min="0" className={inp(fieldErrors["mem.amc"])} value={mem.amc} onChange={e => setM("amc", e.target.value)} placeholder="Annual maintenance charge" />
           </Field>
 
           <Field error={fieldErrors["mem.payment_mode"]} label="Payment Mode" required>
@@ -551,6 +559,27 @@ function NewClientForm() {
         </button>
       </div>
 
+      {/* ── Welcome Email ────────────────────────────────────────── */}
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <SectionHeader icon={Mail} title="Welcome Email" subtitle="Send a welcome message to the client after onboarding" />
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={sendWelcome}
+            onChange={e => setSendWelcome(e.target.checked)}
+            className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+          />
+          <div>
+            <span className="text-sm font-medium text-slate-700">Send welcome email to client</span>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {personal.email
+                ? `A welcome message will be sent to ${personal.email} after onboarding.`
+                : "No email address provided — welcome email will be skipped."}
+            </p>
+          </div>
+        </label>
+      </div>
+
       {/* ── Section 4: Summary ──────────────────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <SectionHeader icon={FileText} title="Summary" subtitle="Review before activating membership" />
@@ -589,30 +618,14 @@ function NewClientForm() {
             <span className="text-slate-500">Outstanding</span>
             <span className={`font-semibold ${outstanding > 0 ? "text-red-600" : "text-green-600"}`}>₹{outstanding.toLocaleString()}</span>
           </div>
+          {amcAmount > 0 && (
+            <div className="flex justify-between py-1 border-b border-slate-100">
+              <span className="text-slate-500">AMC / Year</span>
+              <span className="font-semibold text-slate-800">₹{amcAmount.toLocaleString()}</span>
+            </div>
+          )}
         </div>
 
-        {/* Welcome email checkbox */}
-        <div className="mt-5 pt-4 border-t border-slate-100">
-          <label className="flex items-start gap-3 cursor-pointer select-none group">
-            <input
-              type="checkbox"
-              checked={sendWelcome}
-              onChange={e => setSendWelcome(e.target.checked)}
-              className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-            />
-            <div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-slate-400" />
-                <span className="text-sm font-medium text-slate-700">Send welcome email to client</span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {personal.email
-                  ? `A welcome message will be sent to ${personal.email} after onboarding.`
-                  : "No email address provided — welcome email will be skipped."}
-              </p>
-            </div>
-          </label>
-        </div>
       </div>
 
       {error && (

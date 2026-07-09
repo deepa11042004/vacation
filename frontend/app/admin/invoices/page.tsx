@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Loader2, Search, Eye, Trash2, FileText, RotateCcw } from "lucide-react";
+import { Loader2, Search, Eye, Trash2, FileText, RotateCcw, ShieldAlert } from "lucide-react";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 
 interface Invoice {
   invoice_id: number;
@@ -39,6 +40,7 @@ export default function InvoicesPage() {
   const [query,    setQuery]    = useState("");
   const [loading,  setLoading]  = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ type: "soft" | "permanent" | "restore"; invoice: Invoice } | null>(null);
 
   const limit = 20;
 
@@ -67,11 +69,14 @@ export default function InvoicesPage() {
     setQuery(search);
   }
 
+  const [restoring,    setRestoring]    = useState<number | null>(null);
+  const [permDeleting, setPermDeleting] = useState<number | null>(null);
+
   async function handleDelete(invoice_id: number) {
-    if (!confirm("Delete this invoice? It will be marked as deleted.")) return;
     setDeleting(invoice_id);
     try {
       await api.delete(`/invoices/${invoice_id}`);
+      setConfirmModal(null);
       await load();
     } catch {
       alert("Failed to delete invoice.");
@@ -80,18 +85,29 @@ export default function InvoicesPage() {
     }
   }
 
-  const [restoring, setRestoring] = useState<number | null>(null);
-
   async function handleRestore(invoice_id: number) {
-    if (!confirm("Restore this invoice?")) return;
     setRestoring(invoice_id);
     try {
       await api.post(`/invoices/${invoice_id}/restore`, {});
+      setConfirmModal(null);
       await load();
     } catch {
       alert("Failed to restore invoice.");
     } finally {
       setRestoring(null);
+    }
+  }
+
+  async function handlePermanentDelete(invoice_id: number) {
+    setPermDeleting(invoice_id);
+    try {
+      await api.delete(`/invoices/${invoice_id}/permanent`);
+      setConfirmModal(null);
+      await load();
+    } catch {
+      alert("Failed to permanently delete invoice.");
+    } finally {
+      setPermDeleting(null);
     }
   }
 
@@ -213,26 +229,34 @@ export default function InvoicesPage() {
                       <td className="px-4 py-3 text-center">
                         {!isDeleted ? (
                           <button
-                            onClick={() => handleDelete(inv.invoice_id)}
-                            disabled={deleting === inv.invoice_id}
-                            className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 text-xs font-medium transition-colors disabled:opacity-50"
+                            onClick={() => setConfirmModal({ type: "soft", invoice: inv })}
+                            className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 text-xs font-medium transition-colors"
                           >
-                            {deleting === inv.invoice_id
-                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              : <Trash2 className="w-3.5 h-3.5" />}
-                            Delete
+                            <Trash2 className="w-3.5 h-3.5" /> Delete
                           </button>
                         ) : (
-                          <button
-                            onClick={() => handleRestore(inv.invoice_id)}
-                            disabled={restoring === inv.invoice_id}
-                            className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-800 text-xs font-medium transition-colors disabled:opacity-50"
-                          >
-                            {restoring === inv.invoice_id
-                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              : <RotateCcw className="w-3.5 h-3.5" />}
-                            Restore
-                          </button>
+                          <div className="flex items-center gap-2 justify-center">
+                            <button
+                              onClick={() => setConfirmModal({ type: "restore", invoice: inv })}
+                              disabled={restoring === inv.invoice_id || permDeleting === inv.invoice_id}
+                              className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-800 text-xs font-medium transition-colors disabled:opacity-50"
+                            >
+                              {restoring === inv.invoice_id
+                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                : <RotateCcw className="w-3.5 h-3.5" />}
+                              Restore
+                            </button>
+                            <button
+                              onClick={() => setConfirmModal({ type: "permanent", invoice: inv })}
+                              disabled={restoring === inv.invoice_id || permDeleting === inv.invoice_id}
+                              className="inline-flex items-center gap-1 text-xs font-medium text-red-400 hover:text-red-700 transition-colors disabled:opacity-50"
+                            >
+                              {permDeleting === inv.invoice_id
+                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                : <ShieldAlert className="w-3.5 h-3.5" />}
+                              Delete Forever
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -243,6 +267,38 @@ export default function InvoicesPage() {
           </div>
         )}
       </div>
+
+      {/* Confirm modals */}
+      <ConfirmModal
+        open={confirmModal?.type === "soft"}
+        title="Delete Invoice"
+        message={`Delete invoice "${confirmModal?.invoice.invoice_no}"? It will be marked as deleted and can be restored later.`}
+        confirmLabel="Delete"
+        variant="danger"
+        loading={deleting === confirmModal?.invoice.invoice_id}
+        onConfirm={() => confirmModal && handleDelete(confirmModal.invoice.invoice_id)}
+        onClose={() => { if (!deleting) setConfirmModal(null); }}
+      />
+      <ConfirmModal
+        open={confirmModal?.type === "restore"}
+        title="Restore Invoice"
+        message={`Restore invoice "${confirmModal?.invoice.invoice_no}"? It will become active again.`}
+        confirmLabel="Restore"
+        variant="safe"
+        loading={restoring === confirmModal?.invoice.invoice_id}
+        onConfirm={() => confirmModal && handleRestore(confirmModal.invoice.invoice_id)}
+        onClose={() => { if (!restoring) setConfirmModal(null); }}
+      />
+      <ConfirmModal
+        open={confirmModal?.type === "permanent"}
+        title="Permanently Delete Invoice"
+        message={`Permanently delete invoice "${confirmModal?.invoice.invoice_no}"? This cannot be undone.`}
+        confirmLabel="Delete Forever"
+        variant="permanent"
+        loading={permDeleting === confirmModal?.invoice.invoice_id}
+        onConfirm={() => confirmModal && handlePermanentDelete(confirmModal.invoice.invoice_id)}
+        onClose={() => { if (!permDeleting) setConfirmModal(null); }}
+      />
 
       {/* Pagination */}
       {totalPages > 1 && (

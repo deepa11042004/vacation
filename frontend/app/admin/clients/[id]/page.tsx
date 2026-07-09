@@ -1,14 +1,14 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import Modal from "@/Components/Admin/Modal";
 import {
   ArrowLeft, Loader2, User, Pencil,
   LayoutList, CalendarDays, Wrench, Tag, CreditCard, PhoneCall, FileCheck,
-  Plus, Trash2, AlertCircle, Hotel, X, Mail, CheckCircle2, XCircle
+  Plus, Trash2, AlertCircle, Hotel, X, Mail, CheckCircle2, XCircle, FileText
 } from "lucide-react";
 
 interface Client {
@@ -347,10 +347,14 @@ export default function ClientDetailPage() {
       api.get<{ data: Client }>(`/clients/${id}`),
       safe(api.get<{ data: Address | null }>(`/clients/${id}/address`)),
       safe(api.get<{ data: { memberships: Membership[] } }>(`/memberships?client_id=${id}&limit=1`)),
-    ]).then(([cr, ar, mr]) => {
+      safe(api.get<{ data: { payments: AmcPayment[] } }>(`/clients/${id}/amc-payments`)),
+    ]).then(([cr, ar, mr, amcr]) => {
       setClient(cr?.data ?? null);
       setAddress((ar as any)?.data ?? null);
       setMembership((mr as any)?.data?.memberships?.[0] ?? null);
+      const amcRows: AmcPayment[] = (amcr as any)?.data?.payments ?? [];
+      setAmcPayments(amcRows);
+      setAmcPaymentsFetched(true);
       setLoading(false);
     }).catch(() => setLoading(false));
   }
@@ -807,64 +811,92 @@ export default function ClientDetailPage() {
         </div>
 
         <div className="p-6">
-          {tab === "all-details" && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-10 gap-y-2">
+          {tab === "all-details" && (() => {
+            function Field({ label, value, badge }: { label: string; value?: string | number | null; badge?: boolean }) {
+              if (value === null || value === undefined || value === "") return null;
+              const badgeColor =
+                value === "ACTIVE"    ? "bg-emerald-100 text-emerald-700" :
+                value === "CANCELLED" ? "bg-red-100 text-red-600" :
+                value === "EXPIRED"   ? "bg-orange-100 text-orange-700" : "";
+              return (
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">{label}</p>
+                  {badge && badgeColor
+                    ? <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>{String(value)}</span>
+                    : <p className="text-sm font-medium text-slate-800 truncate">{String(value)}</p>
+                  }
+                </div>
+              );
+            }
+            function SectionDivider({ title }: { title: string }) {
+              return (
+                <div className="col-span-full flex items-center gap-3 pt-2">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 whitespace-nowrap">{title}</span>
+                  <div className="flex-1 h-px bg-slate-200" />
+                </div>
+              );
+            }
+            return (
+              <div className="bg-white rounded-xl border border-slate-200 p-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-5">
 
-              {/* Column 1 — Personal */}
-              <div>
-                <Section title="Personal" />
-                <Row label="Title"             value={client.title} />
-                <Row label="First Name"        value={client.first_name} />
-                <Row label="Middle Name"       value={client.middle_name} />
-                <Row label="Last Name"         value={client.last_name} />
-                <Row label="Gender"            value={client.gender} />
-                <Row label="Date of Birth"     value={fmtDate(client.date_of_birth)} />
-                <Row label="Spouse Name"       value={client.spouse_name} />
-                <Row label="Anniversary"       value={fmtDate(client.marriage_anniversary)} />
-                <Row label="Status"            value={client.status} />
-                <Row label="Member Since"      value={fmtDate(client.created_at)} />
+                  <SectionDivider title="Personal" />
+                  <Field label="Full Name"    value={[client.title, client.first_name, client.middle_name, client.last_name].filter(Boolean).join(" ")} />
+                  <Field label="Gender"       value={client.gender} />
+                  <Field label="Date of Birth" value={fmtDate(client.date_of_birth)} />
+                  <Field label="Member Since" value={fmtDate(client.created_at)} />
+                  <Field label="Spouse Name"  value={client.spouse_name} />
+                  <Field label="Anniversary"  value={fmtDate(client.marriage_anniversary)} />
 
-                <Section title="Contact" />
-                <Row label="Email"             value={client.email} />
-                <Row label="Mobile"            value={`${client.country_code} ${client.mobile}`} />
-                <Row label="Alternate Mobile"  value={client.alternate_mobile} />
+                  <SectionDivider title="Contact" />
+                  <Field label="Email"            value={client.email} />
+                  <Field label="Mobile"           value={`${client.country_code} ${client.mobile}`} />
+                  <Field label="Alternate Mobile" value={client.alternate_mobile} />
+
+                  {(address?.primary_address || address?.primary_state || address?.secondary_address || address?.secondary_state) && (
+                    <>
+                      <SectionDivider title="Address" />
+                      {address?.primary_address  && <Field label="Primary Address" value={address.primary_address} />}
+                      {address?.primary_state    && <Field label="Primary State"   value={address.primary_state} />}
+                      {address?.primary_pincode  && <Field label="Primary Pin"     value={address.primary_pincode} />}
+                      {address?.secondary_address && <Field label="Secondary Address" value={address.secondary_address} />}
+                      {address?.secondary_state   && <Field label="Secondary State"   value={address.secondary_state} />}
+                      {address?.secondary_pincode && <Field label="Secondary Pin"     value={address.secondary_pincode} />}
+                    </>
+                  )}
+
+                  {membership && (
+                    <>
+                      <SectionDivider title="Membership" />
+                      <Field label="Membership No"  value={membership.membership_number} />
+                      <Field label="Package"        value={membership.package_name} />
+                      <Field label="Status"         value={membership.status} badge />
+                      <Field label="Validity"       value={membership.validity_years != null ? `${membership.validity_years} yr${membership.validity_years !== 1 ? "s" : ""}` : null} />
+                      <Field label="Nights / Year"  value={membership.nights_per_year} />
+                      <Field label="Nights Left"    value={membership.nights_remaining} />
+                      <Field label="Sale Date"      value={fmtDate(membership.sale_date)} />
+                      <Field label="Expiry Date"    value={fmtDate(membership.end_date)} />
+                      {amcPayments.length > 0 && amcPayments[0].amount != null && (
+                        <Field label="AMC / Year"   value={fmt(amcPayments[0].amount)} />
+                      )}
+                    </>
+                  )}
+
+                  {membership && (membership.sales_consultant || membership.take_over_manager || membership.dsa || membership.reference_by || membership.remarks) && (
+                    <>
+                      <SectionDivider title="Sales Details" />
+                      <Field label="Sales Consultant"  value={membership.sales_consultant} />
+                      <Field label="Take-Over Manager" value={membership.take_over_manager} />
+                      <Field label="DSA"               value={membership.dsa} />
+                      <Field label="Reference By"      value={membership.reference_by} />
+                      <Field label="Remarks"           value={membership.remarks} />
+                    </>
+                  )}
+
+                </div>
               </div>
-
-              {/* Column 2 — Address */}
-              <div>
-                <Section title="Primary Address" />
-                <Row label="Address"    value={address?.primary_address} />
-                <Row label="State"      value={address?.primary_state} />
-                <Row label="Pin Code"   value={address?.primary_pincode} />
-
-                <Section title="Secondary Address" />
-                <Row label="Address"    value={address?.secondary_address} />
-                <Row label="State"      value={address?.secondary_state} />
-                <Row label="Pin Code"   value={address?.secondary_pincode} />
-              </div>
-
-              {/* Column 3 — Membership */}
-              <div>
-                <Section title="Membership" />
-                <Row label="Membership No"      value={membership?.membership_number} />
-                <Row label="Package"            value={membership?.package_name} />
-                <Row label="Status"             value={membership?.status} />
-                <Row label="Validity"           value={membership?.validity_years != null ? `${membership.validity_years} yr${membership.validity_years !== 1 ? "s" : ""}` : null} />
-                <Row label="Nights / Year"      value={membership?.nights_per_year} />
-                <Row label="Nights Remaining"   value={membership?.nights_remaining} />
-                <Row label="Sale Date"          value={fmtDate(membership?.sale_date)} />
-                <Row label="Expiry Date"        value={fmtDate(membership?.end_date)} />
-
-                <Section title="Sales Details" />
-                <Row label="Sales Consultant"   value={membership?.sales_consultant} />
-                <Row label="Take-Over Manager"  value={membership?.take_over_manager} />
-                <Row label="DSA"                value={membership?.dsa} />
-                <Row label="Reference By"       value={membership?.reference_by} />
-                <Row label="Remarks"            value={membership?.remarks} />
-              </div>
-
-            </div>
-          )}
+            );
+          })()}
 
           {tab === "holiday-chart" && (() => {
             if (!membership) return (
@@ -1177,14 +1209,6 @@ export default function ClientDetailPage() {
                 <h3 className="text-base font-bold text-slate-800">Payment Chart</h3>
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={handleSendInvoice}
-                    disabled={sendingInvoice}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 disabled:opacity-60 transition-colors"
-                  >
-                    {sendingInvoice ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-                    {sendingInvoice ? "Sending..." : "Send Invoice"}
-                  </button>
-                  <button
                     onClick={() => { setPaymentForm(emptyPaymentForm); setPaymentError(""); setShowPaymentModal(true); }}
                     className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
@@ -1210,40 +1234,75 @@ export default function ClientDetailPage() {
                         <th className="text-left font-bold text-slate-700 px-5 py-4 w-40">Receiving Date</th>
                         <th className="text-left font-bold text-slate-700 px-5 py-4 w-44">Mode Of Payment</th>
                         <th className="text-left font-bold text-slate-700 px-5 py-4 w-36">Amount</th>
+                        <th className="text-left font-bold text-slate-700 px-5 py-4 w-28">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {paymentRecords.filter(p => p.status !== "CANCELLED").map(p => (
-                        <tr key={p.payment_id} className="hover:bg-slate-50/60 transition-colors">
-                          <td className="px-5 py-4 text-teal-600 font-medium">
-                            {p.remarks || paymentTypeLabel(p.payment_type)}
-                          </td>
-                          <td className="px-5 py-4 text-teal-600">{fmtPayDate(p.payment_date as string)}</td>
-                          <td className="px-5 py-4 text-slate-700">
-                            {p.bank_name || p.payment_mode.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}
-                          </td>
-                          <td className="px-5 py-4 text-slate-800 font-medium">{fmtAmcAmt(p.amount)}</td>
-                        </tr>
-                      ))}
+                      {paymentRecords.filter(p => p.status !== "CANCELLED").map(p => {
+                        const invoiceParams = new URLSearchParams({
+                          amount:       String(p.amount),
+                          payment_mode: p.payment_mode,
+                          payment_date: p.payment_date ? p.payment_date.slice(0, 10) : "",
+                          payment_type: p.payment_type,
+                          bank:         p.bank_name ?? "",
+                          transaction_id: p.transaction_ref ?? "",
+                          description:  p.remarks || paymentTypeLabel(p.payment_type),
+                        });
+                        return (
+                          <tr key={p.payment_id} className="hover:bg-slate-50/60 transition-colors">
+                            <td className="px-5 py-4 text-teal-600 font-medium">
+                              {p.remarks || paymentTypeLabel(p.payment_type)}
+                            </td>
+                            <td className="px-5 py-4 text-teal-600">{fmtPayDate(p.payment_date as string)}</td>
+                            <td className="px-5 py-4 text-slate-700">
+                              {p.bank_name || p.payment_mode.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}
+                            </td>
+                            <td className="px-5 py-4 text-slate-800 font-medium">{fmtAmcAmt(p.amount)}</td>
+                            <td className="px-5 py-4">
+                              <a
+                                href={`/admin/create-invoice/${id}?${invoiceParams.toString()}`}
+                                className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                              >
+                                <FileText className="w-3.5 h-3.5" /> Invoice
+                              </a>
+                            </td>
+                          </tr>
+                        );
+                      })}
                       {membership && amcPayments.filter(p => p.is_received).map(p => {
                         const yearRow = buildYearRows(membership).find(r => r.year === p.year_number);
+                        const label = `AMC Payment ${yearRow ? `(${fmtAmcDate(yearRow.from)})` : `(Year ${p.year_number})`}`;
+                        const amcInvoiceParams = new URLSearchParams({
+                          amount:         String((p.amount ?? membership.amc) || 0),
+                          payment_mode:   p.payment_mode ?? "",
+                          payment_date:   p.payment_date ? p.payment_date.slice(0, 10) : "",
+                          transaction_id: "",
+                          bank:           "",
+                          description:    label,
+                        });
                         return (
                           <tr key={`amc-${p.amc_payment_id}`} className="hover:bg-slate-50/60 transition-colors">
-                            <td className="px-5 py-4 text-teal-600 font-medium">
-                              AMC Payment {yearRow ? `(${fmtAmcDate(yearRow.from)})` : `(Year ${p.year_number})`}
-                            </td>
+                            <td className="px-5 py-4 text-teal-600 font-medium">{label}</td>
                             <td className="px-5 py-4 text-teal-600">{p.payment_date ? fmtPayDate(p.payment_date) : "—"}</td>
                             <td className="px-5 py-4 text-slate-700">
                               {p.payment_mode ? p.payment_mode.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : "—"}
                             </td>
                             <td className="px-5 py-4 text-slate-800 font-medium">{fmtAmcAmt((p.amount ?? membership.amc) || 0)}</td>
+                            <td className="px-5 py-4">
+                              <a
+                                href={`/admin/create-invoice/${id}?${amcInvoiceParams.toString()}`}
+                                className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                              >
+                                <FileText className="w-3.5 h-3.5" /> Invoice
+                              </a>
+                            </td>
                           </tr>
                         );
                       })}
                     </tbody>
                     <tfoot>
                       <tr className="bg-slate-100/80 border-t border-slate-200">
-                        <td colSpan={3} className="px-5 py-4 text-right font-bold text-slate-700">Total</td>
+                        <td colSpan={4} className="px-5 py-4 text-right font-bold text-slate-700">Total</td>
                         <td className="px-5 py-4 font-bold text-slate-800">
                           {fmtAmcAmt(
                             paymentRecords.filter(p => p.status !== "CANCELLED").reduce((s, p) => s + Number(p.amount), 0) +
@@ -1684,7 +1743,7 @@ export default function ClientDetailPage() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setAmcForm(f => ({ ...f, is_received: !f.is_received }))}
+              onClick={() => { setAmcForm(f => ({ ...f, is_received: !f.is_received })); setAmcError(""); }}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${amcForm.is_received ? "bg-emerald-500" : "bg-slate-300"}`}
             >
               <span className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${amcForm.is_received ? "translate-x-6" : "translate-x-1"}`} />
@@ -1700,7 +1759,7 @@ export default function ClientDetailPage() {
                 <label className="block text-xs font-medium text-slate-600 mb-1">Date Of Receiving <span className="text-red-500">*</span></label>
                 <input type="date" className={inp}
                   value={amcForm.payment_date}
-                  onChange={e => setAmcForm(f => ({ ...f, payment_date: e.target.value }))} />
+                  onChange={e => { const v = e.target.value; setAmcForm(f => ({ ...f, payment_date: v })); setAmcError(""); }} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Mode Of Payment</label>
@@ -1884,7 +1943,7 @@ export default function ClientDetailPage() {
             <button
               onClick={handleSendWelcomeMail}
               disabled={welcomeMailSending}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-70 min-w-[100px]"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-70 min-w-\[100px\]"
             >
               {welcomeMailSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
               {welcomeMailSending ? "Sending..." : "Send Mail"}

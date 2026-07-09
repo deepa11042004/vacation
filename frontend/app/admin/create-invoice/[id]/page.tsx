@@ -297,6 +297,17 @@ interface ClientAddress {
   primary_pincode?: string | null;
 }
 
+function mapPaymentType(mode: string): string {
+  switch (mode.toUpperCase()) {
+    case "CASH":          return "Cash";
+    case "CHEQUE":        return "Cheque";
+    case "CARD":          return "Debit Card";
+    case "ONLINE":        return "UPI";
+    case "BANK_TRANSFER": return "NEFT / RTGS";
+    default:              return "Cash";
+  }
+}
+
 const CO_DEFAULTS: CompanySettings = {
   name: "Arena International Holidays",
   address: "101, Pratap Nagar, Mayur Vihar, Phase-1 Delhi-110091",
@@ -329,6 +340,31 @@ function InvoicePageInner() {
   });
 
   useEffect(() => { setStep("form"); }, [isTax]);
+
+  // Pre-fill payment fields from query params when arriving from a payment row
+  useEffect(() => {
+    const amount         = searchParams.get("amount");
+    const payment_mode   = searchParams.get("payment_mode");
+    const payment_date   = searchParams.get("payment_date");
+    const payment_type   = searchParams.get("payment_type");
+    const bank           = searchParams.get("bank");
+    const transaction_id = searchParams.get("transaction_id");
+    const description    = searchParams.get("description");
+
+    if (amount || payment_mode) {
+      setForm(f => ({
+        ...f,
+        ...(amount         ? { amount }                                          : {}),
+        ...(payment_mode   ? { payment_mode }                                    : {}),
+        ...(payment_date   ? { issue_date: payment_date }                        : {}),
+        ...(payment_mode   ? { payment_type: mapPaymentType(payment_mode) }      : {}),
+        ...(bank           ? { bank }                                            : {}),
+        ...(transaction_id ? { transaction_id }                                  : {}),
+        ...(description    ? { description }                                     : {}),
+      }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const load = async () => {

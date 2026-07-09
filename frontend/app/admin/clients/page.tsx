@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Search, Plus, ChevronLeft, ChevronRight, Loader2, MoreVertical, Pencil, Trash2, RotateCcw, Eye } from "lucide-react";
+import { Search, Plus, ChevronLeft, ChevronRight, Loader2, MoreVertical, Pencil, Trash2, RotateCcw, Eye, ShieldAlert } from "lucide-react";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 
 interface Client {
   client_id: number;
@@ -14,29 +15,27 @@ interface Client {
 }
 
 function ActionMenu({ client, onRefresh }: { client: Client; onRefresh: () => void }) {
-  const [open, setOpen]             = useState(false);
-  const [confirming, setConfirming] = useState(false);
-  const [busy, setBusy]             = useState(false);
+  const [open, setOpen]           = useState(false);
+  const [modal, setModal]         = useState<"soft" | "permanent" | null>(null);
+  const [busy, setBusy]           = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const isDeleted = !!client.deleted_at;
+  const clientName = `${client.first_name} ${client.last_name}`;
 
   useEffect(() => {
     function onClickOut(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false); setConfirming(false);
-      }
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
     document.addEventListener("mousedown", onClickOut);
     return () => document.removeEventListener("mousedown", onClickOut);
   }, []);
 
   async function handleDelete() {
-    if (!confirming) { setConfirming(true); return; }
     setBusy(true);
     try {
       await api.delete(`/clients/${client.client_id}`);
-      setOpen(false); onRefresh();
+      setModal(null); onRefresh();
     } catch { setBusy(false); }
   }
 
@@ -48,51 +47,86 @@ function ActionMenu({ client, onRefresh }: { client: Client; onRefresh: () => vo
     } catch { setBusy(false); }
   }
 
+  async function handlePermanentDelete() {
+    setBusy(true);
+    try {
+      await api.delete(`/clients/${client.client_id}/permanent`);
+      setModal(null); onRefresh();
+    } catch { setBusy(false); }
+  }
+
   return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => { setOpen(o => !o); setConfirming(false); }}
-        className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-      >
-        <MoreVertical className="w-4 h-4" />
-      </button>
+    <>
+      <div ref={ref} className="relative">
+        <button
+          onClick={() => setOpen(o => !o)}
+          className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+        >
+          <MoreVertical className="w-4 h-4" />
+        </button>
 
-      {open && (
-        <div className="absolute right-0 top-8 w-44 bg-white rounded-xl border border-slate-200 shadow-lg py-1 overflow-hidden" style={{ zIndex: 9999 }}>
-          {!isDeleted && (
-            <button
-              onClick={() => { setOpen(false); router.push(`/admin/clients/${client.client_id}/edit`); }}
-              className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-            >
-              <Pencil className="w-3.5 h-3.5 text-slate-400" />
-              Edit
-            </button>
-          )}
+        {open && (
+          <div className="absolute right-0 top-8 w-44 bg-white rounded-xl border border-slate-200 shadow-lg py-1 overflow-hidden" style={{ zIndex: 9999 }}>
+            {!isDeleted && (
+              <button
+                onClick={() => { setOpen(false); router.push(`/admin/clients/${client.client_id}/edit`); }}
+                className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                <Pencil className="w-3.5 h-3.5 text-slate-400" /> Edit
+              </button>
+            )}
 
-          {isDeleted ? (
-            <button
-              onClick={handleRestore}
-              disabled={busy}
-              className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50 transition-colors"
-            >
-              {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
-              {busy ? "Restoring…" : "Restore"}
-            </button>
-          ) : (
-            <button
-              onClick={handleDelete}
-              disabled={busy}
-              className={`flex items-center gap-2.5 w-full px-3 py-2 text-sm transition-colors ${
-                confirming ? "bg-red-50 text-red-700 font-semibold" : "text-red-600 hover:bg-red-50"
-              }`}
-            >
-              {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-              {busy ? "Deleting…" : confirming ? "Confirm Delete" : "Delete"}
-            </button>
-          )}
-        </div>
-      )}
-    </div>
+            {isDeleted ? (
+              <>
+                <button
+                  onClick={handleRestore}
+                  disabled={busy}
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50 transition-colors"
+                >
+                  {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
+                  {busy ? "Working…" : "Restore"}
+                </button>
+                <button
+                  onClick={() => { setOpen(false); setModal("permanent"); }}
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5" /> Permanent Delete
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => { setOpen(false); setModal("soft"); }}
+                className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Delete
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      <ConfirmModal
+        open={modal === "soft"}
+        title="Delete Client"
+        message={`Are you sure you want to delete "${clientName}"? They will be hidden but can be restored later.`}
+        confirmLabel="Delete"
+        variant="danger"
+        loading={busy}
+        onConfirm={handleDelete}
+        onClose={() => { if (!busy) setModal(null); }}
+      />
+
+      <ConfirmModal
+        open={modal === "permanent"}
+        title="Permanently Delete Client"
+        message={`This will permanently erase "${clientName}" and all associated data. There is no way to recover this.`}
+        confirmLabel="Delete Forever"
+        variant="permanent"
+        loading={busy}
+        onConfirm={handlePermanentDelete}
+        onClose={() => { if (!busy) setModal(null); }}
+      />
+    </>
   );
 }
 
