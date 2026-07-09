@@ -76,4 +76,8 @@ export class MembershipRepository {
   async restore(membership_id: number): Promise<void> {
     await Membership.restore({ where: { membership_id } });
   }
+
+  async permanentDelete(membership_id: number, transaction?: Transaction): Promise<void> {
+    await Membership.destroy({ where: { membership_id }, force: true, transaction });
+  }
 }

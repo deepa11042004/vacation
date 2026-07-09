@@ -154,6 +154,24 @@ export class HotelController {
     }
   }
 
+  static async permanentDelete(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN]);
+
+      const id = this.parseId(idStr);
+      await hotelService.permanentDeleteHotel(id);
+
+      return NextResponse.json(
+        ResponseUtil.success('Hotel permanently deleted', null),
+        { status: 200 },
+      );
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
+
   // --- Hotel Images Endpoints ---
 
   static async uploadImage(req: NextRequest, hotelIdStr: string) {

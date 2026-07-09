@@ -81,6 +81,10 @@ export class HotelRepository {
     await Hotel.restore({ where: { hotel_id } });
   }
 
+  async permanentDelete(hotel_id: number): Promise<void> {
+    await Hotel.destroy({ where: { hotel_id }, force: true });
+  }
+
   // --- Hotel Images Methods ---
 
   async findImageById(image_id: number): Promise<HotelImage | null> {

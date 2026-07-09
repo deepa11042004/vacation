@@ -10,10 +10,9 @@ export interface CreateMembershipDTO {
   discount_amount?: number;
   payment_mode: PaymentMode;
   down_payment?: number;
+  amc?: number | null;
   sales_consultant_id?: number | null;
   take_over_manager_id?: number | null;
-  sales_consultant?: string | null;
-  take_over_manager?: string | null;
   dsa?: MembershipDSA | null;
   reference_by?: string | null;
   remarks?: string | null;
@@ -29,8 +28,6 @@ export interface UpdateMembershipDTO {
   payment_mode?: PaymentMode;
   sales_consultant_id?: number | null;
   take_over_manager_id?: number | null;
-  sales_consultant?: string | null;
-  take_over_manager?: string | null;
   dsa?: MembershipDSA | null;
   reference_by?: string | null;
   remarks?: string | null;

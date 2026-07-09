@@ -74,4 +74,8 @@ export class ClientRepository {
       where: { client_id },
     });
   }
+
+  async permanentDelete(client_id: number, transaction?: Transaction): Promise<void> {
+    await Client.destroy({ where: { client_id }, force: true, transaction });
+  }
 }

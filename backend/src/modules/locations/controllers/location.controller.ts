@@ -140,4 +140,22 @@ export class LocationController {
       return errorHandler(error);
     }
   }
+
+  static async permanentDelete(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN]);
+
+      const id = this.parseId(idStr);
+      await locationService.permanentDeleteLocation(id);
+
+      return NextResponse.json(
+        ResponseUtil.success('Location permanently deleted', null),
+        { status: 200 },
+      );
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
 }

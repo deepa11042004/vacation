@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { MembershipDSA, MembershipStatus, PaymentMode } from '../types/membership.types';
+import { MembershipDSA, PaymentMode } from '../types/membership.types';
 
 export const CreateMembershipSchema = z.object({
   client_id:           z.number().int().positive('Client ID is required'),
@@ -13,6 +13,7 @@ export const CreateMembershipSchema = z.object({
     errorMap: () => ({ message: 'payment_mode must be CASH, CHEQUE, ONLINE, BANK_TRANSFER, or CARD' }),
   }),
   down_payment:        z.number().min(0).optional().default(0),
+  amc:                 z.number().min(0).optional().nullable(),
   sales_consultant_id: z.number().int().optional().nullable(),
   take_over_manager_id:z.number().int().optional().nullable(),
   dsa:                 z.nativeEnum(MembershipDSA).optional().nullable(),

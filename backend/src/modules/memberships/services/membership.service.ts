@@ -9,6 +9,8 @@ import { IMembership } from '../interfaces/membership.interface';
 import { sequelize } from '../../../shared/database/sequelize';
 import { Client } from '../../clients/models/Client.model';
 import { Payment } from '../../payments/models/Payment.model';
+import { Booking } from '../../bookings/models/Booking.model';
+import { AmcPayment } from '../../amc-payments/models/AmcPayment.model';
 import { PaymentMode, PaymentStatus, PaymentType } from '../../payments/types/payment.types';
 
 function round2(n: number): number {
@@ -101,6 +103,20 @@ export class MembershipService {
 
         const payment_number = `PAY-${paymentRecord.payment_id.toString().padStart(6, '0')}`;
         await paymentRecord.update({ payment_number }, { transaction: t });
+      }
+
+      // If an AMC amount is provided, pre-seed one amc_payment row per validity year.
+      // Each row starts as unpaid (is_received: false) so admin can mark payment later.
+      if (data.amc && data.amc > 0) {
+        for (let year = 1; year <= validityYears; year++) {
+          await AmcPayment.create({
+            client_id: data.client_id,
+            membership_id: newMembership.membership_id,
+            year_number: year,
+            amount: data.amc,
+            is_received: false,
+          }, { transaction: t });
+        }
       }
 
       await t.commit();
@@ -231,6 +247,25 @@ export class MembershipService {
       throw new AppError('Membership is not deleted', 400);
     }
     await this.membershipRepository.restore(membership_id);
+  }
+
+  async permanentDeleteMembership(membership_id: number) {
+    const membership = await this.membershipRepository.findByIdWithDeleted(membership_id);
+    if (!membership) throw new AppError(MEMBERSHIP_CONSTANTS.ERRORS.NOT_FOUND, 404);
+    if (!membership.deleted_at) throw new AppError('Membership must be soft-deleted before permanent deletion', 400);
+
+    const t = await sequelize.transaction();
+    try {
+      // bookings and amc_payments have no onDelete on their membership_id FK (defaults to RESTRICT).
+      // payments has onDelete: CASCADE so the DB handles it after membership is deleted.
+      await Booking.destroy({ where: { membership_id }, force: true, transaction: t });
+      await AmcPayment.destroy({ where: { membership_id }, force: true, transaction: t });
+      await this.membershipRepository.permanentDelete(membership_id, t);
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      throw err;
+    }
   }
 
   async adjustOutstandingBalance(membership_id: number, amountDelta: number, transaction?: Transaction) {

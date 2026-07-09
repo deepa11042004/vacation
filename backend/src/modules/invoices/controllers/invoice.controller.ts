@@ -97,4 +97,18 @@ export class InvoiceController {
       return errorHandler(error);
     }
   }
+
+  static async permanentDelete(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN]);
+
+      const invoice_id = InvoiceController.parseId(idStr);
+      await invoiceService.permanentDeleteInvoice(invoice_id);
+      return NextResponse.json(ResponseUtil.success('Invoice permanently deleted', null));
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
 }

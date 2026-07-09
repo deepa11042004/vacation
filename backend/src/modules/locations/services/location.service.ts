@@ -86,4 +86,11 @@ export class LocationService {
 
     await this.locationRepository.restore(location_id);
   }
+
+  async permanentDeleteLocation(location_id: number) {
+    const location = await this.locationRepository.findByIdWithDeleted(location_id);
+    if (!location) throw new AppError(LOCATION_CONSTANTS.ERRORS.NOT_FOUND, 404);
+    if (!location.deleted_at) throw new AppError('Location must be soft-deleted before permanent deletion', 400);
+    await this.locationRepository.permanentDelete(location_id);
+  }
 }

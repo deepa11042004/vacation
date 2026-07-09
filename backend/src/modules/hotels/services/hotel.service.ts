@@ -104,6 +104,13 @@ export class HotelService {
     await this.hotelRepository.restore(hotel_id);
   }
 
+  async permanentDeleteHotel(hotel_id: number) {
+    const hotel = await this.hotelRepository.findByIdWithDeleted(hotel_id);
+    if (!hotel) throw new AppError(HOTEL_CONSTANTS.ERRORS.NOT_FOUND, 404);
+    if (!hotel.deleted_at) throw new AppError('Hotel must be soft-deleted before permanent deletion', 400);
+    await this.hotelRepository.permanentDelete(hotel_id);
+  }
+
   // --- Hotel Images Services ---
 
   async addHotelImage(hotel_id: number, data: AddHotelImageDTO) {

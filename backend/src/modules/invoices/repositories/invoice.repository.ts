@@ -45,4 +45,8 @@ export class InvoiceRepository {
   async restore(invoice_id: number): Promise<void> {
     await Invoice.restore({ where: { invoice_id } });
   }
+
+  async permanentDelete(invoice_id: number): Promise<void> {
+    await Invoice.destroy({ where: { invoice_id }, force: true });
+  }
 }

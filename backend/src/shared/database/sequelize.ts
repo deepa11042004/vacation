@@ -24,6 +24,15 @@ export const sequelize = new Sequelize({
   port: parseInt(process.env.DB_PORT || '3306', 10),
   dialect: 'mysql',
   logging: env === 'development' ? console.log : false,
+  pool: {
+    max: 10,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+  dialectOptions: {
+    connectTimeout: 20000,
+  },
   models: [
     Client,
     ClientAddress,
@@ -45,11 +54,18 @@ export const sequelize = new Sequelize({
 let dbConnected = false;
 
 export const connectDB = async () => {
-  if (dbConnected) return;
+  if (dbConnected) {
+    try {
+      await sequelize.authenticate();
+      return;
+    } catch {
+      dbConnected = false;
+    }
+  }
   try {
     await sequelize.authenticate();
     dbConnected = true;
-    console.log('Database connection has been established successfully.');
+    console.log('Database connected successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
     throw error;

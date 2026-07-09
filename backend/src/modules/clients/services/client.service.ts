@@ -7,6 +7,9 @@ import { AppError } from '../../../shared/middlewares/error.middleware';
 import { IClient } from '../interfaces/client.interface';
 import { IClientAddress } from '../interfaces/client-address.interface';
 import { ClientAddress } from '../models/ClientAddress.model';
+import { Invoice } from '../../invoices/models/Invoice.model';
+import { Booking } from '../../bookings/models/Booking.model';
+import { AmcPayment } from '../../amc-payments/models/AmcPayment.model';
 import { sequelize } from '../../../shared/database/sequelize';
 import { UserService, UserRole } from '../../users';
 
@@ -156,5 +159,33 @@ export class ClientService {
     }
 
     await this.clientRepository.restore(client_id);
+  }
+
+  async permanentDeleteClient(client_id: number) {
+    const client = await this.clientRepository.findByIdWithDeleted(client_id);
+    if (!client) {
+      throw new AppError(CLIENT_CONSTANTS.ERRORS.NOT_FOUND, 404);
+    }
+    if (!client.deleted_at) {
+      throw new AppError('Client must be soft-deleted before permanent deletion', 400);
+    }
+
+    const t = await sequelize.transaction();
+    try {
+      // Delete child rows that would block the FK constraints (no onDelete or RESTRICT).
+      // Order: bookings and amc_payments first (they reference both client and membership),
+      // then invoices and client_addresses (client FK only).
+      // After those are gone, deleting the client lets the DB cascade memberships → payments,
+      // and SET NULL the linked user's client_id.
+      await Booking.destroy({ where: { client_id }, force: true, transaction: t });
+      await AmcPayment.destroy({ where: { client_id }, force: true, transaction: t });
+      await Invoice.destroy({ where: { client_id }, force: true, transaction: t });
+      await ClientAddress.destroy({ where: { client_id }, transaction: t });
+      await this.clientRepository.permanentDelete(client_id, t);
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      throw err;
+    }
   }
 }

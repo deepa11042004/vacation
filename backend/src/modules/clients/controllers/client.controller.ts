@@ -139,6 +139,24 @@ export class ClientController {
     }
   }
 
+  static async permanentDelete(req: NextRequest, idStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      requireRoles(currentUser, [UserRole.ADMIN]);
+
+      const id = this.parseId(idStr);
+      await clientService.permanentDeleteClient(id);
+
+      return NextResponse.json(
+        ResponseUtil.success('Client permanently deleted', null),
+        { status: 200 }
+      );
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
+
   static async sendWelcomeMail(req: NextRequest, idStr: string) {
     try {
       await connectDB();

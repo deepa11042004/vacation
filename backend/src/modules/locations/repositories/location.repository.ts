@@ -67,4 +67,8 @@ export class LocationRepository {
   async restore(location_id: number): Promise<void> {
     await Location.restore({ where: { location_id } });
   }
+
+  async permanentDelete(location_id: number): Promise<void> {
+    await Location.destroy({ where: { location_id }, force: true });
+  }
 }

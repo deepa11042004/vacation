@@ -12,6 +12,7 @@ import { PaymentType, PaymentStatus, PaymentMode } from '../../payments/types/pa
 import { IClient } from '../interfaces/client.interface';
 import { IClientAddress } from '../interfaces/client-address.interface';
 import { ClientOfferService, CreateOfferInput } from '../../client-offers/services/client-offer.service';
+import { AmcPayment } from '../../amc-payments/models/AmcPayment.model';
 
 export interface OnboardMembershipInput {
   package_name: string;
@@ -21,6 +22,7 @@ export interface OnboardMembershipInput {
   total_price: number;
   discount_amount: number;
   down_payment: number;
+  amc?: number | null;
   payment_mode: MembershipPaymentMode;
   transaction_ref?: string | null;
   bank_name?: string | null;
@@ -173,7 +175,23 @@ export class OnboardService {
         await newPayment.update({ payment_number }, { transaction: t });
       }
 
-      // ── Step 6: Bulk-create offers (if any) ───────────────────
+      // ── Step 6: Pre-seed AMC payment rows (one per validity year) ─
+      if (memData.amc && memData.amc > 0) {
+        for (let year = 1; year <= validityYears; year++) {
+          await AmcPayment.create(
+            {
+              client_id:     newClient.client_id,
+              membership_id: newMembership.membership_id,
+              year_number:   year,
+              amount:        memData.amc,
+              is_received:   false,
+            } as any,
+            { transaction: t },
+          );
+        }
+      }
+
+      // ── Step 7: Bulk-create offers (if any) ───────────────────
       const validOffers = offersData.filter(o => o.offer_name?.trim());
       if (validOffers.length) {
         await this.offerService.bulkAdd(newClient.client_id, validOffers, t);
