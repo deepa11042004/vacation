@@ -47,7 +47,7 @@ export default function MyProfilePage() {
                   className="object-cover w-full h-full"
                 />
               </div>
-              <button className="absolute bottom-1 right-1 p-3 bg-black text-white rounded-full shadow-lg hover:bg-slate-800 transition-colors group-hover:scale-110 duration-300">
+              <button className="absolute bottom-1 right-1 p-3 bg-black text-white rounded-full shadow-lg cursor-pointer transition-all duration-300 group-hover:scale-110">
                 <Camera className="w-4 h-4" />
               </button>
             </div>
