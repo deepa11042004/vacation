@@ -21,9 +21,19 @@ interface StaffMember {
   deleted_at?: string | null;
 }
 
-const empty = {
+interface StaffForm {
+  full_name: string;
+  email: string;
+  phone: string;
+  designation: string;
+  department: string;
+  joining_date: string;
+  status: "ACTIVE" | "INACTIVE";
+}
+
+const empty: StaffForm = {
   full_name: "", email: "", phone: "",
-  designation: "", department: "", joining_date: "", status: "ACTIVE" as const,
+  designation: "", department: "", joining_date: "", status: "ACTIVE",
 };
 
 const inp = "w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white";
@@ -43,7 +53,7 @@ export default function StaffPage() {
 
   const [showForm,  setShowForm]  = useState(false);
   const [editing,   setEditing]   = useState<StaffMember | null>(null);
-  const [form,      setForm]      = useState(empty);
+  const [form,      setForm]      = useState<StaffForm>(empty);
   const [saving,    setSaving]    = useState(false);
   const [formErr,   setFormErr]   = useState("");
 
