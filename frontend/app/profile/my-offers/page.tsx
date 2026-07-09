@@ -81,7 +81,7 @@ export default function MyOffersPage() {
                   {offer.validity}
                 </div>
                 
-                <button className="w-full flex items-center justify-center gap-2 py-3 bg-black text-white font-medium rounded-xl hover:bg-slate-800 transition-colors shadow-md">
+                <button className="w-full flex items-center justify-center gap-2 py-3 bg-black text-white font-medium rounded-xl cursor-pointer">
                   Claim Offer
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
