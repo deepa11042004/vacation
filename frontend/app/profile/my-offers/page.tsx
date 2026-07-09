@@ -44,7 +44,7 @@ export default function MyOffersPage() {
         <div>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-800 font-marcellus mb-2 flex items-center gap-3">
             My Offers
-            <span className="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-sm font-bold font-sans">3 New</span>
+            <span className="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-sm font-bold">3 New</span>
           </h2>
           <p className="text-slate-500 max-w-2xl">
             Exclusive promotions and special offers attached to your Platinum Global Explorer membership.
@@ -54,7 +54,7 @@ export default function MyOffersPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {offers.map((offer) => (
-          <div key={offer.id} className="group bg-white rounded-3xl border border-slate-100 shadow-[0_2px_20px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col">
+          <div key={offer.id} className="group bg-white rounded-3xl border border-slate-300 overflow-hidden transition-all duration-300 flex flex-col">
             
             {/* Offer Header Banner */}
             <div className={`h-32 bg-linear-to-r ${offer.color} relative overflow-hidden p-6 text-white flex flex-col justify-between`}>
@@ -92,7 +92,7 @@ export default function MyOffersPage() {
         ))}
         
         {/* Placeholder for future offers */}
-        <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 p-8 flex flex-col items-center justify-center text-center min-h-100">
+        <div className="rounded-3xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 flex flex-col items-center justify-center text-center min-h-100">
           <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center mb-4">
             <Sparkles className="w-8 h-8 text-slate-300" />
           </div>
