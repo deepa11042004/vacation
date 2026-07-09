@@ -13,6 +13,7 @@ import { Booking } from '../../modules/bookings/models/Booking.model';
 import { AmcPayment } from '../../modules/amc-payments/models/AmcPayment.model';
 import { CallRecording } from '../../modules/call-recordings/models/CallRecording.model';
 import { KycDocument } from '../../modules/kyc-documents/models/KycDocument.model';
+import { Staff } from '../../modules/staff/models/Staff.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -48,6 +49,7 @@ export const sequelize = new Sequelize({
     AmcPayment,
     CallRecording,
     KycDocument,
+    Staff,
   ],
 });
 
