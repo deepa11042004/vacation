@@ -36,7 +36,6 @@ const navItems: NavItem[] = [
     ],
   },
   { label: "Contact", url: "/contact" },
-  { label: "Login", url: "/login" },
 ];
 
 /*  Component */
@@ -138,12 +137,21 @@ export default function Navbar() {
         ))}
       </div>
 
-      <CtaButton
-        text="Join Now"
-        variant={!useLightStyle ? "outline" : "blue"}
-        href="/join"
-        size="sm"
-      />
+      <div className="flex items-center gap-3">
+        <CtaButton
+          text="Login"
+          variant={!useLightStyle ? "blue" : "blue"}
+          href="/login"
+          size="sm"
+          className="border-white"
+        />
+        <CtaButton
+          text="Join Now"
+          variant={!useLightStyle ? "outline" : "blue"}
+          href="/join"
+          size="sm"
+        />
+      </div>
     </nav>
   );
 }
