@@ -61,7 +61,7 @@ export default function MemberHero() {
         <motion.div variants={foregroundItem}>
           <Badge
             className="my-5"
-            text="Welcome to Tourvia"
+            text="MANDARIN WORLDWIDE"
             variant="white"
             size="lg"
             icon={Minus}

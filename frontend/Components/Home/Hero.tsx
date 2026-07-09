@@ -61,7 +61,7 @@ export default function Hero() {
         <motion.div variants={foregroundItem}>
           <Badge
             className="my-5"
-            text="Welcome to Tourvia"
+            text="MANDARIN WORLDWIDE"
             variant="white"
             size="lg"
             icon={Minus}
@@ -74,7 +74,7 @@ export default function Hero() {
         >
           Explore beyond the
           <br />
-          map With Tourvia
+          map With Us
         </motion.h1>
 
         <motion.div variants={foregroundItem}>
