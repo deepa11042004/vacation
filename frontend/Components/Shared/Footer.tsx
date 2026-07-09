@@ -176,6 +176,12 @@ export default function Footer() {
             >
               Terms & Conditions
             </Link>
+            <Link
+              href="/staff/login"
+              className="hover:text-white transition-colors opacity-60 hover:opacity-100"
+            >
+              Staff Login
+            </Link>
           </div>
         </div>
       </div>
