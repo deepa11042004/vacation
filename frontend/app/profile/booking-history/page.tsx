@@ -5,9 +5,7 @@ import Image from 'next/image';
 import { 
   MapPin, 
   Calendar, 
-  Users, 
-  CreditCard, 
-  Download, 
+  Moon, 
   ChevronRight,
   Search,
   Filter
@@ -26,11 +24,9 @@ export default function BookingHistoryPage() {
       image: "https://images.pexels.com/photos/19244948/pexels-photo-19244948.jpeg",
       checkIn: "Dec 10, 2026",
       checkOut: "Dec 17, 2026",
-      guests: "2 Adults, 1 Room",
-      amount: "$2,850",
+      nightsUsed: 7,
       status: "Upcoming",
-      statusColor: "bg-blue-100 text-blue-700 border-blue-200",
-      paymentStatus: "Paid in full"
+      statusColor: "bg-blue-100 text-blue-700 border-blue-200"
     },
     {
       id: "BKG-5412-PR",
@@ -39,11 +35,9 @@ export default function BookingHistoryPage() {
       image: "https://images.pexels.com/photos/16771759/pexels-photo-16771759.jpeg",
       checkIn: "Aug 15, 2026",
       checkOut: "Aug 22, 2026",
-      guests: "4 Adults, 2 Rooms",
-      amount: "$4,200",
+      nightsUsed: 7,
       status: "Completed",
-      statusColor: "bg-emerald-100 text-emerald-700 border-emerald-200",
-      paymentStatus: "Paid in full"
+      statusColor: "bg-emerald-100 text-emerald-700 border-emerald-200"
     },
     {
       id: "BKG-9921-LM",
@@ -52,11 +46,9 @@ export default function BookingHistoryPage() {
       image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop",
       checkIn: "Apr 05, 2026",
       checkOut: "Apr 12, 2026",
-      guests: "2 Adults, 1 Room",
-      amount: "$1,950",
+      nightsUsed: 7,
       status: "Completed",
-      statusColor: "bg-emerald-100 text-emerald-700 border-emerald-200",
-      paymentStatus: "Paid in full"
+      statusColor: "bg-emerald-100 text-emerald-700 border-emerald-200"
     },
     {
       id: "BKG-3304-WQ",
@@ -65,11 +57,9 @@ export default function BookingHistoryPage() {
       image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=1000&auto=format&fit=crop",
       checkIn: "Jan 10, 2026",
       checkOut: "Jan 15, 2026",
-      guests: "2 Adults, 1 Room",
-      amount: "$5,100",
+      nightsUsed: 5,
       status: "Cancelled",
-      statusColor: "bg-rose-100 text-rose-700 border-rose-200",
-      paymentStatus: "Refunded"
+      statusColor: "bg-rose-100 text-rose-700 border-rose-200"
     }
   ];
 
@@ -84,10 +74,10 @@ export default function BookingHistoryPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-800 font-marcellus mb-2">
-            Your Journeys
+            Booking History
           </h2>
-          <p className="text-slate-500">
-            View and manage all your past, present, and future adventures.
+          <p className="text-slate-500 max-w-2xl">
+            View your past hotel stays linked to your membership and nights utilized.
           </p>
         </div>
         
@@ -96,7 +86,7 @@ export default function BookingHistoryPage() {
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input 
               type="text" 
-              placeholder="Search bookings..." 
+              placeholder="Search stays..." 
               className="pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all w-full md:w-64"
             />
           </div>
@@ -189,40 +179,21 @@ export default function BookingHistoryPage() {
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="p-2 bg-slate-50 rounded-xl text-slate-600">
-                          <Users className="w-4 h-4" />
+                          <Moon className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">Guests & Rooms</p>
-                          <p className="text-sm font-bold text-slate-800">{booking.guests}</p>
+                          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">Nights Used</p>
+                          <p className="text-sm font-bold text-slate-800">{booking.nightsUsed} Nights Deducted</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-6 pt-6 border-t border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
-                        <CreditCard className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">Total Amount</p>
-                        <div className="flex items-center gap-2">
-                          <p className="text-lg font-bold text-slate-800">{booking.amount}</p>
-                          <span className="text-xs font-medium text-slate-500">({booking.paymentStatus})</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-3 w-full sm:w-auto">
-                      <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-colors text-sm">
-                        <Download className="w-4 h-4" />
-                        <span className="hidden xs:inline">Invoice</span>
-                      </button>
-                      <button className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-5 py-2.5 bg-slate-900 text-white font-medium rounded-xl hover:bg-slate-800 transition-colors text-sm group/btn">
-                        Details
-                        <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
-                      </button>
-                    </div>
+                  <div className="flex flex-col sm:flex-row sm:items-end justify-end gap-4 mt-6 pt-6 border-t border-slate-100">
+                    <button className="w-full sm:w-auto flex items-center justify-center gap-1 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors text-sm group/btn">
+                      View Details
+                      <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                    </button>
                   </div>
 
                 </div>

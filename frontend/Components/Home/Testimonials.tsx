@@ -27,7 +27,7 @@ const INDIAN_TESTIMONIALS: Testimonial[] = [
   {
     id: "2",
     quote:
-      "Onze reis naar Bali via Tourvia was fenomenaal. Geen stress over hotelboekingen of lokaal vervoer, alles was op een luxueus niveau geregeld.",
+      "Onze reis naar Bali via MANDARIN WORLDWIDE was fenomenaal. Geen stress over hotelboekingen of lokaal vervoer, alles was op een luxueus niveau geregeld.",
     name: "Ananya Iyer",
     location: "Bangalore, India",
     avatar:

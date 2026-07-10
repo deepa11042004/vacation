@@ -111,10 +111,10 @@ export default function Footer() {
               Support Email
             </span>
             <a
-              href="mailto:support@tourvia.com"
+              href="mailto:support@mandarinworldwide.com"
               className="hover:text-white transition-colors"
             >
-              support@tourvia.com
+              support@mandarinworldwide.com
             </a>
           </div>
           <div className="flex flex-col gap-1">
@@ -138,16 +138,10 @@ export default function Footer() {
             <span className="text-white font-bold uppercase tracking-wider text-xs">
               Payment
             </span>
-            <Link
-              href="/"
-              className="hover:text-white transition-colors"
-            >
+            <Link href="/" className="hover:text-white transition-colors">
               Pay Now (PhonePe)
             </Link>
-            <Link
-              href="/"
-              className="hover:text-white transition-colors"
-            >
+            <Link href="/" className="hover:text-white transition-colors">
               Pay Now (PayU)
             </Link>
           </div>
@@ -155,7 +149,7 @@ export default function Footer() {
 
         {/* Bottom Row: Legalities & Metadata Lockup */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-neutral-300 select-none">
-          <p>© {currentYear} Tourvia. All Rights Reserved.</p>
+          <p>© {currentYear} MANDARIN WORLDWIDE. All Rights Reserved.</p>
           <div className="flex items-center gap-6">
             <Link
               href="/refund-policy"

@@ -27,7 +27,12 @@ export default function LoginPage() {
       <div className="z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
         {/* Left Side Content */}
         <div className="text-white space-y-6">
-          <Badge text="Tourvia" size="lg" variant="white" icon={Minus} />
+          <Badge
+            text="MANDARIN WORLDWIDE"
+            size="lg"
+            variant="white"
+            icon={Minus}
+          />
           <h1 className="text-5xl md:text-7xl leading-tight">
             Your Journey Continues
           </h1>
