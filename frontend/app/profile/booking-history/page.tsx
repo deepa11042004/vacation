@@ -1,92 +1,84 @@
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { 
-  MapPin, 
-  Calendar, 
-  Moon, 
-  ChevronRight,
-  Search,
-  Filter
-} from 'lucide-react';
+import { useState, useEffect } from "react";
+import { MapPin, Calendar, Moon, ChevronRight, Search, Filter, Loader2 } from "lucide-react";
+import { memberApi, getStoredMemberUser } from "@/lib/member-api";
+
+interface Booking {
+  booking_id: number;
+  hotel_name: string;
+  hotel_address?: string | null;
+  check_in: string;
+  check_out: string;
+  nights: number;
+  status?: string | null;
+  confirmation_number?: string | null;
+  room_category?: string | null;
+  no_of_adults?: number | null;
+  children?: number | null;
+  night_type?: string | null;
+}
+
+function fmt(dateStr?: string | null) {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function statusColor(status?: string | null) {
+  switch ((status ?? "").toUpperCase()) {
+    case "UPCOMING": case "CONFIRMED": return "bg-blue-100 text-blue-700 border-blue-200";
+    case "COMPLETED": return "bg-emerald-100 text-emerald-700 border-emerald-200";
+    case "CANCELLED": return "bg-rose-100 text-rose-700 border-rose-200";
+    default: return "bg-slate-100 text-slate-700 border-slate-200";
+  }
+}
+
+const FILTERS = ["All", "Upcoming", "Completed", "Cancelled"];
 
 export default function BookingHistoryPage() {
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
 
-  const filters = ['All', 'Upcoming', 'Completed', 'Cancelled'];
+  useEffect(() => {
+    const user = getStoredMemberUser<{ client_id?: number | null }>();
+    const clientId = user?.client_id;
+    if (!clientId) { setError("No client account linked."); setLoading(false); return; }
 
-  const bookings = [
-    {
-      id: "BKG-7829-XJ",
-      title: "Swiss Alps Resort",
-      location: "Zermatt, Switzerland",
-      image: "https://images.pexels.com/photos/19244948/pexels-photo-19244948.jpeg",
-      checkIn: "Dec 10, 2026",
-      checkOut: "Dec 17, 2026",
-      nightsUsed: 7,
-      status: "Upcoming",
-      statusColor: "bg-blue-100 text-blue-700 border-blue-200"
-    },
-    {
-      id: "BKG-5412-PR",
-      title: "Santorini Coastal Villa",
-      location: "Oia, Greece",
-      image: "https://images.pexels.com/photos/16771759/pexels-photo-16771759.jpeg",
-      checkIn: "Aug 15, 2026",
-      checkOut: "Aug 22, 2026",
-      nightsUsed: 7,
-      status: "Completed",
-      statusColor: "bg-emerald-100 text-emerald-700 border-emerald-200"
-    },
-    {
-      id: "BKG-9921-LM",
-      title: "Kyoto Zen Retreat",
-      location: "Kyoto, Japan",
-      image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop",
-      checkIn: "Apr 05, 2026",
-      checkOut: "Apr 12, 2026",
-      nightsUsed: 7,
-      status: "Completed",
-      statusColor: "bg-emerald-100 text-emerald-700 border-emerald-200"
-    },
-    {
-      id: "BKG-3304-WQ",
-      title: "Maldives Overwater Bungalow",
-      location: "Male, Maldives",
-      image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=1000&auto=format&fit=crop",
-      checkIn: "Jan 10, 2026",
-      checkOut: "Jan 15, 2026",
-      nightsUsed: 5,
-      status: "Cancelled",
-      statusColor: "bg-rose-100 text-rose-700 border-rose-200"
-    }
-  ];
+    memberApi.get<{ success: boolean; data: { bookings: Booking[] } }>(`/clients/${clientId}/bookings`)
+      .then((res) => {
+        if (res?.success) setBookings(Array.isArray(res.data?.bookings) ? res.data.bookings : []);
+        else setError("Failed to load bookings.");
+      })
+      .catch(() => setError("Failed to load bookings."))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const filteredBookings = activeFilter === 'All' 
-    ? bookings 
-    : bookings.filter(b => b.status === activeFilter);
+  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>;
+
+  const filtered = bookings.filter((b) => {
+    const matchFilter = activeFilter === "All" || (b.status ?? "").toUpperCase() === activeFilter.toUpperCase();
+    const matchSearch = !search || b.hotel_name.toLowerCase().includes(search.toLowerCase()) || (b.hotel_address ?? "").toLowerCase().includes(search.toLowerCase());
+    return matchFilter && matchSearch;
+  });
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
-      
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 font-marcellus mb-2">
-            Booking History
-          </h2>
-          <p className="text-slate-500 max-w-2xl">
-            View your past hotel stays linked to your membership and nights utilized.
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 font-marcellus mb-2">Booking History</h2>
+          <p className="text-slate-500 max-w-2xl">View your hotel stays linked to your membership.</p>
         </div>
-        
         <div className="flex items-center gap-3">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search stays..." 
+            <input
+              type="text"
+              placeholder="Search stays..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all w-full md:w-64"
             />
           </div>
@@ -96,28 +88,25 @@ export default function BookingHistoryPage() {
         </div>
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex overflow-x-auto pb-2 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
         <div className="flex items-center gap-2 bg-white p-1.5 rounded-full border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-          {filters.map(filter => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
+          {FILTERS.map((f) => (
+            <button key={f} onClick={() => setActiveFilter(f)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                activeFilter === filter
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              {filter}
+                activeFilter === f ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-slate-100"
+              }`}>
+              {f}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Bookings List */}
       <div className="space-y-6">
-        {filteredBookings.length === 0 ? (
+        {error ? (
+          <div className="bg-white rounded-3xl p-12 text-center border border-slate-100 shadow-sm">
+            <p className="text-slate-500">{error}</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center border border-slate-100 shadow-sm">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-6 h-6 text-slate-400" />
@@ -126,64 +115,46 @@ export default function BookingHistoryPage() {
             <p className="text-slate-500">You don&apos;t have any {activeFilter.toLowerCase()} bookings at the moment.</p>
           </div>
         ) : (
-          filteredBookings.map((booking) => (
-            <div 
-              key={booking.id}
-              className="group bg-white rounded-3xl p-4 md:p-6 shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-slate-100 hover:border-blue-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300"
-            >
+          filtered.map((b) => (
+            <div key={b.booking_id}
+              className="group bg-white rounded-3xl p-4 md:p-6 shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-slate-100 hover:border-blue-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
               <div className="flex flex-col md:flex-row gap-6">
-                
-                {/* Image Section */}
-                <div className="relative w-full md:w-64 h-48 md:h-auto shrink-0 rounded-2xl overflow-hidden">
-                  <Image 
-                    src={booking.image}
-                    alt={booking.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md ${booking.statusColor}`}>
-                      {booking.status}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Details Section */}
                 <div className="flex-1 flex flex-col justify-between py-1">
                   <div>
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-2">
                       <div>
-                        <div className="flex items-center text-sm text-slate-500 font-medium mb-1">
-                          <MapPin className="w-3.5 h-3.5 mr-1" />
-                          {booking.location}
-                        </div>
-                        <h3 className="text-2xl font-bold text-slate-800 font-marcellus leading-tight">
-                          {booking.title}
-                        </h3>
+                        {b.hotel_address && (
+                          <div className="flex items-center text-sm text-slate-500 font-medium mb-1">
+                            <MapPin className="w-3.5 h-3.5 mr-1" />{b.hotel_address}
+                          </div>
+                        )}
+                        <h3 className="text-2xl font-bold text-slate-800 font-marcellus leading-tight">{b.hotel_name}</h3>
                       </div>
-                      <div className="text-left md:text-right">
-                        <p className="text-sm font-medium text-slate-500">Booking Ref</p>
-                        <p className="text-sm font-bold text-slate-800">{booking.id}</p>
+                      <div className="text-left md:text-right flex md:flex-col items-center md:items-end gap-3">
+                        {b.status && (
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${statusColor(b.status)}`}>
+                            {b.status}
+                          </span>
+                        )}
+                        {b.confirmation_number && (
+                          <p className="text-xs font-mono text-slate-500">Ref: {b.confirmation_number}</p>
+                        )}
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                       <div className="flex items-start gap-3">
-                        <div className="p-2 bg-slate-50 rounded-xl text-slate-600">
-                          <Calendar className="w-4 h-4" />
-                        </div>
+                        <div className="p-2 bg-slate-50 rounded-xl text-slate-600"><Calendar className="w-4 h-4" /></div>
                         <div>
                           <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">Dates</p>
-                          <p className="text-sm font-bold text-slate-800">{booking.checkIn} — {booking.checkOut}</p>
+                          <p className="text-sm font-bold text-slate-800">{fmt(b.check_in)} — {fmt(b.check_out)}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
-                        <div className="p-2 bg-slate-50 rounded-xl text-slate-600">
-                          <Moon className="w-4 h-4" />
-                        </div>
+                        <div className="p-2 bg-slate-50 rounded-xl text-slate-600"><Moon className="w-4 h-4" /></div>
                         <div>
                           <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-0.5">Nights Used</p>
-                          <p className="text-sm font-bold text-slate-800">{booking.nightsUsed} Nights Deducted</p>
+                          <p className="text-sm font-bold text-slate-800">{b.nights} Nights</p>
                         </div>
                       </div>
                     </div>
@@ -195,14 +166,12 @@ export default function BookingHistoryPage() {
                       <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
                     </button>
                   </div>
-
                 </div>
               </div>
             </div>
           ))
         )}
       </div>
-
     </div>
   );
 }
