@@ -99,7 +99,7 @@ export default function ProfileLayout({
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between bg-white p-4 border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+      <div className="md:hidden flex items-center rounded-b-2xl justify-between bg-white p-4 border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <Link href="/" className="flex items-center">
           <Image
             src="/Img/fulllogo.png"
@@ -133,11 +133,11 @@ export default function ProfileLayout({
         <div className="hidden md:flex items-center p-6 border-b border-slate-100 h-20 shrink-0">
           <Link href="/">
             <Image
-              src="/Img/logo.png"
+              src="/Img/fulllogo.png"
               alt="Logo"
               width={150}
               height={30}
-              className="h-8 w-auto object-cover"
+              className="h-15 md:h-20 w-auto object-contain"
             />
           </Link>
         </div>
