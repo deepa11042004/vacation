@@ -106,25 +106,27 @@ export default function FAQsec() {
         </div>
 
         {/* ─── Segmented Navigation Switcher Tabs ─── */}
-        <div className="flex flex-wrap gap-3 mb-10 justify-center">
-          <div className="inline-flex flex-wrap gap-1.5 rounded-full bg-neutral-100 p-1.5 border border-neutral-200 shadow-xs">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  setActiveTab(tab.id as any);
-                  setOpenIndex(null);
-                }}
-                className={`rounded-full px-5 py-2 text-xs font-bold tracking-widest transition-all uppercase duration-300 ${
-                  activeTab === tab.id
-                    ? "bg-neutral-950 text-white shadow-md"
-                    : "text-gray-500 hover:text-gray-900"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+        <div className="flex justify-center w-full mb-10 px-2">
+          <div className="flex bg-neutral-100 p-1.5 border border-neutral-200 shadow-xs rounded-4xl md:rounded-full max-w-full">
+            <div className="flex overflow-x-auto scrollbar-hide gap-1.5 items-center w-full">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    setActiveTab(tab.id as any);
+                    setOpenIndex(null);
+                  }}
+                  className={`whitespace-nowrap shrink-0 rounded-full px-5 py-2 text-xs font-bold tracking-widest transition-all uppercase duration-300 ${
+                    activeTab === tab.id
+                      ? "bg-neutral-950 text-white shadow-md"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

@@ -7,9 +7,12 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative h-screen w-full bg-black overflow-hidden text-white flex items-end">
+    // FIXED: Changed 'h-screen' to 'min-h-screen lg:h-screen' (optional if you want full screen on desktop)
+    // and removed 'overflow-hidden' so content flows properly on mobile.
+    <footer className="relative min-h-screen lg:h-screen w-full bg-black text-white flex items-end py-12 lg:py-0">
       {/* Main Content Hub */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-10 flex flex-col justify-between h-full pt-36">
+      {/* FIXED: Adjusted pt-36 to a responsive pt-20 lg:pt-36 to give it breathing room on mobile */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pb-10 flex flex-col justify-between h-full pt-20 lg:pt-36 gap-12 lg:gap-0">
         {/* Top Row: Navigation Links + Centered Call To Action */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           {/* Left Column: Main Page Directory */}
@@ -40,12 +43,6 @@ export default function Footer() {
                 Destination
               </Link>
               <Link
-                href="/contact"
-                className="hover:text-white transition-colors"
-              >
-                Contact
-              </Link>
-              <Link
                 href="/login"
                 className="hover:text-white transition-colors"
               >
@@ -59,7 +56,9 @@ export default function Footer() {
             <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-6 leading-tight max-w-lg">
               Expeditions Expertise <br /> at Your Service
             </h3>
-            <CtaButton text="Contact Us" variant="white" size="md" />
+            <Link href="/contact">
+              <CtaButton text="Contact Us" variant="white" size="md" />
+            </Link>
           </div>
 
           {/* Right Column: Social Channels Directory */}
@@ -105,7 +104,8 @@ export default function Footer() {
         </div>
 
         {/* Middle Row: Customer Support Details */}
-        <div className="mt-16 flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 text-sm font-medium text-neutral-300 text-center md:text-left">
+        {/* FIXED: Changed alignment on mobile from text-center to text-left to match your image style layout */}
+        <div className="mt-8 lg:mt-16 grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-row items-start justify-between gap-8 text-sm font-medium text-neutral-300 text-left">
           <div className="flex flex-col gap-1">
             <span className="text-white font-bold uppercase tracking-wider text-xs">
               Support Email
@@ -148,9 +148,10 @@ export default function Footer() {
         </div>
 
         {/* Bottom Row: Legalities & Metadata Lockup */}
-        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium text-neutral-300 select-none">
+        {/* FIXED: flex-wrap ensures items break gracefully on smaller viewport sizes */}
+        <div className="mt-8 lg:mt-12 pt-6 border-t border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-sm font-medium text-neutral-300 select-none">
           <p>© {currentYear} MANDARIN WORLDWIDE. All Rights Reserved.</p>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link
               href="/refund-policy"
               className="hover:text-white transition-colors"
