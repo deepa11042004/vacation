@@ -98,6 +98,8 @@ export class OnboardService {
           password: newClient.mobile,
           role: UserRole.CLIENT,
           client_id: newClient.client_id,
+          first_name: newClient.first_name ?? undefined,
+          last_name: newClient.last_name ?? undefined,
         },
         t,
       );

@@ -71,11 +71,16 @@ export async function GET(
   try {
     await connectDB();
     const currentUser = await authenticateRequest(request);
-    requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
 
     const { id } = await props.params;
     const clientId = parseInt(id, 10);
     if (isNaN(clientId)) return NextResponse.json(ResponseUtil.failure('Invalid client id'), { status: 400 });
+
+    if (currentUser.role === UserRole.CLIENT && currentUser.client_id !== clientId) {
+      return NextResponse.json(ResponseUtil.failure('Forbidden: Access denied'), { status: 403 });
+    }
+
+    requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER, UserRole.CLIENT]);
 
     const payments = await service.getByClientId(clientId);
     return NextResponse.json(ResponseUtil.success('AMC payments fetched', { payments }));

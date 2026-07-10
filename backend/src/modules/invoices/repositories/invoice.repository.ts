@@ -15,11 +15,12 @@ export class InvoiceRepository {
   }
 
   async findAll(filters: InvoiceFilterOptions = {}): Promise<{ rows: Invoice[]; count: number }> {
-    const { search, page = 1, limit = 20 } = filters;
+    const { search, client_id, page = 1, limit = 20 } = filters;
     const cappedLimit = Math.min(limit, MAX_LIMIT);
     const offset = (page - 1) * cappedLimit;
 
     const where: Record<string, unknown> = {};
+    if (client_id) where['client_id'] = client_id;
     if (search) {
       where[Op.or as unknown as string] = [
         { client_name:  { [Op.like]: `%${search}%` } },

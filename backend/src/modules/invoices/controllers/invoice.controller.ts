@@ -20,13 +20,22 @@ export class InvoiceController {
     try {
       await connectDB();
       const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
 
       const { searchParams } = new URL(req.url);
+      let client_id: number | undefined = searchParams.get('client_id') ? parseInt(searchParams.get('client_id')!, 10) : undefined;
+
+      if (currentUser.role === UserRole.CLIENT) {
+        if (!currentUser.client_id) throw new AppError('Forbidden: No client account', 403);
+        client_id = currentUser.client_id;
+      } else {
+        requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
+      }
+
       const filters = {
-        search: searchParams.get('search') || undefined,
-        page:   parseInt(searchParams.get('page')  || '1',  10),
-        limit:  parseInt(searchParams.get('limit') || '20', 10),
+        search:    searchParams.get('search') || undefined,
+        client_id,
+        page:      parseInt(searchParams.get('page')  || '1',  10),
+        limit:     parseInt(searchParams.get('limit') || '20', 10),
       };
 
       const result = await invoiceService.getAllInvoices(filters);

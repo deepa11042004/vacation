@@ -5,6 +5,9 @@ import { LoginDTO } from '../dto/auth.dto';
 import { JwtUtil } from '../../../shared/utils/jwt.util';
 import { AppError } from '../../../shared/middlewares/error.middleware';
 import { UserRole, UserStatus } from '../../users/types/user.types';
+import { Client } from '../../clients/models/Client.model';
+import { ClientAddress } from '../../clients/models/ClientAddress.model';
+import { Membership } from '../../memberships/models/Membership.model';
 
 export class AuthService {
   private authRepository: AuthRepository;
@@ -140,6 +143,26 @@ export class AuthService {
   }
 
   async me(user_id: number) {
-    return await this.userService.getUserById(user_id);
+    const user = await this.userService.getUserById(user_id);
+
+    if (user.role !== UserRole.CLIENT || !user.client_id) return user;
+
+    const [client, membership] = await Promise.all([
+      Client.findByPk(user.client_id, {
+        attributes: ['client_id', 'first_name', 'middle_name', 'last_name', 'mobile', 'country_code', 'email', 'gender'],
+        include: [{ model: ClientAddress, attributes: ['primary_address', 'primary_state', 'primary_pincode'] }],
+      }),
+      Membership.findOne({
+        where: { client_id: user.client_id },
+        attributes: ['membership_id', 'membership_number', 'status', 'package_name', 'end_date'],
+        order: [['created_at', 'DESC']],
+      }),
+    ]);
+
+    return {
+      ...user,
+      clientProfile: client ? client.toJSON() : null,
+      membership: membership ? membership.toJSON() : null,
+    };
   }
 }
