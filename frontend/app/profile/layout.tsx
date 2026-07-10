@@ -137,7 +137,7 @@ export default function ProfileLayout({
               alt="Logo"
               width={150}
               height={30}
-              className="h-15 md:h-20 w-auto object-contain"
+              className="h-15 md:h-20 w-auto object-contain ml-10"
             />
           </Link>
         </div>
