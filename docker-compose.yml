@@ -16,6 +16,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+    volumes:
+      - uploads_data:/app/public/upload
     networks:
       - app
     labels:
@@ -51,6 +53,9 @@ services:
       - traefik.http.routers.frontend.tls=true
       - traefik.http.routers.frontend.tls.certresolver=letsencrypt
       - traefik.http.services.frontend.loadbalancer.server.port=3000
+
+volumes:
+  uploads_data:
 
 networks:
   app:
