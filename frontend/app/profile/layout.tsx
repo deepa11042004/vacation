@@ -43,33 +43,33 @@ export default function ProfileLayout({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const token = getMemberToken();
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
+  // useEffect(() => {
+  //   const token = getMemberToken();
+  //   if (!token) {
+  //     router.replace("/login");
+  //     return;
+  //   }
 
-    const stored = getStoredMemberUser<MeUser>();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setUser(stored);
+  //   const stored = getStoredMemberUser<MeUser>();
+  //   // eslint-disable-next-line react-hooks/set-state-in-effect
+  //   if (stored) setUser(stored);
 
-    memberApi
-      .get<{ success: boolean; data: MeUser }>("/auth/me")
-      .then((res) => {
-        if (res?.success && res.data) {
-          setUser(res.data);
-          // Refresh stored user with latest data
-          const refreshToken = getMemberRefreshToken();
-          if (token && refreshToken)
-            saveMemberAuth(token, refreshToken, res.data);
-        } else {
-          router.replace("/login");
-        }
-      })
-      .catch(() => router.replace("/login"))
-      .finally(() => setAuthChecked(true));
-  }, [router]);
+  //   memberApi
+  //     .get<{ success: boolean; data: MeUser }>("/auth/me")
+  //     .then((res) => {
+  //       if (res?.success && res.data) {
+  //         setUser(res.data);
+  //         // Refresh stored user with latest data
+  //         const refreshToken = getMemberRefreshToken();
+  //         if (token && refreshToken)
+  //           saveMemberAuth(token, refreshToken, res.data);
+  //       } else {
+  //         router.replace("/login");
+  //       }
+  //     })
+  //     .catch(() => router.replace("/login"))
+  //     .finally(() => setAuthChecked(true));
+  // }, [router]);
 
   const navigation = [
     { url: "/profile", name: "My Profile" },
@@ -88,13 +88,13 @@ export default function ProfileLayout({
     "Member";
   const memberNo = user?.membership?.membership_number ?? "";
 
-  if (!authChecked && !getStoredMemberUser()) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
+  // if (!authChecked && !getStoredMemberUser()) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-slate-50">
+  //       <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
@@ -130,20 +130,20 @@ export default function ProfileLayout({
         }`}
       >
         {/* Desktop Logo */}
-        <div className="hidden md:flex items-center p-6 border-b border-slate-100 h-20 shrink-0">
+        <div className="hidden md:flex items-center p-16 border-b border-slate-100 h-20 shrink-0">
           <Link href="/">
             <Image
               src="/Img/fulllogo.png"
               alt="Logo"
               width={150}
               height={30}
-              className="h-15 md:h-20 w-auto object-contain ml-10"
+              className="h-15 md:h-20 w-auto object-contain"
             />
           </Link>
         </div>
 
         {/* User Profile Summary */}
-        <div className="p-6 border-b border-slate-100 flex items-center gap-4 shrink-0 bg-slate-50/50">
+        <div className="p-4 border-b border-slate-100 flex items-center gap-4 shrink-0 bg-slate-50/50">
           <div className="relative shrink-0">
             <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl border-2 border-white shadow-sm">
               {fullName.charAt(0).toUpperCase()}
