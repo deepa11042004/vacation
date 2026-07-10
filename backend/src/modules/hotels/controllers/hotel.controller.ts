@@ -201,14 +201,14 @@ export class HotelController {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      const uploadDir = path.join(process.cwd(), 'public', 'upload', 'hotels');
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'hotels');
       await fs.mkdir(uploadDir, { recursive: true });
 
       const filename = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
       const filePath = path.join(uploadDir, filename);
       await fs.writeFile(filePath, buffer);
 
-      const relativePath = `/upload/hotels/${filename}`;
+      const relativePath = `/uploads/hotels/${filename}`;
 
       // Call Service
       const result = await hotelService.addHotelImage(hotel_id, {

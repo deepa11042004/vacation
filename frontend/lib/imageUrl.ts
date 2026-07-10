@@ -1,7 +1,3 @@
-/**
- * Bare filenames (seeded data) are resolved under /upload/<subfolder>/.
- * Full paths that already start with "/" or "http" are passed through as-is.
- */
 export function hotelImageUrl(
   imagePath: string | null | undefined,
   fallback = "/Img/room.png"
