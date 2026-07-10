@@ -43,33 +43,33 @@ export default function ProfileLayout({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // useEffect(() => {
-  //   const token = getMemberToken();
-  //   if (!token) {
-  //     router.replace("/login");
-  //     return;
-  //   }
+  useEffect(() => {
+    const token = getMemberToken();
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
 
-  //   const stored = getStoredMemberUser<MeUser>();
-  //   // eslint-disable-next-line react-hooks/set-state-in-effect
-  //   if (stored) setUser(stored);
+    const stored = getStoredMemberUser<MeUser>();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (stored) setUser(stored);
 
-  //   memberApi
-  //     .get<{ success: boolean; data: MeUser }>("/auth/me")
-  //     .then((res) => {
-  //       if (res?.success && res.data) {
-  //         setUser(res.data);
-  //         // Refresh stored user with latest data
-  //         const refreshToken = getMemberRefreshToken();
-  //         if (token && refreshToken)
-  //           saveMemberAuth(token, refreshToken, res.data);
-  //       } else {
-  //         router.replace("/login");
-  //       }
-  //     })
-  //     .catch(() => router.replace("/login"))
-  //     .finally(() => setAuthChecked(true));
-  // }, [router]);
+    memberApi
+      .get<{ success: boolean; data: MeUser }>("/auth/me")
+      .then((res) => {
+        if (res?.success && res.data) {
+          setUser(res.data);
+          // Refresh stored user with latest data
+          const refreshToken = getMemberRefreshToken();
+          if (token && refreshToken)
+            saveMemberAuth(token, refreshToken, res.data);
+        } else {
+          router.replace("/login");
+        }
+      })
+      .catch(() => router.replace("/login"))
+      .finally(() => setAuthChecked(true));
+  }, [router]);
 
   const navigation = [
     { url: "/profile", name: "My Profile" },
@@ -88,13 +88,13 @@ export default function ProfileLayout({
     "Member";
   const memberNo = user?.membership?.membership_number ?? "";
 
-  // if (!authChecked && !getStoredMemberUser()) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center bg-slate-50">
-  //       <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-  //     </div>
-  //   );
-  // }
+  if (!authChecked && !getStoredMemberUser()) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
