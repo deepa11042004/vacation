@@ -102,11 +102,11 @@ export default function ProfileLayout({
       <div className="md:hidden flex items-center justify-between bg-white p-4 border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <Link href="/" className="flex items-center">
           <Image
-            src="/Img/logo.png"
+            src="/Img/fulllogo.png"
             alt="Logo"
             width={120}
             height={24}
-            className="h-8 w-auto object-cover"
+            className="h-15 md:h-20 w-auto object-contain"
           />
         </Link>
         <button
