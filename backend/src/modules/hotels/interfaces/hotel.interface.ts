@@ -2,6 +2,7 @@ import { PropertyType, HotelType, HotelStatus } from '../types/hotel.types';
 
 export interface IHotel {
   hotel_id: number;
+  hotel_code: string;
   location_id: number;
   hotel_name: string;
   property_type: PropertyType;

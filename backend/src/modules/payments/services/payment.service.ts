@@ -6,7 +6,6 @@ import { AppError } from '../../../shared/middlewares/error.middleware';
 import { IPayment } from '../interfaces/payment.interface';
 import { sequelize } from '../../../shared/database/sequelize';
 import { MembershipService } from '../../memberships/services/membership.service';
-import { MembershipStatus } from '../../memberships/types/membership.types';
 import { Membership } from '../../memberships/models/Membership.model';
 
 export class PaymentService {

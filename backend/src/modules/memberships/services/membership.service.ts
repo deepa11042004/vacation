@@ -12,15 +12,7 @@ import { Payment } from '../../payments/models/Payment.model';
 import { Booking } from '../../bookings/models/Booking.model';
 import { AmcPayment } from '../../amc-payments/models/AmcPayment.model';
 import { PaymentMode, PaymentStatus, PaymentType } from '../../payments/types/payment.types';
-
-function round2(n: number): number {
-  return parseFloat(n.toFixed(2));
-}
-
-function uniqueTemp(prefix: string, maxLen: number): string {
-  const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
-  return `${prefix}${Date.now()}${rand}`.slice(0, maxLen);
-}
+import { round2, uniqueTemp } from '../../../shared/utils/math.util';
 
 export class MembershipService {
   private membershipRepository: MembershipRepository;

@@ -2,8 +2,9 @@ import { z } from 'zod';
 import { PropertyType, HotelType, HotelStatus } from '../types/hotel.types';
 
 export const CreateHotelSchema = z.object({
+  hotel_code: z.string().min(1).max(20).optional(),
   location_id: z.number().int().positive('Invalid Location ID'),
-  hotel_name: z.string().min(1, 'Hotel name is required').max(100),
+  hotel_name: z.string().min(1, 'Hotel name is required').max(500),
   property_type: z.nativeEnum(PropertyType, {
     errorMap: () => ({ message: 'Invalid property type (INTERNAL_PROPERTY or ASSOCIATED_PROPERTY)' }),
   }),

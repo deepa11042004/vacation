@@ -9,8 +9,4 @@ export const HOTEL_CONSTANTS = {
     UPLOAD_FAILED: 'Failed to upload hotel image',
     LOCATION_NOT_FOUND: 'The associated location was not found',
   },
-  DEFAULTS: {
-    STATUS_ACTIVE: 'ACTIVE',
-    STATUS_INACTIVE: 'INACTIVE',
-  },
 };

@@ -8,6 +8,46 @@ import { connectDB } from '@/shared/database/sequelize';
 
 const service = new KycDocumentService();
 
+/**
+ * @swagger
+ * /api/clients/{id}/kyc-documents:
+ *   get:
+ *     summary: List KYC documents for a client
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: KYC documents retrieved successfully
+ *   post:
+ *     summary: Upload a KYC document for a client
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [file, title]
+ *             properties:
+ *               file:  { type: string, format: binary }
+ *               title: { type: string, example: "Aadhaar Card" }
+ *     responses:
+ *       201:
+ *         description: Document uploaded successfully
+ */
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();

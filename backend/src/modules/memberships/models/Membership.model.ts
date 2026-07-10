@@ -126,8 +126,16 @@ export class Membership extends Model<IMembership, Partial<IMembership>> impleme
   dsa?: MembershipDSA | null;
 
   @AllowNull(true)
-  @Column(DataType.STRING(100))
+  @Column(DataType.STRING(150))
   reference_by?: string | null;
+
+  @ForeignKey(() => Membership)
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  referrer_membership_id?: number | null;
+
+  @BelongsTo(() => Membership, { foreignKey: 'referrer_membership_id', as: 'referrerMembership', constraints: false })
+  referrerMembership?: Membership | null;
 
   @Default(MembershipStatus.ACTIVE)
   @AllowNull(false)

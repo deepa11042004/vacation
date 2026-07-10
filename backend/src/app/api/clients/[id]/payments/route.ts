@@ -10,6 +10,51 @@ import { connectDB } from '@/shared/database/sequelize';
 
 const paymentService = new PaymentService();
 
+/**
+ * @swagger
+ * /api/clients/{id}/payments:
+ *   get:
+ *     summary: List payments for a client
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Payments retrieved successfully
+ *   post:
+ *     summary: Record a payment for a client membership
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [membership_id, amount, payment_mode, payment_date]
+ *             properties:
+ *               membership_id:   { type: integer }
+ *               amount:          { type: number, example: 50000 }
+ *               payment_mode:    { type: string, enum: [CASH, CHEQUE, ONLINE, BANK_TRANSFER, CARD] }
+ *               payment_date:    { type: string, format: date }
+ *               transaction_ref: { type: string }
+ *               bank_name:       { type: string }
+ *               remarks:         { type: string }
+ *     responses:
+ *       201:
+ *         description: Payment recorded successfully
+ */
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   return PaymentController.getByClientId(request, params.id);

@@ -8,6 +8,46 @@ import { connectDB } from '@/shared/database/sequelize';
 
 const service = new CallRecordingService();
 
+/**
+ * @swagger
+ * /api/clients/{id}/call-recordings:
+ *   get:
+ *     summary: List call recordings for a client
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Recordings retrieved successfully
+ *   post:
+ *     summary: Upload a call recording for a client
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [file, note]
+ *             properties:
+ *               file: { type: string, format: binary }
+ *               note: { type: string, example: "Follow-up call" }
+ *     responses:
+ *       201:
+ *         description: Recording uploaded successfully
+ */
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();

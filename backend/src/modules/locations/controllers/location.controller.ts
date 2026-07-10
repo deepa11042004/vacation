@@ -45,7 +45,6 @@ export class LocationController {
   static async getAll(req: NextRequest) {
     try {
       await connectDB();
-      await authenticateRequest(req);
 
       const { searchParams } = new URL(req.url);
       const search = searchParams.get('search') || undefined;
@@ -70,7 +69,6 @@ export class LocationController {
   static async getById(req: NextRequest, idStr: string) {
     try {
       await connectDB();
-      await authenticateRequest(req);
 
       const id = this.parseId(idStr);
       const result = await locationService.getLocationById(id);

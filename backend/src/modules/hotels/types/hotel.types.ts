@@ -25,4 +25,5 @@ export interface HotelFilterOptions {
   status?: HotelStatus;
   page?: number;
   limit?: number;
+  includeDeleted?: boolean;
 }

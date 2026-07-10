@@ -18,6 +18,52 @@ const UpsertSchema = z.object({
   payment_mode:  z.string().max(100).optional().nullable(),
 });
 
+/**
+ * @swagger
+ * /api/clients/{id}/amc-payments:
+ *   get:
+ *     summary: List AMC payments for a client
+ *     description: Returns annual maintenance charge (AMC) payment records for all memberships of a client.
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: AMC payments retrieved successfully
+ *   post:
+ *     summary: Upsert an AMC payment record
+ *     description: Creates or updates an AMC payment for a specific membership year. Admin / Manager only.
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [membership_id, year_number, is_received]
+ *             properties:
+ *               membership_id: { type: integer }
+ *               year_number:   { type: integer, example: 1 }
+ *               is_received:   { type: boolean }
+ *               amount:        { type: number, nullable: true }
+ *               payment_date:  { type: string, format: date, nullable: true }
+ *               payment_mode:  { type: string, nullable: true }
+ *     responses:
+ *       200:
+ *         description: AMC payment saved successfully
+ */
 export async function GET(
   request: NextRequest,
   props: { params: Promise<{ id: string }> },

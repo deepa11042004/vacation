@@ -22,6 +22,7 @@ export interface IMembership {
   take_over_manager?: string | null;
   dsa?: MembershipDSA | null;
   reference_by?: string | null;
+  referrer_membership_id?: number | null;
   status: MembershipStatus;
   cancellation_reason?: string | null;
   remarks?: string | null;

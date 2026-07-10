@@ -15,6 +15,7 @@ export interface CreateMembershipDTO {
   take_over_manager_id?: number | null;
   dsa?: MembershipDSA | null;
   reference_by?: string | null;
+  referrer_membership_id?: number | null;
   remarks?: string | null;
   created_by?: number | null;
 }

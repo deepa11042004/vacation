@@ -34,6 +34,59 @@ const CreateBookingSchema = z.object({
   note:                   z.string().optional().nullable(),
 });
 
+/**
+ * @swagger
+ * /api/clients/{id}/bookings:
+ *   get:
+ *     summary: List bookings for a client
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Bookings retrieved successfully
+ *   post:
+ *     summary: Create a booking for a client
+ *     description: Records a hotel booking against a membership, deducting nights used.
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [membership_id, check_in, check_out, nights, hotel_name]
+ *             properties:
+ *               membership_id:         { type: integer, example: 1 }
+ *               hotel_name:            { type: string, example: "The Leela Goa" }
+ *               check_in:              { type: string, format: date, example: "2026-12-01" }
+ *               check_out:             { type: string, format: date, example: "2026-12-05" }
+ *               nights:                { type: integer, example: 4 }
+ *               no_of_rooms:           { type: integer, default: 1 }
+ *               no_of_adults:          { type: integer, default: 1 }
+ *               children:              { type: integer, default: 0 }
+ *               room_category:         { type: string }
+ *               booking_amount:        { type: number }
+ *               amount_paid_by_client: { type: number, default: 0 }
+ *               confirmation_number:   { type: string }
+ *               night_type:            { type: string, enum: [MEMBERSHIP, AMC, EXTRA], default: MEMBERSHIP }
+ *               remark:                { type: string }
+ *     responses:
+ *       201:
+ *         description: Booking created successfully
+ */
 // GET /api/clients/:id/bookings
 export async function GET(
   request: NextRequest,

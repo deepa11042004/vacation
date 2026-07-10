@@ -52,6 +52,10 @@ import { HotelController } from '@/modules/hotels/controllers/hotel.controller';
  *         name: status
  *         schema: { type: string, enum: [ACTIVE, INACTIVE] }
  *       - in: query
+ *         name: includeDeleted
+ *         schema: { type: boolean, default: false }
+ *         description: When true, includes soft-deleted hotels (admin panel use)
+ *       - in: query
  *         name: page
  *         schema: { type: integer, default: 1 }
  *       - in: query

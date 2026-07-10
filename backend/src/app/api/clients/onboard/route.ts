@@ -24,9 +24,10 @@ const MembershipSchema = z.object({
   bank_name:         z.string().max(100).optional().nullable(),
   sales_consultant:  z.string().max(100).optional().nullable(),
   take_over_manager: z.string().max(100).optional().nullable(),
-  dsa:               z.nativeEnum(MembershipDSA, { errorMap: () => ({ message: 'Invalid DSA type' }) }).optional().nullable(),
-  reference_by:      z.string().max(100).optional().nullable(),
-  remarks:           z.string().optional().nullable(),
+  dsa:                    z.nativeEnum(MembershipDSA, { errorMap: () => ({ message: 'Invalid DSA type' }) }).optional().nullable(),
+  reference_by:           z.string().max(150).optional().nullable(),
+  referrer_membership_id: z.number().int().positive().optional().nullable(),
+  remarks:                z.string().optional().nullable(),
 });
 
 const AddressSchema = z.object({
@@ -52,6 +53,80 @@ const OnboardSchema = z.object({
 
 const onboardService = new OnboardService();
 
+/**
+ * @swagger
+ * /api/clients/onboard:
+ *   post:
+ *     summary: Onboard a new client in one shot
+ *     description: |
+ *       Creates a client profile, address, membership, and optional offers in a single atomic transaction.
+ *       This is the primary endpoint used by the sales team when registering a new member.
+ *       Admin / Manager only.
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [client, membership]
+ *             properties:
+ *               client:
+ *                 type: object
+ *                 description: Client profile fields (same as POST /api/clients)
+ *                 required: [first_name, last_name, gender, mobile, email, country_code]
+ *                 properties:
+ *                   first_name:        { type: string }
+ *                   last_name:         { type: string }
+ *                   gender:            { type: string, enum: [MALE, FEMALE, OTHER] }
+ *                   mobile:            { type: string }
+ *                   email:             { type: string, format: email }
+ *                   country_code:      { type: string, example: "+91" }
+ *                   send_welcome_mail: { type: boolean, default: false }
+ *               address:
+ *                 type: object
+ *                 nullable: true
+ *                 properties:
+ *                   primary_address:   { type: string }
+ *                   primary_state:     { type: string }
+ *                   primary_pincode:   { type: string }
+ *                   secondary_address: { type: string }
+ *                   secondary_state:   { type: string }
+ *                   secondary_pincode: { type: string }
+ *               membership:
+ *                 type: object
+ *                 required: [package_name, sale_date, total_price, payment_mode]
+ *                 properties:
+ *                   package_name:      { type: string, example: "Gold 5N" }
+ *                   validity_years:    { type: integer, default: 1 }
+ *                   nights_per_year:   { type: integer, default: 0 }
+ *                   sale_date:         { type: string, format: date }
+ *                   total_price:       { type: number }
+ *                   discount_amount:   { type: number, default: 0 }
+ *                   down_payment:      { type: number, default: 0 }
+ *                   payment_mode:      { type: string, enum: [CASH, CHEQUE, ONLINE, BANK_TRANSFER, CARD] }
+ *                   dsa:               { type: string, enum: [VENUE, CSDO, OTHER], nullable: true }
+ *                   reference_by:      { type: string, nullable: true }
+ *                   remarks:           { type: string, nullable: true }
+ *               offers:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     offer_name:  { type: string }
+ *                     valid_until: { type: string, format: date, nullable: true }
+ *     responses:
+ *       201:
+ *         description: Client onboarded successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden — Admin or Manager only
+ */
 export async function POST(request: NextRequest) {
   try {
     await connectDB();

@@ -16,10 +16,11 @@ export const CreateMembershipSchema = z.object({
   amc:                 z.number().min(0).optional().nullable(),
   sales_consultant_id: z.number().int().optional().nullable(),
   take_over_manager_id:z.number().int().optional().nullable(),
-  dsa:                 z.nativeEnum(MembershipDSA).optional().nullable(),
-  reference_by:        z.string().max(100).optional().nullable(),
-  remarks:             z.string().optional().nullable(),
-  created_by:          z.number().int().optional().nullable(),
+  dsa:                        z.nativeEnum(MembershipDSA).optional().nullable(),
+  reference_by:               z.string().max(150).optional().nullable(),
+  referrer_membership_id:     z.number().int().positive().optional().nullable(),
+  remarks:                    z.string().optional().nullable(),
+  created_by:                 z.number().int().optional().nullable(),
 });
 
 export const UpdateMembershipSchema = z.object({
@@ -30,7 +31,7 @@ export const UpdateMembershipSchema = z.object({
   sales_consultant_id: z.number().int().optional().nullable(),
   take_over_manager_id:z.number().int().optional().nullable(),
   dsa:                 z.nativeEnum(MembershipDSA).optional().nullable(),
-  reference_by:        z.string().max(100).optional().nullable(),
+  reference_by:        z.string().max(150).optional().nullable(),
   remarks:             z.string().optional().nullable(),
   updated_by:          z.number().int().optional().nullable(),
 });

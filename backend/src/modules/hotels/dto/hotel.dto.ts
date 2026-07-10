@@ -1,6 +1,7 @@
 import { PropertyType, HotelType, HotelStatus } from '../types/hotel.types';
 
 export interface CreateHotelDTO {
+  hotel_code?: string;
   location_id: number;
   hotel_name: string;
   property_type: PropertyType;
@@ -14,6 +15,7 @@ export interface CreateHotelDTO {
 }
 
 export interface UpdateHotelDTO {
+  hotel_code?: string;
   location_id?: number;
   hotel_name?: string;
   property_type?: PropertyType;

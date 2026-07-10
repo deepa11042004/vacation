@@ -13,6 +13,7 @@ import { IClient } from '../interfaces/client.interface';
 import { IClientAddress } from '../interfaces/client-address.interface';
 import { ClientOfferService, CreateOfferInput } from '../../client-offers/services/client-offer.service';
 import { AmcPayment } from '../../amc-payments/models/AmcPayment.model';
+import { round2, uniqueTemp } from '../../../shared/utils/math.util';
 
 export interface OnboardMembershipInput {
   package_name: string;
@@ -30,6 +31,7 @@ export interface OnboardMembershipInput {
   take_over_manager?: string | null;
   dsa?: MembershipDSA | null;
   reference_by?: string | null;
+  referrer_membership_id?: number | null;
   remarks?: string | null;
 }
 
@@ -38,15 +40,6 @@ export interface OnboardClientDTO {
   address?: Partial<IClientAddress>;
   membership: OnboardMembershipInput;
   offers?: CreateOfferInput[];
-}
-
-function round2(n: number): number {
-  return parseFloat(n.toFixed(2));
-}
-
-function uniqueTemp(prefix: string, maxLen: number): string {
-  const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
-  return `${prefix}${Date.now()}${rand}`.slice(0, maxLen);
 }
 
 export class OnboardService {
@@ -140,10 +133,11 @@ export class OnboardService {
           outstanding_balance,
           sales_consultant:   memData.sales_consultant ?? null,
           take_over_manager:  memData.take_over_manager ?? null,
-          dsa:                memData.dsa ?? null,
-          reference_by:       memData.reference_by ?? null,
-          remarks:            memData.remarks ?? null,
-          status:             MembershipStatus.ACTIVE,
+          dsa:                      memData.dsa ?? null,
+          reference_by:             memData.reference_by ?? null,
+          referrer_membership_id:   memData.referrer_membership_id ?? null,
+          remarks:                  memData.remarks ?? null,
+          status:                   MembershipStatus.ACTIVE,
         } as any,
         { transaction: t },
       );

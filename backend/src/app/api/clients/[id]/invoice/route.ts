@@ -32,6 +32,54 @@ const InvoiceSchema = z.object({
   client_gst:     z.string().optional(),
 });
 
+/**
+ * @swagger
+ * /api/clients/{id}/invoice:
+ *   post:
+ *     summary: Generate and send an invoice to client
+ *     description: Generates a PDF invoice, emails it to the client, and saves the invoice record. Admin / Manager only.
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *         description: Client ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [invoice_no, issue_date, client_name, email]
+ *             properties:
+ *               invoice_no:     { type: string, example: "INV-000123" }
+ *               issue_date:     { type: string, example: "2026-07-09" }
+ *               client_name:    { type: string, example: "John Doe" }
+ *               email:          { type: string, format: email }
+ *               phone:          { type: string, example: "9876543210" }
+ *               address:        { type: string }
+ *               payment_mode:   { type: string, example: "CASH" }
+ *               payment_type:   { type: string, example: "Cash" }
+ *               amount:         { type: string, example: "50000" }
+ *               description:    { type: string, example: "Holiday Package" }
+ *               invoice_type:   { type: string, enum: [invoice, tax], default: invoice }
+ *               card_number:    { type: string }
+ *               transaction_id: { type: string }
+ *               bank:           { type: string }
+ *               card_cheque_no: { type: string }
+ *               state:          { type: string }
+ *               client_gst:     { type: string }
+ *     responses:
+ *       200:
+ *         description: Invoice generated and sent successfully
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Client not found
+ */
 export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();

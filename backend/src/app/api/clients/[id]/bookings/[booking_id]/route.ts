@@ -32,6 +32,63 @@ const UpdateBookingSchema = z.object({
   status:                z.nativeEnum(BookingStatus).optional(),
 });
 
+/**
+ * @swagger
+ * /api/clients/{id}/bookings/{booking_id}:
+ *   put:
+ *     summary: Update a booking
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: booking_id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               hotel_name:            { type: string }
+ *               check_in:              { type: string, format: date }
+ *               check_out:             { type: string, format: date }
+ *               nights:                { type: integer }
+ *               no_of_rooms:           { type: integer }
+ *               no_of_adults:          { type: integer }
+ *               booking_amount:        { type: number }
+ *               amount_paid_by_client: { type: number }
+ *               status:                { type: string, enum: [PENDING, CONFIRMED, CANCELLED, COMPLETED] }
+ *               remark:                { type: string }
+ *     responses:
+ *       200:
+ *         description: Booking updated successfully
+ *   delete:
+ *     summary: Cancel a booking (restores membership nights)
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: booking_id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Booking cancelled and nights restored
+ *       404:
+ *         description: Booking not found
+ */
 // PUT /api/clients/:id/bookings/:booking_id — update details
 export async function PUT(
   request: NextRequest,

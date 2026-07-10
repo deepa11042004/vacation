@@ -27,6 +27,13 @@ export class MembershipRepository {
     return await Membership.findByPk(membership_id, { paranoid: false });
   }
 
+  async findByMembershipNumber(membership_number: string): Promise<Membership | null> {
+    return await Membership.findOne({
+      where: { membership_number },
+      include: [{ model: Client, as: 'client', attributes: ['client_id', 'first_name', 'last_name', 'mobile'] }],
+    });
+  }
+
   async findByClientId(client_id: number): Promise<Membership[]> {
     return await Membership.findAll({
       where: { client_id },

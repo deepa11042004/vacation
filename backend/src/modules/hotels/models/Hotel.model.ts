@@ -13,6 +13,7 @@ import {
   UpdatedAt,
   DeletedAt,
   AllowNull,
+  Unique,
 } from 'sequelize-typescript';
 import { IHotel } from '../interfaces/hotel.interface';
 import { PropertyType, HotelType, HotelStatus } from '../types/hotel.types';
@@ -41,8 +42,13 @@ export class Hotel extends Model<IHotel, Partial<IHotel>> implements IHotel {
   @BelongsTo(() => require('../../locations/models/Location.model').Location, { foreignKey: 'location_id', onDelete: 'RESTRICT', onUpdate: 'CASCADE' })
   location!: Location;
 
+  @Unique
   @AllowNull(false)
-  @Column(DataType.STRING(100))
+  @Column(DataType.STRING(20))
+  hotel_code!: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(500))
   hotel_name!: string;
 
   @AllowNull(false)

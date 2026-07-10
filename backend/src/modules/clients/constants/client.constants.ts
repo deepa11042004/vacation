@@ -5,8 +5,4 @@ export const CLIENT_CONSTANTS = {
     MOBILE_EXISTS: 'Client with this mobile number already exists',
     INVALID_ID: 'Invalid Client ID',
   },
-  DEFAULTS: {
-    STATUS_ACTIVE: 'ACTIVE',
-    STATUS_INACTIVE: 'INACTIVE',
-  },
 };

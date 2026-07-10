@@ -14,6 +14,46 @@ const CreateOfferSchema = z.object({
   valid_until: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
 });
 
+/**
+ * @swagger
+ * /api/clients/{id}/offers:
+ *   get:
+ *     summary: List client offers
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Offers retrieved successfully
+ *   post:
+ *     summary: Add an offer to a client
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [offer_name]
+ *             properties:
+ *               offer_name:  { type: string, example: "Free Night Stay" }
+ *               valid_until: { type: string, format: date, example: "2026-12-31" }
+ *     responses:
+ *       201:
+ *         description: Offer added successfully
+ */
 // GET /api/clients/:id/offers
 export async function GET(
   request: NextRequest,

@@ -27,7 +27,7 @@ export class HotelRepository {
   }
 
   async findAll(filters: HotelFilterOptions = {}): Promise<{ rows: Hotel[]; count: number }> {
-    const { search, location_id, property_type, hotel_type, status, page = 1, limit = 10 } = filters;
+    const { search, location_id, property_type, hotel_type, status, page = 1, limit = 10, includeDeleted } = filters;
     const cappedLimit = Math.min(limit, MAX_LIMIT);
     const offset = (page - 1) * cappedLimit;
 
@@ -62,7 +62,8 @@ export class HotelRepository {
       offset,
       order: [['created_at', 'DESC']],
       include: [{ model: HotelImage, as: 'images' }],
-      distinct: true, // Needed to ensure count is correct with includes
+      distinct: true,
+      paranoid: !includeDeleted,
     });
   }
 

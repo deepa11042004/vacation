@@ -27,7 +27,16 @@ export class HotelService {
       throw new AppError(HOTEL_CONSTANTS.ERRORS.NAME_EXISTS_IN_LOCATION, 400);
     }
 
-    const newHotel = await this.hotelRepository.create(data);
+    // Insert with a temp unique code; update to H{id} immediately after
+    const newHotel = await this.hotelRepository.create({
+      ...data,
+      hotel_code: data.hotel_code || `TEMP-${Date.now()}`,
+    });
+
+    if (!data.hotel_code) {
+      await this.hotelRepository.update(newHotel.hotel_id, { hotel_code: `H${newHotel.hotel_id}` });
+    }
+
     return this.getHotelById(newHotel.hotel_id);
   }
 

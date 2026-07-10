@@ -8,6 +8,31 @@ import { connectDB } from '@/shared/database/sequelize';
 
 const service = new ClientOfferService();
 
+/**
+ * @swagger
+ * /api/clients/{id}/offers/{offer_id}:
+ *   delete:
+ *     summary: Delete a client offer
+ *     tags: [Clients]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *         description: Client ID
+ *       - in: path
+ *         name: offer_id
+ *         required: true
+ *         schema: { type: integer }
+ *         description: Offer ID
+ *     responses:
+ *       200:
+ *         description: Offer deleted successfully
+ *       404:
+ *         description: Offer not found
+ */
 // DELETE /api/clients/:id/offers/:offer_id
 export async function DELETE(
   request: NextRequest,

@@ -47,7 +47,6 @@ export class HotelController {
   static async getAll(req: NextRequest) {
     try {
       await connectDB();
-      await authenticateRequest(req);
 
       const { searchParams } = new URL(req.url);
       const search = searchParams.get('search') || undefined;
@@ -58,6 +57,7 @@ export class HotelController {
       const status = searchParams.get('status') as HotelStatus | undefined;
       const page = parseInt(searchParams.get('page') || '1', 10);
       const limit = parseInt(searchParams.get('limit') || '10', 10);
+      const includeDeleted = searchParams.get('includeDeleted') === 'true';
 
       const result = await hotelService.getAllHotels({
         search,
@@ -67,6 +67,7 @@ export class HotelController {
         status,
         page,
         limit,
+        includeDeleted,
       });
 
       return NextResponse.json(
@@ -81,7 +82,6 @@ export class HotelController {
   static async getById(req: NextRequest, idStr: string) {
     try {
       await connectDB();
-      await authenticateRequest(req);
 
       const id = this.parseId(idStr);
       const result = await hotelService.getHotelById(id);
@@ -201,16 +201,14 @@ export class HotelController {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Create uploads folder if not exists
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'hotels');
+      const uploadDir = path.join(process.cwd(), 'public', 'upload', 'hotels');
       await fs.mkdir(uploadDir, { recursive: true });
 
-      // Save file
       const filename = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
       const filePath = path.join(uploadDir, filename);
       await fs.writeFile(filePath, buffer);
 
-      const relativePath = `/uploads/hotels/${filename}`;
+      const relativePath = `/upload/hotels/${filename}`;
 
       // Call Service
       const result = await hotelService.addHotelImage(hotel_id, {

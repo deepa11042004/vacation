@@ -45,6 +45,10 @@ import { LocationController } from '@/modules/locations/controllers/location.con
  *         name: status
  *         schema: { type: string, enum: [ACTIVE, INACTIVE] }
  *       - in: query
+ *         name: includeDeleted
+ *         schema: { type: boolean, default: false }
+ *         description: When true, includes soft-deleted locations (admin panel use)
+ *       - in: query
  *         name: page
  *         schema: { type: integer, default: 1 }
  *       - in: query
