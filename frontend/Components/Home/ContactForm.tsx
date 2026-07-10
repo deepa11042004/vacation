@@ -75,8 +75,6 @@ export default function ContactForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // wire this up to your booking endpoint
-    console.log(values);
   };
 
   return (

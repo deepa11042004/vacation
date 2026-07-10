@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const metadata = {
   title: 'Terms & Conditions | Tourvia',
   description: 'Terms and Conditions for Tourvia (Rosewood Worldwide Travel Private Limited).',

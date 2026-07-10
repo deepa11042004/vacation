@@ -1,4 +1,3 @@
-import React from "react";
 import Image from "next/image";
 import {
   MapPin,
@@ -53,6 +52,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
             sizes="(max-width: 768px) 100vw, 66vw"
             priority
+            unoptimized
           />
         </div>
 
@@ -65,6 +65,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
               sizes="33vw"
+              unoptimized
             />
           </div>
           <div className="relative w-full h-1/2 rounded-2xl overflow-hidden shadow-xs group">
@@ -74,6 +75,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
               sizes="33vw"
+              unoptimized
             />
           </div>
         </div>

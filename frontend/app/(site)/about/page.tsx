@@ -3,8 +3,6 @@ import BookDetail from "@/Components/About/BookDetail";
 import Story from "@/Components/About/Story";
 import About from "@/Components/About/About";
 import FAQsec from "@/Components/Home/FAQsec";
-import React from "react";
-
 function about() {
   return (
     <>

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Minus, Clock } from "lucide-react";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";

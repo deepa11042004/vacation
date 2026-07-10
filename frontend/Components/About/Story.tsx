@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { Minus } from "lucide-react";
 import Badge from "@/UI/Badge";

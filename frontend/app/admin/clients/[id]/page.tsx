@@ -8,7 +8,7 @@ import Modal from "@/Components/Admin/Modal";
 import {
   ArrowLeft, Loader2, User, Pencil,
   LayoutList, CalendarDays, Wrench, Tag, CreditCard, PhoneCall, FileCheck,
-  Plus, Trash2, AlertCircle, Hotel, X, Mail, CheckCircle2, XCircle, FileText
+  Plus, Trash2, AlertCircle, X, Mail, CheckCircle2, XCircle, FileText
 } from "lucide-react";
 
 interface Client {

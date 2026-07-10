@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const metadata = {
   title: 'Refund & Return Policy | Tourvia',
   description: 'Refund & Return Policy for Tourvia (Rosewood Worldwide Travel Private Limited).',

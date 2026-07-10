@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { z } from "zod";
 import { ArrowLeft, Loader2, User, CreditCard, FileText, Tag, Plus, X, Zap, Mail } from "lucide-react";
+import MembershipLookup from "@/Components/Admin/MembershipLookup";
 
 const inp = (err?: string) => `w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${err ? "border-red-500 bg-red-50 text-red-900" : "border-slate-300 bg-white"}`;
 const sel = inp;
@@ -71,7 +72,7 @@ const FormSchema = z.object({
     amc:               z.coerce.number().min(0, "Cannot be negative").optional(),
     payment_mode:      z.enum(["CASH", "CHEQUE", "ONLINE", "BANK_TRANSFER", "CARD"], { error: "Select a payment mode" }),
     dsa:               z.string().optional().or(z.literal("")),
-    reference_by:      z.string().max(100, "Too long").optional().or(z.literal("")),
+    reference_by:      z.string().max(150, "Too long").optional().or(z.literal("")),
     transaction_ref:   z.string().max(100, "Too long").optional().or(z.literal("")),
     bank_name:         z.string().max(100, "Too long").optional().or(z.literal("")),
     sales_consultant:  z.string().max(100, "Too long").optional().or(z.literal("")),
@@ -121,6 +122,9 @@ function NewClientForm() {
     dsa: "", reference_by: "", remarks: "",
     transaction_ref: "", bank_name: "",
   });
+  // Referral lookup state — separate from mem so the input string and the resolved FK stay in sync
+  const [referralInput, setReferralInput] = useState("");
+  const [referrerMembershipId, setReferrerMembershipId] = useState<number | null>(null);
 
   const [offers, setOffers] = useState<{ offer_name: string; valid_until: string }[]>([
     { offer_name: "", valid_until: "" },
@@ -208,9 +212,10 @@ function NewClientForm() {
     bank_name:         mem.bank_name         || null,
     sales_consultant:  mem.sales_consultant  || null,
     take_over_manager: mem.take_over_manager || null,
-    dsa:               mem.dsa               || null,
-    reference_by:      mem.reference_by      || null,
-    remarks:           mem.remarks           || null,
+    dsa:                      mem.dsa               || null,
+    reference_by:             mem.reference_by      || null,
+    referrer_membership_id:   referrerMembershipId  ?? null,
+    remarks:                  mem.remarks           || null,
   };
 
   const offersPayload = offers
@@ -476,8 +481,16 @@ function NewClientForm() {
               <option value="OTHER">Other</option>
             </select>
           </Field>
-          <Field error={fieldErrors["mem.reference_by"]} label="Reference By">
-            <input className={inp(fieldErrors["mem.reference_by"])} value={mem.reference_by} onChange={e => setM("reference_by", e.target.value)} placeholder="Referred by" />
+          <Field label="Reference By (Member)">
+            <MembershipLookup
+              value={referralInput}
+              onChange={setReferralInput}
+              onSelect={(id, display) => {
+                setReferrerMembershipId(id);
+                setMem(prev => ({ ...prev, reference_by: display }));
+              }}
+              error={fieldErrors["mem.reference_by"]}
+            />
           </Field>
 
           <Field error={fieldErrors["mem.transaction_ref"]} label="Transaction Ref / Cheque No.">

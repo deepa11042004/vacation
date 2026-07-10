@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const metadata = {
   title: 'Privacy Policy | Tourvia',
   description: 'Privacy Policy for Tourvia (Rosewood Worldwide Travel Private Limited).',

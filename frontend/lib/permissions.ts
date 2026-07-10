@@ -1,4 +1,4 @@
-export interface SectionDef {
+interface SectionDef {
   key: string;
   label: string;
   href: string;
@@ -24,7 +24,6 @@ const ROUTE_MAP: { prefix: string; section: string }[] = [
   { prefix: '/admin/settings/panel-users/create', section: 'panel_users' },
   { prefix: '/admin/settings/panel-users',        section: 'panel_users' },
   { prefix: '/admin/settings/email-template', section: 'email_template' },
-  { prefix: '/admin/clients/create',          section: 'create_client' },
   { prefix: '/admin/clients/new',             section: 'clients' },
   { prefix: '/admin/clients',                 section: 'clients' },
   { prefix: '/admin/create-invoice',          section: 'create_invoice' },
@@ -58,8 +57,3 @@ export function hasAccess(user: PermissionUser | null, section: string): boolean
   return user.allowed_sections.includes(section);
 }
 
-export function getVisibleSections(user: PermissionUser | null): string[] {
-  if (!user) return [];
-  if (user.role === 'ADMIN') return SECTIONS.map((s) => s.key);
-  return (user.allowed_sections ?? []).filter((s) => s !== 'panel_users');
-}

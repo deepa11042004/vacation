@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { motion, Variants } from "framer-motion";
 import { CheckCircle2, Minus } from "lucide-react";
