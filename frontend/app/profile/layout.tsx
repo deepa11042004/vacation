@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, LogOut, Menu, X, Loader2 } from "lucide-react";
+import { Bell, LogOut, Menu, X, Loader2, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import {
   getMemberToken,
@@ -31,7 +31,7 @@ export default function ProfileLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<MeUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -97,16 +97,41 @@ export default function ProfileLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <nav
-        className={`fixed z-50 flex flex-col md:flex-row md:items-center justify-between transition-all duration-300 ${
-          isScrolled
-            ? "top-0 md:top-4 inset-x-0 md:inset-x-8 lg:inset-x-12 bg-white/90 backdrop-blur-xl md:rounded-full py-3 px-4 md:px-6 shadow-md border-b md:border border-slate-200"
-            : "inset-x-0 top-0 bg-white md:bg-transparent py-4 md:py-6 px-6 md:px-12 lg:px-24 border-b border-slate-100 md:border-none"
+    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center justify-between bg-white p-4 border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/Img/logo.png"
+            alt="Logo"
+            width={120}
+            height={24}
+            className="h-8 w-auto object-cover"
+          />
+        </Link>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="p-2 -mr-2 text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+        >
+          {mobileMenuOpen ? (
+            <X className="w-5 h-5" />
+          ) : (
+            <Menu className="w-5 h-5" />
+          )}
+        </button>
+      </div>
+
+      {/* Sidebar Navigation */}
+      <aside
+        className={`fixed md:sticky top-0 left-0 z-40 h-screen w-72 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out flex flex-col shadow-2xl md:shadow-none ${
+          mobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="flex items-center justify-between w-full md:w-auto">
-          <Link href="/" className="flex items-center">
+        {/* Desktop Logo */}
+        <div className="hidden md:flex items-center p-6 border-b border-slate-100 h-20 shrink-0">
+          <Link href="/">
             <Image
               src="/Img/logo.png"
               alt="Logo"
@@ -115,127 +140,79 @@ export default function ProfileLayout({
               className="h-8 w-auto object-cover"
             />
           </Link>
-
-          <div className="flex items-center gap-4 md:hidden">
-            <div className="relative cursor-pointer border-2 border-blue-600 rounded-full">
-              <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                {fullName.charAt(0).toUpperCase()}
-              </div>
-              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
-            </div>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 -mr-2 text-slate-700"
-            >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
-          </div>
         </div>
 
-        {/* Center Navigation */}
-        <div
-          className={`hidden md:flex flex-1 overflow-x-auto scrollbar-hide mx-6 transition-colors duration-300 ${
-            isScrolled
-              ? "bg-transparent"
-              : "bg-white/50 backdrop-blur-md rounded-full border border-slate-200"
-          }`}
-        >
-          <div className="flex items-center gap-3 px-2 mx-auto py-2">
-            {navigation.map((item) => {
-              const isActive = pathname === item.url;
-              return (
-                <Link
-                  key={item.url}
-                  href={item.url}
-                  className={`flex items-center whitespace-nowrap gap-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${
-                    isActive
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-black"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Right Side Avatar */}
-        <div className="hidden md:block relative group shrink-0">
-          <div className="relative cursor-pointer border-2 border-blue-600 rounded-full hover:shadow-lg transition-shadow">
-            <div className="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+        {/* User Profile Summary */}
+        <div className="p-6 border-b border-slate-100 flex items-center gap-4 shrink-0 bg-slate-50/50">
+          <div className="relative shrink-0">
+            <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl border-2 border-white shadow-sm">
               {fullName.charAt(0).toUpperCase()}
             </div>
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
           </div>
+          <div className="overflow-hidden">
+            <p className="text-sm font-bold text-slate-800 truncate">
+              {fullName}
+            </p>
+            {memberNo && (
+              <p className="text-xs text-slate-500 font-medium mt-0.5 truncate">
+                {memberNo}
+              </p>
+            )}
+          </div>
+        </div>
 
-          <div className="absolute right-0 top-full pt-3 w-56 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300">
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden py-2">
-              <div className="px-4 py-3 border-b border-slate-100 mb-1">
-                <p className="text-sm font-bold text-slate-800">{fullName}</p>
-                {memberNo && (
-                  <p className="text-xs text-slate-500">{memberNo}</p>
-                )}
-              </div>
-              <button className="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3 transition-colors">
-                <Bell className="w-4 h-4 text-slate-400" />
-                Notifications
-              </button>
-              <div className="h-px bg-slate-100 my-1"></div>
-              <button
-                onClick={() => memberLogout()}
-                className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors font-medium"
+        {/* Navigation Links */}
+        <nav className="flex-1 overflow-y-auto py-4 px-4 space-y-1.5 scrollbar-hide">
+          {navigation.map((item) => {
+            const isActive = pathname === item.url;
+            return (
+              <Link
+                key={item.url}
+                href={item.url}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
+                  isActive
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
               >
-                <LogOut className="w-4 h-4 text-red-400" />
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
+                <span>{item.name}</span>
+                {isActive && <ChevronRight className="w-4 h-4 opacity-70" />}
+              </Link>
+            );
+          })}
+        </nav>
 
-        {/* Mobile Menu */}
+        {/* Bottom Actions */}
+        <div className="p-4 border-t border-slate-100 space-y-2 shrink-0 bg-slate-50/50">
+          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 transition-all">
+            <Bell className="w-5 h-5 text-slate-400" />
+            Notifications
+          </button>
+          <button
+            onClick={() => memberLogout()}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-red-100 transition-all"
+          >
+            <LogOut className="w-5 h-5 text-red-400" />
+            Sign Out
+          </button>
+        </div>
+      </aside>
+
+      {/* Overlay for mobile sidebar */}
+      {mobileMenuOpen && (
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            mobileMenuOpen
-              ? "max-h-100 rounded-2xl opacity-100 mt-4"
-              : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="flex flex-col gap-1 py-2 border-t border-slate-100">
-            {navigation.map((item) => {
-              const isActive = pathname === item.url;
-              return (
-                <Link
-                  key={item.url}
-                  href={item.url}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
-                    isActive
-                      ? "bg-black text-white"
-                      : "text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              );
-            })}
-            <div className="h-px bg-slate-100 my-1" />
-            <button
-              onClick={() => memberLogout()}
-              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors"
-            >
-              <LogOut className="w-4 h-4" /> Sign Out
-            </button>
-          </div>
-        </div>
-      </nav>
+          className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm transition-opacity duration-300"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
 
-      <main className="pt-32 pb-16 px-4 md:px-8 lg:px-24">
-        <div className="max-w-7xl mx-auto">{children}</div>
+      {/* Main Content Area */}
+      <main className="flex-1 min-w-0 w-full transition-all duration-300 h-screen overflow-y-auto">
+        <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto pb-24">
+          {children}
+        </div>
       </main>
     </div>
   );
