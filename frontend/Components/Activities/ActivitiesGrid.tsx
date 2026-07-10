@@ -100,6 +100,7 @@ export default function Activities() {
 
         {/* ─── Infinite Vertical Marquee ─── */}
         <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start h-150 md:h-300 overflow-hidden rounded-3xl">
+          {/* Top and Bottom Fade Overlays */}
           <div className="absolute inset-x-0 top-0 h-10 bg-linear-to-b from-white to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-white to-transparent z-10 pointer-events-none" />
 
@@ -109,6 +110,7 @@ export default function Activities() {
                 className="flex flex-col gap-6 w-full pb-6"
                 style={{
                   animation: `${colIdx % 2 === 0 ? "marqueeUp" : "marqueeDown"} ${DURATIONS[colIdx]}s linear infinite`,
+                  willChange: "transform",
                 }}
               >
                 {/* 2× duplication is enough for a seamless loop */}
@@ -123,7 +125,7 @@ export default function Activities() {
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover brightness-[0.93] group-hover:scale-103 transition-transform duration-700 ease-out"
-                      loading="lazy"
+                      loading="eager"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6 z-10">
                       <span className="text-white text-base font-bold tracking-wide">
