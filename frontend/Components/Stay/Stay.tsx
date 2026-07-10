@@ -566,28 +566,30 @@ export default function Stay() {
           </div>
 
           {/* Navigation Switcher */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex flex-wrap justify-center rounded-full bg-neutral-100 p-1.5 border border-neutral-200 shadow-xs">
-              {FILTER_TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveFilter(tab.id)}
-                  className={`relative rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
-                    activeFilter === tab.id
-                      ? "bg-neutral-950 text-white shadow-md"
-                      : "text-gray-500 hover:text-gray-900"
-                  }`}
-                >
-                  {activeFilter === tab.id && (
-                    <motion.span
-                      layoutId="stay-filter-pill"
-                      className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
-                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    />
-                  )}
-                  {tab.label}
-                </button>
-              ))}
+          <div className="flex justify-center w-full mb-4 px-2">
+            <div className="flex bg-neutral-100 p-1.5 border border-neutral-200 shadow-xs rounded-4xl md:rounded-full max-w-full">
+              <div className="flex overflow-x-auto scrollbar-hide gap-1.5 items-center w-full">
+                {FILTER_TABS.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveFilter(tab.id)}
+                    className={`relative whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
+                      activeFilter === tab.id
+                        ? "bg-neutral-950 text-white shadow-md"
+                        : "text-gray-500 hover:text-gray-900"
+                    }`}
+                  >
+                    {activeFilter === tab.id && (
+                      <motion.span
+                        layoutId="stay-filter-pill"
+                        className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                    )}
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -739,10 +741,10 @@ export default function Stay() {
       </section>
 
       {/* Phase 4: Dynamic Expanding Width Carousel with Button Controls */}
-      <section className="w-full bg-white py-32 px-6 md:px-24">
+      <section className="w-full bg-white py-20 md:py-32 px-4 md:px-24">
         <div className="max-w-7xl mx-auto relative">
           {/* Header Layout with integrated Left/Right Control Buttons */}
-          <div className="flex items-end justify-between mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
             <div>
               <Badge
                 icon={Minus}
@@ -751,7 +753,7 @@ export default function Stay() {
                 className="mb-5 tracking-widest"
               />
               <h2 className="font-bold text-3xl md:text-6xl tracking-wide text-black">
-                Experiences That Make <br />
+                Experiences That Make <br className="hidden md:block" />
                 Every Stay Memorable
               </h2>
             </div>
@@ -772,7 +774,7 @@ export default function Stay() {
           </div>
 
           {/* Flexible Dynamic Track */}
-          <div className="w-full h-[65vh] flex gap-4 overflow-hidden">
+          <div className="w-full h-[75vh] md:h-[65vh] flex flex-col md:flex-row gap-2 md:gap-4 overflow-hidden">
             {carouselCards.map((card, idx) => {
               const isActive = idx === activeCard;
               return (
@@ -781,7 +783,7 @@ export default function Stay() {
                   onClick={() => setActiveCard(idx)}
                   animate={{ flex: isActive ? 3.5 : 1 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className="h-full relative rounded-2xl overflow-hidden cursor-pointer shadow-sm border border-black/5 bg-neutral-200 group shrink-0"
+                  className="w-full h-full relative rounded-2xl overflow-hidden cursor-pointer shadow-sm border border-black/5 bg-neutral-200 group shrink-0"
                 >
                   <Image
                     src={card.src}
@@ -793,7 +795,7 @@ export default function Stay() {
                   <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-black/30 z-10" />
 
                   {/* Absolute Badge elements inside cards */}
-                  <div className="absolute top-6 left-6 z-20">
+                  <div className="absolute top-4 left-4 md:top-6 md:left-6 z-20">
                     <Badge
                       icon={Minus}
                       text={card.badge}
@@ -803,17 +805,17 @@ export default function Stay() {
                   </div>
 
                   {/* Text Overlay Layout */}
-                  <div className="absolute bottom-6 left-6 right-6 z-20 text-white flex flex-col justify-end h-1/2">
+                  <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 z-20 text-white flex flex-col justify-end h-1/2">
                     <motion.div
                       animate={{
-                        opacity: isActive ? 1 : 0.4,
+                        opacity: isActive ? 1 : 0,
                         y: isActive ? 0 : 5,
                       }}
                       transition={{ duration: 0.3 }}
                       className="space-y-3"
                     >
                       <h4
-                        className={`tracking-wide leading-tight transition-all duration-300 ${isActive ? "text-2xl md:text-3xl font-bold max-w-xl" : "text-base font-medium line-clamp-2"}`}
+                        className={`tracking-wide leading-tight transition-all duration-300 ${isActive ? "text-xl sm:text-2xl md:text-3xl font-bold max-w-xl" : "text-sm md:text-base font-medium line-clamp-2"}`}
                       >
                         {card.title}
                       </h4>

@@ -95,7 +95,7 @@ export default function Navbar() {
             alt="Logo"
             width={150}
             height={30}
-            className={`${isScrolled ? "h-7 md:h-9 w-auto object-contain" : "h-7 md:h-20 w-auto object-contain"}`}
+            className={`${isScrolled ? "h-7 md:h-9 w-auto object-contain" : "h-15 md:h-20 w-auto object-contain"}`}
           />
         </Link>
 

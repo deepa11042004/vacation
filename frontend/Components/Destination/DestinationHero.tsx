@@ -36,7 +36,7 @@ export default function DestinationHero() {
       </div>
 
       {/* Middle Layer */}
-      <div className="absolute inset-x-0 top-[15%] md:top-[12%] flex justify-center z-10 pointer-events-none px-4">
+      <div className="absolute inset-x-0 top-[50%] md:top-[12%] flex justify-center z-10 pointer-events-none px-4">
         <motion.h1
           style={{ y: titleY }}
           className="text-[12vw] font-medium tracking-tight text-white uppercase filter drop-shadow-sm"

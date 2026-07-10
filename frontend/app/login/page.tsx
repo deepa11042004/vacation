@@ -18,27 +18,27 @@ export default function LoginPage() {
 
       <Link
         href="/"
-        className="absolute top-20 left-55 z-20 inline-flex items-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 px-4 py-2 rounded-full text-sm font-medium transition-colors"
+        className="absolute top-8 left-6 md:top-12 md:left-12 lg:top-20 lg:left-50 z-20 inline-flex items-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Home
       </Link>
 
-      <div className="z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+      <div className="z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 lg:gap-24 items-center mt-16 md:mt-0">
         {/* Left Side Content */}
-        <div className="text-white space-y-6">
+        <div className="text-white space-y-4 md:space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
           <Badge
             text="MANDARIN WORLDWIDE"
             size="lg"
             variant="white"
             icon={Minus}
           />
-          <h1 className="text-5xl md:text-7xl leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight font-bold">
             Your Journey Continues
           </h1>
 
-          <div className="space-y-4 pt-4">
-            <p className="text-lg font-medium text-white">
+          <div className="space-y-4 pt-2 md:pt-4">
+            <p className="text-base md:text-lg font-medium text-white/90">
               Sign in to unlock personalized travel experiences, premium
               vacation packages, and seamless trip management—all in one place.
             </p>
@@ -46,8 +46,8 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side Login Card */}
-        <div className="flex justify-end">
-          <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-4xl p-8 md:p-10 shadow-2xl">
+        <div className="flex justify-center lg:justify-end">
+          <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl md:rounded-4xl p-6 md:p-10 shadow-2xl">
             <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-white tracking-widest uppercase">

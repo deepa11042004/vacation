@@ -46,7 +46,7 @@ export default function HotelsHero() {
 
       {/* Background Text */}
 
-      <div className="absolute inset-x-0 top-[20%] flex justify-center z-10 pointer-events-none px-4">
+      <div className="absolute inset-x-0 top-[50%] md:top-[20%] flex justify-center z-10 pointer-events-none px-4">
         <motion.h1
           style={{ y: titleY }}
           className="text-[12vw] font-medium tracking-wider text-white uppercase filter drop-shadow-sm"
