@@ -154,7 +154,7 @@ export const stayTypes = [
     subtitle: "Sleep Under the Stars",
     description: "Geodesic domes offering unforgettable views.",
     propertyCount: 180,
-    image: "https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg",
+    image: "https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 9,
@@ -165,7 +165,7 @@ export const stayTypes = [
     description: "Modern cabins with floor-to-ceiling glass walls.",
     propertyCount: 215,
     image:
-      "https://images.pexels.com/photos/23999340/pexels-photo-23999340.jpeg",
+      "https://images.pexels.com/photos/23999340/pexels-photo-23999340.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 10,
@@ -175,7 +175,7 @@ export const stayTypes = [
     subtitle: "Live on the Water",
     description: "Floating accommodations on lakes, rivers, and canals.",
     propertyCount: 340,
-    image: "https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg",
+    image: "https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 11,
@@ -197,7 +197,7 @@ export const stayTypes = [
     description: "Rustic cabins surrounded by forests and mountains.",
     propertyCount: 1780,
     image:
-      "https://images.pexels.com/photos/32334284/pexels-photo-32334284.jpeg",
+      "https://images.pexels.com/photos/32334284/pexels-photo-32334284.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 13,
@@ -207,7 +207,7 @@ export const stayTypes = [
     subtitle: "Nature Meets Comfort",
     description: "Luxury camping with hotel-style comforts.",
     propertyCount: 760,
-    image: "https://images.pexels.com/photos/9491328/pexels-photo-9491328.jpeg",
+    image: "https://images.pexels.com/photos/9491328/pexels-photo-9491328.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 14,
@@ -218,7 +218,7 @@ export const stayTypes = [
     description: "Eco-friendly accommodations in natural settings.",
     propertyCount: 630,
     image:
-      "https://images.pexels.com/photos/23999340/pexels-photo-23999340.jpeg",
+      "https://images.pexels.com/photos/23999340/pexels-photo-23999340.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 15,
@@ -228,7 +228,7 @@ export const stayTypes = [
     subtitle: "Rural Living",
     description: "Experience authentic countryside hospitality.",
     propertyCount: 540,
-    image: "https://images.pexels.com/photos/2132227/pexels-photo-2132227.jpeg",
+    image: "https://images.pexels.com/photos/2132227/pexels-photo-2132227.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 16,
@@ -238,7 +238,7 @@ export const stayTypes = [
     subtitle: "Desert Nights",
     description: "Luxury tents and camps under star-filled skies.",
     propertyCount: 190,
-    image: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg",
+    image: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 17,
@@ -248,7 +248,7 @@ export const stayTypes = [
     subtitle: "Stay Underground",
     description: "Unique cave accommodations carved into rock formations.",
     propertyCount: 88,
-    image: "https://images.pexels.com/photos/1619317/pexels-photo-1619317.jpeg",
+    image: "https://images.pexels.com/photos/1619317/pexels-photo-1619317.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 18,
@@ -259,7 +259,7 @@ export const stayTypes = [
     description: "Historic mansions, palaces, and restored homes.",
     propertyCount: 310,
     image:
-      "https://images.pexels.com/photos/38190567/pexels-photo-38190567.png",
+      "https://images.pexels.com/photos/38190567/pexels-photo-38190567.png?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 19,
@@ -291,7 +291,7 @@ export const stayTypes = [
     subtitle: "Small Space, Big Adventure",
     description: "Compact designer homes with everything you need.",
     propertyCount: 290,
-    image: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg",
+    image: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 22,
@@ -301,7 +301,7 @@ export const stayTypes = [
     subtitle: "Float in Style",
     description: "Exclusive floating villas with panoramic water views.",
     propertyCount: 38,
-    image: "https://images.pexels.com/photos/753626/pexels-photo-753626.jpeg",
+    image: "https://images.pexels.com/photos/753626/pexels-photo-753626.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 23,
@@ -510,7 +510,7 @@ export default function Stay() {
             className="hidden md:block w-[24vw] h-[55vh] overflow-hidden rounded-md shrink-0 relative"
           >
             <Image
-              src="https://images.pexels.com/photos/1795508/pexels-photo-1795508.jpeg"
+              src="https://images.pexels.com/photos/1795508/pexels-photo-1795508.jpeg?auto=compress&cs=tinysrgb&w=600"
               alt="Cafe interior"
               fill
               className="object-cover"
@@ -842,10 +842,8 @@ export default function Stay() {
           <CtaButton text="Book Now" variant="blue" size="md" />
         </div>
 
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          className="absolute w-175 h-175 md:w-225 md:h-225 flex items-center justify-center rounded-full"
+        <div
+          className="absolute w-175 h-175 md:w-225 md:h-225 flex items-center justify-center rounded-full animate-[spin_60s_linear_infinite]"
         >
           {orbitImages.map((src, index) => {
             const angle = (index / orbitImages.length) * 360;
@@ -869,7 +867,7 @@ export default function Stay() {
               </div>
             );
           })}
-        </motion.div>
+        </div>
       </section>
     </div>
   );

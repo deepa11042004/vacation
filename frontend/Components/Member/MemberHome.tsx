@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Minus, Play, Pause } from "lucide-react";
 import Badge from "@/UI/Badge";
 
@@ -86,11 +85,16 @@ export default function MemberHome() {
       </div>
 
       {/* ─── 2. Infinite Continuous Marquee Engine ─── */}
+      <style>{`
+        @keyframes marqueeLeft {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+      `}</style>
       <div className="relative w-full overflow-hidden">
-        <motion.div
+        <div
           className="flex w-max items-center"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ ease: "linear", duration: 30, repeat: Infinity }}
+          style={{ animation: "marqueeLeft 30s linear infinite" }}
         >
           {[...MEMBER_GALLERY, ...MEMBER_GALLERY].map((card, idx) => (
             <div
@@ -135,7 +139,7 @@ export default function MemberHome() {
               )}
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

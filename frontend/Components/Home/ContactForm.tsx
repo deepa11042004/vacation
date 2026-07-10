@@ -83,10 +83,8 @@ export default function ContactForm() {
       <div className="absolute w-150 h-150 md:w-220 md:h-220 border border-blue-600 rounded-full pointer-events-none animate-[pulse_6s_infinite]" />
       <div className="absolute w-225 h-225 md:w-275 md:h-275 lg:w-300 lg:h-300 border border-blue-600 rounded-full pointer-events-none" />
 
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-        className="hidden sm:flex absolute items-center justify-center rounded-full pointer-events-none
+      <div
+        className="hidden sm:flex absolute items-center justify-center rounded-full pointer-events-none animate-[spin_60s_linear_infinite]
           [--orbit-r:480px] [--orbit-img-w:7rem] [--orbit-img-h:9rem]
           md:[--orbit-r:560px] md:[--orbit-img-w:8rem] md:[--orbit-img-h:11rem]
           lg:[--orbit-r:640px] lg:[--orbit-img-w:10rem] lg:[--orbit-img-h:14rem]"
@@ -111,7 +109,7 @@ export default function ContactForm() {
             </div>
           );
         })}
-      </motion.div>
+      </div>
 
       {/* form, fixed at the center of the rings */}
       <motion.div
