@@ -13,6 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const isLogin = pathname === "/admin/login";
   const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isLogin) { setAuthorized(true); return; }
@@ -57,11 +58,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (authorized === null) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 print:h-auto print:overflow-visible print:bg-white">
-      <Sidebar />
-      <div className="flex flex-col flex-1 overflow-hidden print:overflow-visible print:block">
-        <Topbar />
-        <main className="flex-1 overflow-y-auto p-6 print:overflow-visible print:block print:p-0">{children}</main>
+    <div className="flex h-screen overflow-hidden bg-slate-50 print:h-auto print:overflow-visible print:bg-white relative">
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-40 md:hidden" 
+          onClick={() => setMobileMenuOpen(false)} 
+        />
+      )}
+      <Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+      <div className="flex flex-col flex-1 overflow-hidden print:overflow-visible print:block w-full">
+        <Topbar onOpenMobileMenu={() => setMobileMenuOpen(true)} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 print:overflow-visible print:block print:p-0">{children}</main>
       </div>
     </div>
   );

@@ -57,7 +57,7 @@ const sections = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileMenuOpen?: boolean, setMobileMenuOpen?: (val: boolean) => void } = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const user = getStoredUser();
@@ -76,7 +76,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className={`print:hidden flex flex-col min-h-screen bg-slate-900 shrink-0 transition-all duration-300 ${isCollapsed ? "w-20" : "w-60"}`}>
+    <aside className={`print:hidden flex flex-col min-h-screen bg-slate-900 shrink-0 transition-all duration-300 fixed inset-y-0 left-0 z-50 md:relative md:translate-x-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} ${isCollapsed ? "md:w-20 w-64" : "w-64 md:w-60"}`}>
       <div className={`flex items-center px-5 py-5 border-b border-slate-800 ${isCollapsed ? "justify-center" : "justify-between"}`}>
         {!isCollapsed && (
           <div className="flex items-center gap-2">
@@ -112,6 +112,7 @@ export default function Sidebar() {
                     <Link
                       key={href}
                       href={href}
+                      onClick={() => setMobileMenuOpen?.(false)}
                       title={isCollapsed ? label : undefined}
                       className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         active

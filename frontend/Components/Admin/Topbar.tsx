@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { getStoredUser, logout } from "@/lib/api";
-import { UserCircle, LogOut } from "lucide-react";
+import { UserCircle, LogOut, Menu } from "lucide-react";
 
 const titles: Record<string, string> = {
   "/admin/dashboard": "Dashboard",
@@ -22,7 +22,7 @@ function getTitle(pathname: string) {
   return "Admin";
 }
 
-export default function Topbar() {
+export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => void } = {}) {
   const pathname = usePathname();
   const [user, setUser] = useState<{ email?: string; role?: string } | null>(
     null,
@@ -33,10 +33,18 @@ export default function Topbar() {
   }, []);
 
   return (
-    <header className="print:hidden h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
-      <h1 className="text-slate-800 font-bold text-base">
-        {getTitle(pathname)}
-      </h1>
+    <header className="print:hidden h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 shrink-0">
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={onOpenMobileMenu}
+          className="md:hidden text-slate-500 hover:text-slate-800 p-1 -ml-1"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <h1 className="text-slate-800 font-bold text-base hidden sm:block">
+          {getTitle(pathname)}
+        </h1>
+      </div>
       <div className="flex items-center gap-3 text-sm text-slate-600">
         <div className="flex items-center gap-2">
           <UserCircle className="w-5 h-5 text-slate-400" />
