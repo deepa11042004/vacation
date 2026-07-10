@@ -91,11 +91,11 @@ export default function Navbar() {
       <div className="flex items-center justify-between w-full lg:w-auto">
         <Link href="/" className="flex items-center shrink-0">
           <Image
-            src="/Img/logo.png"
+            src={isScrolled ? "/Img/logo.png" : "/Img/fulllogo.png"}
             alt="Logo"
             width={150}
             height={30}
-            className="h-7 md:h-8 lg:h-9 w-auto object-contain"
+            className={`${isScrolled ? "h-7 md:h-9 w-auto object-contain" : "h-7 md:h-20 w-auto object-contain"}`}
           />
         </Link>
 
