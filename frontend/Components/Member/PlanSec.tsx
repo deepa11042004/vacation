@@ -154,8 +154,8 @@ export default function PlanSec() {
                     key={`${card.id}-${idx}`}
                     className={`relative shrink-0 overflow-hidden rounded-2xl bg-neutral-900 shadow-xs group mr-5 ${
                       card.size === "short"
-                        ? "h-100 md:h-90 md:w-70"
-                        : "h-125 md:h-110 md:w-120"
+                        ? "h-80 w-70 md:h-90 md:w-70"
+                        : "h-100 w-80 md:h-110 md:w-120"
                     }`}
                   >
                     <Image
