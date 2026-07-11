@@ -7,6 +7,7 @@ import FAQsec from "@/Components/Home/FAQsec";
 import Testimonials from "@/Components/Home/Testimonials";
 import Book from "@/Components/Home/Book";
 import BookDetail from "@/Components/About/BookDetail";
+import Partners from "@/Components/Home/Partners";
 
 function page() {
   return (
@@ -14,6 +15,7 @@ function page() {
       <Hero />
       <Book />
       <BookDetail />
+      <Partners />
       <Destination />
       <Properties />
       <Itinerary />

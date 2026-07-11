@@ -15,5 +15,6 @@ html,
 body {
   width: 100%;
   min-height: 100%;
+  background-color: #EEF7FF;
   scroll-behavior: smooth;
 }

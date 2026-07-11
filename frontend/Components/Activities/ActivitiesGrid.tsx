@@ -71,7 +71,7 @@ const DURATIONS = [30, 35, 40];
 
 export default function Activities() {
   return (
-    <section className="bg-white text-black py-24 px-4 sm:px-6 lg:px-8 w-full overflow-hidden select-none font-display">
+    <section className="bg-blue-50 text-black py-24 px-4 sm:px-6 lg:px-8 w-full overflow-hidden select-none font-display">
       <style>{`
         @keyframes marqueeUp {
           from { transform: translateY(0); }
@@ -101,8 +101,8 @@ export default function Activities() {
         {/* ─── Infinite Vertical Marquee ─── */}
         <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start h-150 md:h-300 overflow-hidden rounded-3xl">
           {/* Top and Bottom Fade Overlays */}
-          <div className="absolute inset-x-0 top-0 h-10 bg-linear-to-b from-white to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-10 bg-linear-to-b from-blue-50 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-blue-50 to-transparent z-10 pointer-events-none" />
 
           {ACTIVITY_COLUMNS.map((column, colIdx) => (
             <div key={colIdx} className="h-full w-full">

@@ -85,7 +85,7 @@ export default function Testimonials() {
   const next = () => setOffset((o) => Math.min(maxOffset, o + 1));
 
   return (
-    <section className="w-full bg-white px-6 py-20 sm:px-10 lg:px-14 font-display">
+    <section className="w-full rounded-b-[6vw] bg-white px-6 py-20 sm:px-10 lg:px-14 font-display">
       <div className="mx-auto max-w-7xl flex flex-col">
         {/* ─── Top Header Layout (Badge + Title + Controller Nav Set) ─── */}
         <div className="mb-12 w-full flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
@@ -146,7 +146,7 @@ export default function Testimonials() {
             {INDIAN_TESTIMONIALS.map((item) => (
               <div
                 key={item.id}
-                className="relative shrink-0 rounded-3xl bg-[#0b0c0e] p-8 md:p-10 text-white flex flex-col justify-between overflow-hidden shadow-sm h-95 sm:h-87.5"
+                className="relative shrink-0 rounded-3xl bg-black p-8 md:p-10 text-white flex flex-col justify-between overflow-hidden shadow-sm h-95 sm:h-87.5"
                 style={{
                   width: `calc((100% - ${(visibleCount - 1) * GAP}px) / ${visibleCount})`,
                   flex: `0 0 calc((100% - ${(visibleCount - 1) * GAP}px) / ${visibleCount})`,

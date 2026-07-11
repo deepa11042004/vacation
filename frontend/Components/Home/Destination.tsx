@@ -27,6 +27,7 @@ const Destination = () => {
       .then((res) => {
         const locs = res?.data?.locations ?? [];
         setSlides(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           locs.map((l: any) => ({
             id: l.location_id,
             country: l.country,
@@ -65,7 +66,7 @@ const Destination = () => {
   if (slides.length === 0) return null;
 
   return (
-    <section className="bg-white px-6 py-20 sm:px-10 lg:px-14 font-display w-full select-none">
+    <section className="bg-white rounded-t-[6vw] px-6 py-20 sm:px-10 lg:px-14 font-display w-full select-none">
       <div className="max-w-7xl mx-auto flex flex-col">
         <div className="mb-12 w-full">
           <Badge text="Explore" variant="black" size="lg" icon={Minus} className="mb-4" />
