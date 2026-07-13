@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
-import { ShieldCheck, Minus, Play, Pause } from "lucide-react";
+import { ShieldCheck, Minus, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
 
-// Reconfigured Data Array
+// Data
 const CAROUSEL_PRIVILEGES = [
   {
     id: 1,
@@ -22,7 +22,6 @@ const CAROUSEL_PRIVILEGES = [
     image:
       "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
     size: "tall",
-    hasControls: true,
     isPaused: true,
   },
   {
@@ -38,7 +37,6 @@ const CAROUSEL_PRIVILEGES = [
     image:
       "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80",
     size: "tall",
-    hasControls: true,
     isPaused: true,
   },
   {
@@ -54,7 +52,6 @@ const CAROUSEL_PRIVILEGES = [
     image:
       "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=800&q=80",
     size: "tall",
-    hasControls: true,
     isPaused: true,
   },
 ];
@@ -65,7 +62,7 @@ const MEMBERSHIPS = [
     subtitle: "Your year-round access to unforgettable family gateways",
     bgClass: "bg-black text-white border-neutral-800",
     lineColor: "rgba(255,255,255,0.08)",
-    bulletColor: "bg-cyan-400",
+    bulletColor: "bg-white",
     benefits: [
       "7N/8D holidays every year across 52 weeks",
       "Complimentary breakfast for 2 per room per night, up to 10 years",
@@ -76,9 +73,9 @@ const MEMBERSHIPS = [
   {
     title: "IVORY",
     subtitle: "Experience destinations during the peak of their popularity",
-    bgClass: "bg-[#EAE6DD] text-neutral-900 border-[#DCD7CD]",
+    bgClass: "bg-black text-white border-neutral-800",
     lineColor: "rgba(0,0,0,0.05)",
-    bulletColor: "bg-neutral-900",
+    bulletColor: "bg-white",
     benefits: [
       "7N/8D holidays every year across 46 weeks",
       "Complimentary breakfast for 2 per room per night, up to 10 years",
@@ -89,9 +86,9 @@ const MEMBERSHIPS = [
   {
     title: "JADE",
     subtitle: "Enjoy your favourite destinations during quieter seasons",
-    bgClass: "bg-[#165B54] text-white border-[#1B6B63]",
+    bgClass: "bg-black text-white border-neutral-800",
     lineColor: "rgba(255,255,255,0.08)",
-    bulletColor: "bg-cyan-300",
+    bulletColor: "bg-white",
     benefits: [
       "7N/8D holidays every year across 24 weeks",
       "Complimentary breakfast for 2 per room per night, up to 10 years",
@@ -103,9 +100,9 @@ const MEMBERSHIPS = [
 
 export default function PlanSec() {
   return (
-    <section className="bg-black w-full overflow-hidden select-none">
+    <section className="w-full overflow-hidden select-none">
       {/* SECTION 1: Club Elevate INFO */}
-      <div className="relative pt-24 pb-16 px-6 max-w-7xl mx-auto text-center z-10">
+      <div className="bg-black relative pt-24 pb-16 px-6 w-full mx-auto text-center z-10">
         <div className="absolute top-0 left-0 w-44 h-44 opacity-20 pointer-events-none select-none">
           <svg
             viewBox="0 0 100 100"
@@ -141,7 +138,6 @@ export default function PlanSec() {
             Handpicked Privileges
           </h4>
 
-          {/* ─── Infinite Continuous Marquee Engine ─── */}
           <style>{`
             @keyframes marqueeLeft {
               from { transform: translateX(0); }
@@ -170,30 +166,12 @@ export default function PlanSec() {
                       sizes="(max-width: 768px) 350px, 450px"
                       className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     />
-
-                    {/* Image Lower Linear Vignette */}
                     <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10" />
-
-                    {/* Tag Component Overlay */}
                     <div className="absolute left-6 bottom-6 z-20 flex items-center gap-1.5 rounded-lg bg-black/40 px-3 py-1.5 backdrop-blur-md border border-white/10">
                       <span className="text-sm font-medium text-white tracking-wide">
                         {card.title}
                       </span>
                     </div>
-
-                    {/* Status Action Overlays */}
-                    {card.hasControls && (
-                      <div className="absolute right-6 bottom-6 z-20 flex items-center gap-1.5 rounded-lg bg-black/40 px-4 py-1.5 backdrop-blur-md border border-white/10 text-white text-sm font-medium">
-                        <span className="mr-1">
-                          {card.isPaused ? "Pause" : "Play"}
-                        </span>
-                        {card.isPaused ? (
-                          <Pause className="h-4 w-4 fill-white" />
-                        ) : (
-                          <Play className="h-4 w-4 fill-white" />
-                        )}
-                      </div>
-                    )}
                   </div>
                 ),
               )}
@@ -203,7 +181,7 @@ export default function PlanSec() {
       </div>
 
       {/* SECTION 2: MEMBERSHIP PLANS */}
-      <div className="bg-white text-black rounded-t-[2.5rem] py-24 px-6 w-full">
+      <div className="bg-white text-black rounded-[6vw] py-24 px-6 w-full">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex justify-center mb-5">
             <Badge
@@ -223,14 +201,14 @@ export default function PlanSec() {
             enter a world of seamless vacations
           </p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch mb-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch mb-14 justify-items-center">
             {MEMBERSHIPS.map((card, idx) => (
               <TiltCard key={idx} card={card} />
             ))}
           </div>
 
           <div className="flex justify-center">
-            <CtaButton text="Know More" variant="white" size="md" />
+            <CtaButton text="Join Now" href="/join" variant="white" size="md" />
           </div>
         </div>
       </div>
@@ -241,8 +219,13 @@ export default function PlanSec() {
 // SUB-COMPONENT: REUSABLE 3D MOUSE TILT CARD
 function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
+  const cursorX = useMotionValue(0);
+  const cursorY = useMotionValue(0);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const element = cardRef.current;
@@ -250,13 +233,28 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
     const rect = element.getBoundingClientRect();
     const mouseX = e.clientX - rect.left - rect.width / 2;
     const mouseY = e.clientY - rect.top - rect.height / 2;
-    rotateX.set(-(mouseY / rect.height) * 14);
-    rotateY.set((mouseX / rect.width) * 14);
+
+    // Subtle tilt effect (reduced for a stiffer, premium credit card feel)
+    rotateX.set(-(mouseY / rect.height) * 8);
+    rotateY.set((mouseX / rect.width) * 8);
+
+    // Track cursor for the follower tag
+    cursorX.set(e.clientX - rect.left);
+    cursorY.set(e.clientY - rect.top);
   };
 
   const handleMouseLeave = () => {
     rotateX.set(0);
     rotateY.set(0);
+    setIsHovered(false);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleClick = () => {
+    setIsFlipped(!isFlipped);
   };
 
   const transform = useMotionTemplate`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
@@ -266,50 +264,129 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
+      onClick={handleClick}
       style={{ transform }}
-      className={`relative rounded-3xl p-8 border flex flex-col justify-between text-left transition-all duration-150 ease-out shadow-md select-none overflow-hidden h-full min-h-120 ${card.bgClass}`}
+      className="relative w-full max-w-sm aspect-[1.586] cursor-pointer group"
     >
-      <div
-        className="absolute top-0 right-0 w-60 h-40 pointer-events-none select-none opacity-40 z-0"
-        style={{ color: card.lineColor }}
-      >
-        <svg
-          viewBox="0 0 100 100"
-          className="w-full h-full stroke-current fill-none stroke-[0.75]"
+      {/* Interactive Cursor Follower Tag */}
+      {isHovered && (
+        <motion.span
+          style={{ x: cursorX, y: cursorY }}
+          className="absolute z-50 bg-white text-black rounded-2xl px-3 py-1.5 text-xs font-bold pointer-events-none shadow-lg -translate-x-1/2 -translate-y-1/2 flex items-center gap-1"
         >
-          <path d="M30,-20 Q80,20 130,40 M10,-20 Q70,30 130,60 M-10,-20 Q60,40 130,80 M-30,-20 Q50,50 130,100" />
-        </svg>
-      </div>
+          {isFlipped ? "Flip" : "Flip"}
+        </motion.span>
+      )}
 
-      <div className="relative z-10">
-        <span className="text-xs uppercase font-bold tracking-widest text-neutral-400 block mb-1">
-          Key
-        </span>
-        <h4 className="text-3xl font-extrabold tracking-wide mb-4 font-sans">
-          {card.title}
-        </h4>
-        <p className="text-sm opacity-80 leading-relaxed font-medium mb-6 border-b border-neutral-700/20 pb-6">
-          {card.subtitle}
-        </p>
+      {/* Inner Wrapper for 3D Flip Animation */}
+      <motion.div
+        className="relative w-full h-full"
+        style={{ transformStyle: "preserve-3d" }}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{
+          duration: 0.6,
+          type: "spring",
+          stiffness: 260,
+          damping: 20,
+        }}
+      >
+        {/* ─── FRONT FACE ─── */}
+        <div
+          className={`absolute inset-0 rounded-3xl p-6 flex flex-col justify-between text-left shadow-xl overflow-hidden border ${card.bgClass}`}
+          style={{ backfaceVisibility: "hidden" }}
+        >
+          {/* Background Pattern SVG */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <Image
+              src="/Img/pattern.png"
+              alt="Background pattern"
+              fill
+              className="object-cover mix-blend-overlay"
+              unoptimized
+            />
+          </div>
 
-        <h5 className="text-xs font-bold tracking-wider uppercase mb-4 flex items-center gap-1.5">
-          <ShieldCheck className="w-4 h-4 opacity-70" /> Benefits:
-        </h5>
+          {/* Glossy Overlay */}
+          <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent pointer-events-none rounded-3xl" />
 
-        <ul className="space-y-3.5">
-          {card.benefits.map((benefit, i) => (
-            <li
-              key={i}
-              className="flex items-start gap-2.5 text-xs leading-relaxed"
-            >
-              <span
-                className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${card.bulletColor}`}
+          {/* Front Content */}
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div className="inline-flex justify-between items-center">
+              <Image
+                src="/Img/fan.png"
+                alt="Fan Icon"
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain drop-shadow-md"
               />
-              <span className="text-sm font-medium opacity-90">{benefit}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+              <span className="text-xs uppercase font-bold tracking-widest opacity-60">
+                Membership
+              </span>
+            </div>
+
+            <div>
+              <h4 className="text-3xl font-extrabold tracking-wide mb-2 font-sans">
+                {card.title}
+              </h4>
+              <p className="text-sm opacity-80 leading-relaxed font-medium">
+                {card.subtitle}
+              </p>
+            </div>
+
+            <div className="flex justify-between items-end">
+              <div className="text-xs opacity-60 font-mono tracking-widest">
+                **** **** **** {card.title.substring(0, 4).toUpperCase()}
+              </div>
+              <div className="w-8 h-8 rounded-full opacity-80 border border-current flex items-center justify-center">
+                <ArrowRight className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── BACK FACE ─── */}
+        <div
+          className={`absolute inset-0 rounded-3xl p-6 flex flex-col justify-between text-left shadow-xl overflow-hidden border ${card.bgClass}`}
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+        >
+          {/* Glossy Overlay */}
+          <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent pointer-events-none rounded-3xl" />
+          {/* Background Pattern SVG */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <Image
+              src="/Img/pattern.png"
+              alt="Background pattern"
+              fill
+              className="object-cover mix-blend-overlay"
+              unoptimized
+            />
+          </div>
+
+          <div className="relative z-10 flex flex-col h-full">
+            <div className="flex items-center gap-2 mb-4">
+              <ShieldCheck className="w-5 h-5 opacity-70" />
+              <h5 className="text-sm font-bold tracking-wider uppercase">
+                Benefits
+              </h5>
+            </div>
+
+            <ul className="space-y-3 grow">
+              {card.benefits.map((benefit, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-3 text-sm leading-relaxed"
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${card.bulletColor}`}
+                  />
+                  <span className="font-medium opacity-90">{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }

@@ -79,7 +79,7 @@ export default function Properties() {
   if (hotels.length === 0) return null;
 
   return (
-    <section className="w-full bg-white py-20 px-6 sm:px-10 lg:px-14 font-display">
+    <section className="w-full rounded-t-[6vw] bg-white py-20 px-6 sm:px-10 lg:px-14 font-display">
       <div className="w-full max-w-7xl mx-auto flex flex-col">
         <div className="mb-12 w-full">
           <Badge text="Explore" variant="black" size="lg" icon={Minus} className="mb-4" />

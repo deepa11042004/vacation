@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -24,6 +25,26 @@ interface AllDestinationProps {
 
 type Category = "ALL" | "NATIONAL" | "INTERNATIONAL";
 
+const LOCATIONS = [
+  "All",
+  "Dehradun",
+  "Dalhousie",
+  "Varanasi",
+  "Kufri",
+  "Coimbatore",
+  "Chennai",
+  "Pondicherry",
+  "Coorg",
+  "Ayodhya",
+  "Vrindavan",
+  "Lucknow",
+  "Mahabaleshwar",
+  "Zirakpur",
+  "Lonavala",
+  "Indore",
+  "Vadodara",
+];
+
 export default function AllDestination({ type = "all" }: AllDestinationProps) {
   const router = useRouter();
   const [locations, setLocations] = useState<Location[]>([]);
@@ -36,6 +57,16 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [activeLocation, setActiveLocation] = useState("All");
+
+  const handleLocationClick = (loc: string) => {
+    setActiveLocation(loc);
+    if (loc === "All") {
+      setSearchQuery("");
+    } else {
+      setSearchQuery(loc);
+    }
+  };
 
   const limit = 12;
 
@@ -112,18 +143,55 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setActiveLocation("");
+              }}
               placeholder="Search by name or country..."
               className="bg-transparent text-sm text-neutral-950 placeholder-neutral-400 focus:outline-none w-full font-medium"
             />
             {searchQuery && (
               <button
-                onClick={() => setSearchQuery("")}
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveLocation("All");
+                }}
                 className="p-1 hover:bg-neutral-200 rounded-full transition-colors shrink-0"
               >
                 <X className="w-3.5 h-3.5 text-neutral-500" />
               </button>
             )}
+          </div>
+        </div>
+
+        {/* Location Tabs */}
+        <div className="flex justify-center w-full mb-12 px-2">
+          <div className="flex p-4 shadow-xs rounded-3xl max-w-4xl">
+            <div className="flex flex-wrap justify-center gap-2 items-center w-full">
+              {LOCATIONS.map((loc) => {
+                const isActive = activeLocation === loc;
+                return (
+                  <button
+                    key={loc}
+                    onClick={() => handleLocationClick(loc)}
+                    className={`relative whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
+                      isActive
+                        ? "bg-neutral-950 text-white shadow-md"
+                        : "text-gray-500 hover:text-gray-900 border border-neutral-200"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="destination-location-filter-pill"
+                        className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                    )}
+                    {loc}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 

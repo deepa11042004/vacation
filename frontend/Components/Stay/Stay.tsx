@@ -13,6 +13,7 @@ import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
 import { Minus } from "lucide-react";
 import Testimonials from "@/Components/Home/Testimonials";
+import { useRouter } from "next/navigation";
 
 const NEW_CAROUSEL_DATA = [
   {
@@ -350,6 +351,7 @@ const cardVariants: Variants = {
 };
 
 export default function Stay() {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeFanIndex, setActiveFanIndex] = useState(0);
 
@@ -608,6 +610,7 @@ export default function Stay() {
                   <motion.div
                     key={type.id}
                     variants={cardVariants}
+                    onClick={() => router.push(`/stays/${type.slug}`)}
                     className="relative overflow-hidden rounded-2xl bg-neutral-100 group cursor-pointer shadow-xs hover:shadow-lg transition-shadow duration-300 transform-gpu"
                     style={{ aspectRatio: "3 / 3" }}
                   >

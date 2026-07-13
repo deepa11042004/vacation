@@ -6,19 +6,21 @@ import Itinerary from "@/Components/Home/Itinerary";
 import FAQsec from "@/Components/Home/FAQsec";
 import Testimonials from "@/Components/Home/Testimonials";
 import Book from "@/Components/Home/Book";
-import BookDetail from "@/Components/About/BookDetail";
+import BookDetail from "@/Components/Home/BookDetail";
 import Partners from "@/Components/Home/Partners";
+import LogoAbout from "@/Components/About/LogoAbout";
 
 function page() {
   return (
     <main className="overflow-x-hidden">
       <Hero />
       <Book />
+      <LogoAbout/>
       <BookDetail />
-      <Partners />
       <Destination />
       <Properties />
       <Itinerary />
+      <Partners />
       <Testimonials />
       <ActivitiesGrid />
       <FAQsec />

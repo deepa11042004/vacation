@@ -1,39 +1,11 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Badge from "@/UI/Badge";
 import { Minus } from "lucide-react";
 
 const PARTNER_CATEGORIES = [
-  {
-    title: "Preferred Airlines",
-    partners: [
-      "Emirates",
-      "IndiGo",
-      "Qatar Airways",
-      "Vistara",
-      "AirAsia",
-      "SpiceJet",
-      "Air India",
-    ],
-    direction: "marquee-left",
-    speed: 35,
-  },
-  {
-    title: "Our Preferred Hotels",
-    partners: [
-      "Golden Tulip",
-      "Park Plaza",
-      "Ramada",
-      "The Fern",
-      "WelcomHeritage",
-      "Country Inn",
-      "Taj",
-      "Oberoi",
-    ],
-    direction: "marquee-right",
-    speed: 40,
-  },
   {
     title: "Travel Partners",
     partners: [
@@ -47,9 +19,12 @@ const PARTNER_CATEGORIES = [
     ],
     direction: "marquee-left",
     speed: 38,
+    imagePrefix: "/partners/travel",
+    imageClassName: "w-auto h-10 object-contain",
   },
+
   {
-    title: "B2B Channel Partners",
+    title: "Associates Brands",
     partners: [
       "TBO.com",
       "Unimoni",
@@ -61,6 +36,25 @@ const PARTNER_CATEGORIES = [
     ],
     direction: "marquee-right",
     speed: 45,
+    imagePrefix: "/associates/ass_partner",
+    imageClassName: "w-auto h-8 object-cover",
+  },
+
+  {
+    title: "Preferred Airlines",
+    partners: [
+      "Emirates",
+      "IndiGo",
+      "Qatar Airways",
+      "Vistara",
+      "AirAsia",
+      "SpiceJet",
+      "Air India",
+    ],
+    direction: "marquee-left",
+    speed: 35,
+    imagePrefix: "/airlines/air",
+    imageClassName: "w-auto h-16 object-contain",
   },
 ];
 
@@ -124,9 +118,13 @@ export default function Partners() {
                       key={`${idx}-${pIdx}`}
                       className="w-48 h-24 md:w-56 md:h-28 shrink-0 bg-white border border-neutral-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-full flex items-center justify-center hover:scale-105 hover:shadow-[0_8px_20px_-4px_rgba(0,100,255,0.15)] hover:border-blue-100 transition-all duration-300 ease-out cursor-pointer group"
                     >
-                      <span className="font-bold text-neutral-400 group-hover:text-blue-600 transition-colors duration-300 text-lg md:text-xl text-center px-4">
-                        {partner}
-                      </span>
+                      <Image
+                        src={`${category.imagePrefix}${(pIdx % 7) + 1}.png`}
+                        alt={partner}
+                        width={120}
+                        height={48}
+                        className={category.imageClassName}
+                      />
                     </div>
                   ))}
                 </div>

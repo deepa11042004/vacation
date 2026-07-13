@@ -56,6 +56,7 @@ export default function Navbar() {
     pathname === "/terms-conditions" ||
     pathname === "/privacy-policy" ||
     pathname === "/refund-policy" ||
+    pathname.startsWith("/stays/") ||
     pathname.startsWith("/destination") ||
     pathname.startsWith("/hotels");
 
@@ -91,11 +92,11 @@ export default function Navbar() {
       <div className="flex items-center justify-between w-full lg:w-auto">
         <Link href="/" className="flex items-center shrink-0">
           <Image
-            src={isScrolled ? "/Img/logo.png" : "/Img/fulllogo.png"}
+            src={isScrolled ? "/Img/logo.png" : "/Img/fanlogo.png"}
             alt="Logo"
             width={150}
             height={30}
-            className={`${isScrolled ? "h-7 md:h-9 w-auto object-contain" : "h-15 md:h-20 w-auto object-contain"}`}
+            className={`${isScrolled ? "h-7 md:h-9 w-auto object-contain invert-100" : "h-15 md:h-25 w-auto object-contain"}`}
           />
         </Link>
 
@@ -133,7 +134,7 @@ export default function Navbar() {
               className={`flex items-center gap-1 rounded-full px-2.5 xl:px-4 py-2 text-[13px] xl:text-sm font-medium transition-colors duration-300 ${
                 !useLightStyle && !isScrolled
                   ? "text-white/90 hover:bg-white/20"
-                  : "text-gray-700 hover:bg-blue-100/50 hover:text-gray-900"
+                  : "text-gray-700 hover:bg-blue-100 hover:text-gray-900"
               }`}
             >
               {item.label}
