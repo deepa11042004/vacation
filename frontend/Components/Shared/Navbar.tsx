@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { ChevronDown, Menu, X } from "lucide-react";
@@ -7,7 +8,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import CtaButton from "@/UI/CtaButton";
 
-/*  Data */
+/* Data */
 
 type NavItem = {
   label: string;
@@ -39,74 +40,77 @@ const navItems: NavItem[] = [
   { label: "Contact", url: "/contact" },
 ];
 
-/*  Component */
+/* Component */
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const pathname = usePathname();
 
-  const useLightStyle =
-    isScrolled ||
-    mobileMenuOpen ||
-    pathname === "/stays" ||
-    pathname === "/contact" ||
-    pathname === "/join" ||
-    pathname === "/terms-conditions" ||
-    pathname === "/privacy-policy" ||
-    pathname === "/refund-policy" ||
-    pathname.startsWith("/stays/") ||
-    pathname.startsWith("/destination") ||
-    pathname.startsWith("/hotels");
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 300);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    // Initial check
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   // Close mobile menu on route change
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
   }, [pathname]);
 
   return (
-    /*  Layer 4 — navigation */
-    <nav
-      className={`fixed z-1000 flex flex-col lg:flex-row lg:items-center justify-between transition-all duration-300 ${
-        isScrolled
-          ? "top-0 lg:top-4 inset-x-0 lg:inset-x-4 xl:inset-x-8 2xl:inset-x-32 bg-white/95 backdrop-blur-md lg:bg-blue-50 lg:rounded-full py-3 px-4 md:px-6 lg:px-4 shadow-md"
-          : mobileMenuOpen
-            ? "inset-x-0 top-0 bg-white/95 rounded-b-2xl backdrop-blur-md py-4 px-4 md:px-8 shadow-sm"
-            : "inset-x-0 top-0 bg-transparent py-4 lg:py-6 px-4 md:px-8 lg:px-6 xl:px-12 2xl:px-40"
-      }`}
-    >
-      <div className="flex items-center justify-between w-full lg:w-auto">
+    <nav className="fixed inset-x-0 top-0 z-1000 bg-black py-4 px-4 md:px-8 lg:px-10 rounded-b-4xl">
+      <div className="flex items-center justify-between max-w-7xl mx-auto">
+        {/* Logo */}
         <Link href="/" className="flex items-center shrink-0">
           <Image
-            src={isScrolled ? "/Img/logo.png" : "/Img/fanlogo.png"}
+            src="/Img/fanlogo.png"
             alt="Logo"
             width={150}
-            height={30}
-            className={`${isScrolled ? "h-7 md:h-9 w-auto object-contain invert-100" : "h-15 md:h-25 w-auto object-contain"}`}
+            height={40}
+            className="h-12 md:h-18 w-auto object-contain"
+            priority
           />
         </Link>
 
+        {/* Desktop Center Navigation */}
+        <div className="hidden lg:flex items-center gap-1">
+          {navItems.map((item) => (
+            <div key={item.label} className="group relative">
+              <Link
+                href={item.url}
+                className="flex items-center gap-1 rounded-full px-3 xl:px-4 py-2 text-[13px] xl:text-sm font-medium text-white hover:bg-white hover:text-black transition-colors duration-300"
+              >
+                {item.label}
+                {item.dropdown && (
+                  <ChevronDown className="h-3.5 w-3.5 group-hover:rotate-180 transition-transform duration-300" />
+                )}
+              </Link>
+
+              {item.dropdown && (
+                <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300">
+                  <div className="flex flex-col min-w-37.5 rounded-xl shadow-lg overflow-hidden py-1 bg-white border border-gray-100">
+                    {item.dropdown.map((dropItem) => (
+                      <Link
+                        key={dropItem.label}
+                        href={dropItem.url}
+                        className="px-4 py-2 text-[13px] xl:text-sm text-gray-700 hover:bg-blue-50 hover:text-gray-900 transition-colors"
+                      >
+                        {dropItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop CTA Buttons */}
+        <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
+          <CtaButton text="Login" variant="blue" href="/login" size="sm" />
+          <CtaButton text="Join Now" variant="outline" href="/join" size="sm" />
+        </div>
+
         {/* Mobile Hamburger Toggle */}
-        <div className="flex items-center gap-4 lg:hidden">
+        <div className="flex items-center lg:hidden">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`p-2 -mr-2 rounded-lg transition-colors ${
-              !useLightStyle ? "text-white" : "text-gray-900"
-            }`}
+            className="p-2 rounded-lg text-white hover:bg-white transition-colors"
           >
             {mobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -117,81 +121,9 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Desktop Center Navigation */}
-      <div
-        className={`hidden lg:flex items-center gap-0.5 xl:gap-1 rounded-full px-2 py-1.5 transition-colors duration-300 ${
-          !useLightStyle && !isScrolled
-            ? "border border-white/25 bg-white/10 backdrop-blur-md"
-            : isScrolled
-              ? "bg-transparent"
-              : "bg-blue-50"
-        }`}
-      >
-        {navItems.map((item) => (
-          <div key={item.label} className="group relative">
-            <Link
-              href={item.url}
-              className={`flex items-center gap-1 rounded-full px-2.5 xl:px-4 py-2 text-[13px] xl:text-sm font-medium transition-colors duration-300 ${
-                !useLightStyle && !isScrolled
-                  ? "text-white/90 hover:bg-white/20"
-                  : "text-gray-700 hover:bg-blue-100 hover:text-gray-900"
-              }`}
-            >
-              {item.label}
-              {item.dropdown && (
-                <ChevronDown className="h-3.5 w-3.5 group-hover:rotate-180 transition-transform duration-300" />
-              )}
-            </Link>
-
-            {item.dropdown && (
-              <div className="absolute left-0 top-full pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300">
-                <div
-                  className={`flex flex-col min-w-37.5 rounded-2xl shadow-lg overflow-hidden py-1 ${
-                    !useLightStyle && !isScrolled
-                      ? "bg-white/10 backdrop-blur-md border border-white/25"
-                      : "bg-white border border-gray-100"
-                  }`}
-                >
-                  {item.dropdown.map((dropItem) => (
-                    <Link
-                      key={dropItem.label}
-                      href={dropItem.url}
-                      className={`px-4 py-2 text-[13px] xl:text-sm transition-colors ${
-                        !useLightStyle && !isScrolled
-                          ? "text-white/90 hover:bg-white/20"
-                          : "text-gray-700 hover:bg-blue-50 hover:text-gray-900"
-                      }`}
-                    >
-                      {dropItem.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Desktop CTA Buttons */}
-      <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
-        <CtaButton
-          text="Login"
-          variant={!useLightStyle && !isScrolled ? "blue" : "blue"}
-          href="/login"
-          size="sm"
-          className={!useLightStyle && !isScrolled ? "border-white" : ""}
-        />
-        <CtaButton
-          text="Join Now"
-          variant={!useLightStyle && !isScrolled ? "outline" : "blue"}
-          href="/join"
-          size="sm"
-        />
-      </div>
-
       {/* Mobile Menu Dropdown */}
       <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out w-full ${
+        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           mobileMenuOpen
             ? "max-h-[80vh] opacity-100 mt-4 overflow-y-auto scrollbar-hide"
             : "max-h-0 opacity-0"
@@ -207,7 +139,7 @@ export default function Navbar() {
                       openDropdown === item.label ? null : item.label,
                     )
                   }
-                  className="px-4 py-3 text-sm font-medium text-gray-800 hover:bg-slate-50 rounded-xl transition-colors flex justify-between items-center w-full text-left cursor-pointer"
+                  className="px-4 py-3 text-sm font-medium text-white hover:bg-gray-50 rounded-xl transition-colors flex justify-between items-center w-full text-left cursor-pointer"
                 >
                   {item.label}
                   <ChevronDown
@@ -217,11 +149,12 @@ export default function Navbar() {
               ) : (
                 <Link
                   href={item.url}
-                  className="px-4 py-3 text-sm font-medium text-gray-800 hover:bg-slate-50 rounded-xl transition-colors flex justify-between items-center"
+                  className="px-4 py-3 text-sm font-medium text-white hover:bg-gray-50 rounded-xl transition-colors flex justify-between items-center"
                 >
                   {item.label}
                 </Link>
               )}
+
               {item.dropdown && (
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
@@ -235,7 +168,7 @@ export default function Navbar() {
                       <Link
                         key={dropItem.label}
                         href={dropItem.url}
-                        className="px-4 py-2 text-[13px] text-gray-600 hover:text-blue-600 transition-colors"
+                        className="px-4 py-2 text-[13px] text-white/80 hover:text-black hover:bg-white transition-colors"
                       >
                         {dropItem.label}
                       </Link>
@@ -246,6 +179,7 @@ export default function Navbar() {
             </div>
           ))}
 
+          {/* Mobile CTA buttons */}
           <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-100/50 px-4">
             <Link
               href="/login"

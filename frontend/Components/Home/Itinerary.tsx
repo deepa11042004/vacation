@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { MapPin, Clock, Play, X, Minus } from "lucide-react";
+import { MapPin, Play, X, Minus } from "lucide-react";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
 
@@ -13,8 +13,6 @@ interface ItineraryItem {
   country: string;
   title: string;
   description: string;
-  duration: string;
-  badge: string;
   image: string;
   youtubeId: string;
 }
@@ -27,8 +25,6 @@ const itinerariesData: ItineraryItem[] = [
     title: "Dubai — Desert Dreams & City Glamour",
     description:
       "Explore Jumeirah Mosque, Gold Souk, Dubai Mall, Spice Souk, and the historic Bastakiya Square. Drive past Atlantis, The Palm, and end with an unforgettable desert safari experience.",
-    duration: "5 Nights / 6 Days",
-    badge: "✈️ 5 Nights",
     image:
       "https://images.unsplash.com/photo-1739900292622-a7f860175aad?w=800&auto=format&fit=crop&q=80",
     youtubeId: "Hs4arPj29_I",
@@ -39,8 +35,6 @@ const itinerariesData: ItineraryItem[] = [
     title: "Goa — Sun, Sand & Soul",
     description:
       "Goa offers much more than its famous party scene. Rich legacy, history, culture, and sun-soaked beaches make it a perfect destination for every kind of traveller seeking joy.",
-    duration: "4 Nights / 5 Days",
-    badge: "🏝️ 4 Nights",
     image:
       "https://images.unsplash.com/photo-1614082242765-7c98ca0f3df3?w=800&auto=format&fit=crop&q=80",
     youtubeId: "BoFGjD9Bv-k",
@@ -51,8 +45,6 @@ const itinerariesData: ItineraryItem[] = [
     title: "Bali — Enchanting Island of Gods",
     description:
       "Bali's enchanting beauty, rich culture, and serene beaches create an unforgettable experience. Whether you seek adventure or relaxation, Bali has it all for you.",
-    duration: "6 Nights / 7 Days",
-    badge: "🌺 6 Nights",
     image:
       "https://plus.unsplash.com/premium_photo-1677829177642-30def98b0963?w=800&auto=format&fit=crop&q=80",
     youtubeId: "BFS9n4B_2xA",
@@ -125,11 +117,6 @@ function ItineraryCard({ item, onPlay }: CardProps) {
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-linear-to-b from-black/15 via-transparent to-black/60 pointer-events-none z-10" />
 
-        {/* Badge */}
-        <span className="absolute top-4 left-4 z-20 bg-white/25 backdrop-blur-md border border-white/10 text-white text-xs font-medium px-4 py-1.5 rounded-full tracking-wide shadow-xs select-none">
-          {item.badge}
-        </span>
-
         {/* Play button */}
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <button
@@ -165,11 +152,6 @@ function ItineraryCard({ item, onPlay }: CardProps) {
 
         {/* Footer */}
         <div className="pt-4 mt-auto border-t border-gray-100 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 text-gray-400 text-xs font-bold uppercase tracking-wider">
-            <Clock className="w-3.5 h-3.5 shrink-0" />
-            <span>{item.duration}</span>
-          </div>
-
           <CtaButton
             text="Explore"
             variant="white"

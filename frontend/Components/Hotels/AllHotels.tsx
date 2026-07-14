@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Loader2,} from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CtaButton from "@/UI/CtaButton";
 import { hotelImageUrl } from "@/lib/imageUrl";
@@ -35,23 +35,23 @@ interface AllHotelsProps {
 type Category = "ALL" | "ASSOCIATED" | "INTERNAL";
 
 const LOCATIONS = [
-  "All",
-  "Delhi",
-  "Goa",
-  "Mumbai",
-  "Jaipur",
-  "Kerala",
-  "Agra",
-  "Udaipur",
-  "Bengaluru",
-  "Chennai",
-  "Kolkata",
-  "Hyderabad",
-  "Pune",
-  "Shimla",
-  "Manali",
-  "Darjeeling",
-  "Varanasi",
+  { name: "All", count: 0 }, // 0 or empty for 'All'
+  { name: "Delhi", count: 12 },
+  { name: "Goa", count: 8 },
+  { name: "Mumbai", count: 15 },
+  { name: "Jaipur", count: 6 },
+  { name: "Kerala", count: 10 },
+  { name: "Agra", count: 4 },
+  { name: "Udaipur", count: 5 },
+  { name: "Bengaluru", count: 11 },
+  { name: "Chennai", count: 7 },
+  { name: "Kolkata", count: 9 },
+  { name: "Hyderabad", count: 8 },
+  { name: "Pune", count: 6 },
+  { name: "Shimla", count: 5 },
+  { name: "Manali", count: 4 },
+  { name: "Darjeeling", count: 3 },
+  { name: "Varanasi", count: 6 },
 ];
 
 export default function AllHotels({ type = "all" }: AllHotelsProps) {
@@ -97,8 +97,10 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
       limit: String(limit),
       status: "ACTIVE",
     });
-    if (activeCategory === "ASSOCIATED") params.set("property_type", "ASSOCIATED_PROPERTY");
-    if (activeCategory === "INTERNAL") params.set("property_type", "INTERNAL_PROPERTY");
+    if (activeCategory === "ASSOCIATED")
+      params.set("property_type", "ASSOCIATED_PROPERTY");
+    if (activeCategory === "INTERNAL")
+      params.set("property_type", "INTERNAL_PROPERTY");
     if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
 
     setError("");
@@ -109,14 +111,20 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
         setHotels(res?.data?.hotels ?? []);
         setTotal(res?.data?.total ?? 0);
       })
-      .catch((e) => { console.error("Hotels API:", e); setError(e.message); setHotels([]); })
+      .catch((e) => {
+        console.error("Hotels API:", e);
+        setError(e.message);
+        setHotels([]);
+      })
       .finally(() => setLoading(false));
   }, [page, activeCategory, debouncedSearch]);
 
   const totalPages = Math.ceil(total / limit);
 
   function coverImage(h: Hotel): string {
-    const sorted = [...(h.images ?? [])].sort((a, b) => a.sort_order - b.sort_order);
+    const sorted = [...(h.images ?? [])].sort(
+      (a, b) => a.sort_order - b.sort_order,
+    );
     return hotelImageUrl(sorted[0]?.image_path);
   }
 
@@ -131,7 +139,10 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
               return (
                 <button
                   key={cat}
-                  onClick={() => { setActiveCategory(cat); setSearchQuery(""); }}
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    setSearchQuery("");
+                  }}
                   className={`relative px-6 py-2.5 rounded-full text-sm font-medium transition-colors duration-300 ${
                     isSelected
                       ? "text-white"
@@ -142,10 +153,16 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                     <motion.div
                       layoutId="hotels-filter-pill"
                       className="absolute inset-0 bg-neutral-900 rounded-full -z-10"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      transition={{
+                        type: "spring",
+                        bounce: 0.2,
+                        duration: 0.6,
+                      }}
                     />
                   )}
-                  <span className="relative z-10 text-xs tracking-widest uppercase">{cat}</span>
+                  <span className="relative z-10 text-xs tracking-widest uppercase">
+                    {cat}
+                  </span>
                 </button>
               );
             })}
@@ -185,12 +202,12 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
           <div className="flex p-4 shadow-xs rounded-3xl max-w-4xl">
             <div className="flex flex-wrap justify-center gap-2 items-center w-full">
               {LOCATIONS.map((loc) => {
-                const isActive = activeLocation === loc;
+                const isActive = activeLocation === loc.name;
                 return (
                   <button
-                    key={loc}
-                    onClick={() => handleLocationClick(loc)}
-                    className={`relative whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
+                    key={loc.name}
+                    onClick={() => handleLocationClick(loc.name)}
+                    className={`relative cursor-pointer whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
                       isActive
                         ? "bg-neutral-950 text-white shadow-md"
                         : "text-gray-500 hover:text-gray-900 border border-neutral-200"
@@ -200,10 +217,26 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                       <motion.span
                         layoutId="hotel-location-filter-pill"
                         className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
-                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{
+                          duration: 0.35,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
                       />
                     )}
-                    {loc}
+                    <span className="flex items-center justify-center gap-1.5">
+                      <span>{loc.name}</span>
+                      {loc.name !== "All" && loc.count > 0 && (
+                        <span
+                          className={`flex items-center justify-center min-w-5 h-5 px-1 rounded-full text-[10px] font-bold transition-colors duration-300 ${
+                            isActive
+                              ? "bg-white text-neutral-950"
+                              : "bg-neutral-100 text-neutral-600 border border-neutral-200"
+                          }`}
+                        >
+                          {loc.count}
+                        </span>
+                      )}
+                    </span>
                   </button>
                 );
               })}
@@ -233,7 +266,9 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                     className="col-span-full py-20 text-center flex flex-col items-center justify-center text-neutral-500"
                   >
                     <Search className="w-10 h-10 text-neutral-300 mb-4" />
-                    <p className="text-xl font-bold text-neutral-900 mb-2">No hotels found</p>
+                    <p className="text-xl font-bold text-neutral-900 mb-2">
+                      No hotels found
+                    </p>
                     <p className="text-sm text-neutral-400 font-light max-w-sm mx-auto leading-relaxed">
                       Try a different search or category.
                     </p>
@@ -267,7 +302,9 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                     <div className="grow mb-6">
                       <span className="text-[11px] font-bold text-neutral-400 tracking-wider uppercase mb-1 block">
                         {hotel.location?.location_name ?? ""}
-                        {hotel.location?.country ? `, ${hotel.location.country}` : ""}
+                        {hotel.location?.country
+                          ? `, ${hotel.location.country}`
+                          : ""}
                       </span>
                       <h3 className="text-xl md:text-2xl font-bold tracking-tight text-neutral-900 mb-3 group-hover:text-neutral-600 transition-colors leading-snug">
                         {hotel.hotel_name}

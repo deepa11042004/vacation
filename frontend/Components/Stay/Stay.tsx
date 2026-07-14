@@ -70,6 +70,72 @@ const NEW_CAROUSEL_DATA = [
 
 export const stayTypes = [
   {
+    id: 3,
+    slug: "villas",
+    title: "Villas",
+    category: "Private Stay",
+    subtitle: "Exclusive Luxury",
+    description: "Private villas with pools, gardens, and stunning views.",
+    propertyCount: 3920,
+    image:
+      "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 7,
+    slug: "treehouses",
+    title: "Treehouses",
+    category: "Unique Stay",
+    subtitle: "Stay Above the Forest",
+    description: "Unique treehouse escapes surrounded by nature.",
+    propertyCount: 420,
+    image:
+      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 8,
+    slug: "domes",
+    title: "Domes",
+    category: "Unique Stay",
+    subtitle: "Sleep Under the Stars",
+    description: "Geodesic domes offering unforgettable views.",
+    propertyCount: 180,
+    image:
+      "https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg?auto=compress&cs=tinysrgb&w=600",
+  },
+  {
+    id: 20,
+    slug: "igloos",
+    title: "Igloos",
+    category: "Snow Experience",
+    subtitle: "Arctic Adventure",
+    description: "Sleep beneath the Northern Lights in glass igloos.",
+    propertyCount: 42,
+    image:
+      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 12,
+    slug: "cabins",
+    title: "Cabins",
+    category: "Mountain Retreat",
+    subtitle: "Cozy Escapes",
+    description: "Rustic cabins surrounded by forests and mountains.",
+    propertyCount: 1780,
+    image:
+      "https://images.pexels.com/photos/32334284/pexels-photo-32334284.jpeg?auto=compress&cs=tinysrgb&w=600",
+  },
+  {
+    id: 25,
+    slug: "tenthouses",
+    title: "Tenthouses",
+    category: "Unique Stay",
+    subtitle: "Glamorous Camping",
+    description: "Luxury tents and camps under star-filled skies.",
+    propertyCount: 320,
+    image:
+      "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&w=800&q=80",
+  },
+  {
     id: 1,
     slug: "hotels",
     title: "Hotels",
@@ -91,17 +157,6 @@ export const stayTypes = [
     propertyCount: 6840,
     image:
       "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 3,
-    slug: "villas",
-    title: "Villas",
-    category: "Private Stay",
-    subtitle: "Exclusive Luxury",
-    description: "Private villas with pools, gardens, and stunning views.",
-    propertyCount: 3920,
-    image:
-      "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 4,
@@ -137,27 +192,6 @@ export const stayTypes = [
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
   },
   {
-    id: 7,
-    slug: "treehouses",
-    title: "Treehouses",
-    category: "Unique Stay",
-    subtitle: "Stay Above the Forest",
-    description: "Unique treehouse escapes surrounded by nature.",
-    propertyCount: 420,
-    image:
-      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 8,
-    slug: "domes",
-    title: "Domes",
-    category: "Unique Stay",
-    subtitle: "Sleep Under the Stars",
-    description: "Geodesic domes offering unforgettable views.",
-    propertyCount: 180,
-    image: "https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg?auto=compress&cs=tinysrgb&w=600",
-  },
-  {
     id: 9,
     slug: "glass-cabins",
     title: "Glass Cabins",
@@ -176,7 +210,8 @@ export const stayTypes = [
     subtitle: "Live on the Water",
     description: "Floating accommodations on lakes, rivers, and canals.",
     propertyCount: 340,
-    image: "https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      "https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 11,
@@ -190,17 +225,6 @@ export const stayTypes = [
       "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=800&q=80",
   },
   {
-    id: 12,
-    slug: "cabins",
-    title: "Cabins",
-    category: "Mountain Retreat",
-    subtitle: "Cozy Escapes",
-    description: "Rustic cabins surrounded by forests and mountains.",
-    propertyCount: 1780,
-    image:
-      "https://images.pexels.com/photos/32334284/pexels-photo-32334284.jpeg?auto=compress&cs=tinysrgb&w=600",
-  },
-  {
     id: 13,
     slug: "glamping",
     title: "Glamping",
@@ -208,7 +232,8 @@ export const stayTypes = [
     subtitle: "Nature Meets Comfort",
     description: "Luxury camping with hotel-style comforts.",
     propertyCount: 760,
-    image: "https://images.pexels.com/photos/9491328/pexels-photo-9491328.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      "https://images.pexels.com/photos/9491328/pexels-photo-9491328.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 14,
@@ -229,7 +254,8 @@ export const stayTypes = [
     subtitle: "Rural Living",
     description: "Experience authentic countryside hospitality.",
     propertyCount: 540,
-    image: "https://images.pexels.com/photos/2132227/pexels-photo-2132227.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      "https://images.pexels.com/photos/2132227/pexels-photo-2132227.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 16,
@@ -239,7 +265,8 @@ export const stayTypes = [
     subtitle: "Desert Nights",
     description: "Luxury tents and camps under star-filled skies.",
     propertyCount: 190,
-    image: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 17,
@@ -249,7 +276,8 @@ export const stayTypes = [
     subtitle: "Stay Underground",
     description: "Unique cave accommodations carved into rock formations.",
     propertyCount: 88,
-    image: "https://images.pexels.com/photos/1619317/pexels-photo-1619317.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      "https://images.pexels.com/photos/1619317/pexels-photo-1619317.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 18,
@@ -274,17 +302,6 @@ export const stayTypes = [
       "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=800&q=80",
   },
   {
-    id: 20,
-    slug: "igloos",
-    title: "Igloos",
-    category: "Snow Experience",
-    subtitle: "Arctic Adventure",
-    description: "Sleep beneath the Northern Lights in glass igloos.",
-    propertyCount: 42,
-    image:
-      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80",
-  },
-  {
     id: 21,
     slug: "tiny-homes",
     title: "Tiny Homes",
@@ -292,7 +309,8 @@ export const stayTypes = [
     subtitle: "Small Space, Big Adventure",
     description: "Compact designer homes with everything you need.",
     propertyCount: 290,
-    image: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 22,
@@ -302,7 +320,8 @@ export const stayTypes = [
     subtitle: "Float in Style",
     description: "Exclusive floating villas with panoramic water views.",
     propertyCount: 38,
-    image: "https://images.pexels.com/photos/753626/pexels-photo-753626.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      "https://images.pexels.com/photos/753626/pexels-photo-753626.jpeg?auto=compress&cs=tinysrgb&w=600",
   },
   {
     id: 23,
@@ -330,10 +349,12 @@ export const stayTypes = [
 
 const FILTER_TABS = [
   { id: "all", label: "All Stays" },
-  { id: "classic", label: "Classic & Urban" },
-  { id: "nature", label: "Nature & Adventure" },
-  { id: "water", label: "Water & Coastal" },
-  { id: "unique", label: "Unique & Luxury" },
+  { id: "villas", label: "Villas" },
+  { id: "treehouses", label: "Treehouse" },
+  { id: "domes", label: "Domes" },
+  { id: "igloos", label: "Igloos" },
+  { id: "cabins", label: "Cabin" },
+  { id: "tenthouses", label: "Tenthouse" },
 ];
 
 const gridVariants = {
@@ -364,43 +385,7 @@ export default function Stay() {
 
   const filteredStays = stayTypes.filter((s) => {
     if (activeFilter === "all") return true;
-    if (activeFilter === "classic")
-      return [
-        "hotels",
-        "resorts",
-        "apartments",
-        "vacation-homes",
-        "heritage-homes",
-        "castles",
-        "villas",
-      ].includes(s.slug);
-    if (activeFilter === "nature")
-      return [
-        "treehouses",
-        "domes",
-        "cabins",
-        "glamping",
-        "eco-lodges",
-        "farm-stays",
-        "desert-camps",
-        "glass-cabins",
-        "igloos",
-      ].includes(s.slug);
-    if (activeFilter === "water")
-      return [
-        "beach-houses",
-        "houseboats",
-        "overwater-bungalows",
-        "floating-villas",
-      ].includes(s.slug);
-    if (activeFilter === "unique")
-      return [
-        "cave-hotels",
-        "tiny-homes",
-        "wellness-retreats",
-        "unique-stays",
-      ].includes(s.slug);
-    return true;
+    return s.slug === activeFilter;
   });
 
   // Limit items in "All" view to keep grid manageable, or just show all
@@ -585,7 +570,10 @@ export default function Stay() {
                       <motion.span
                         layoutId="stay-filter-pill"
                         className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
-                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{
+                          duration: 0.35,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
                       />
                     )}
                     {tab.label}
@@ -845,9 +833,7 @@ export default function Stay() {
           <CtaButton text="Book Now" variant="blue" size="md" />
         </div>
 
-        <div
-          className="absolute w-175 h-175 md:w-225 md:h-225 flex items-center justify-center rounded-full animate-[spin_60s_linear_infinite]"
-        >
+        <div className="absolute w-175 h-175 md:w-225 md:h-225 flex items-center justify-center rounded-full animate-[spin_60s_linear_infinite]">
           {orbitImages.map((src, index) => {
             const angle = (index / orbitImages.length) * 360;
             return (

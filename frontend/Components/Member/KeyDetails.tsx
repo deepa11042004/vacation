@@ -50,8 +50,40 @@ const KEY_TENETS: TenetItem[] = [
       "Your membership unlocks thoughtfully crafted experiences for you and your loved ones.",
     ],
   },
+  {
+    id: 4,
+    title: "Seamless Booking & Flexibility",
+    image:
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80",
+    benefits: [
+      "Book your stays up to 4 months in advance with guaranteed confirmation.",
+      "Flexible carry-forward options for unused nights, ensuring your time is never wasted.",
+      "Easy modification and cancellation policies tailored specifically for members.",
+    ],
+  },
+  {
+    id: 5,
+    title: "Exclusive Member Events",
+    image:
+      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80",
+    benefits: [
+      "Invitations to private, members-only events and exclusive culinary experiences.",
+      "Early access to new resort openings and special seasonal holiday packages.",
+      "Curated local experiences and guided tours at select premium destinations.",
+    ],
+  },
+  {
+    id: 6,
+    title: "Dedicated Concierge Support",
+    image:
+      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
+    benefits: [
+      "24/7 dedicated member support for all your travel and booking needs.",
+      "Personalized itinerary planning and special request handling before your stay.",
+      "Priority assistance for flight, transfer, and premium activity bookings.",
+    ],
+  },
 ];
-
 export default function KeyDetails() {
   const [activeIndex, setActiveIndex] = useState(0);
   const total = KEY_TENETS.length;
@@ -82,7 +114,7 @@ export default function KeyDetails() {
             className="mx-auto mb-4"
           />
           <h2 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl md:text-5xl">
-            Keystone | Key Tenets
+            Memberships | Key Tenets
           </h2>
         </div>
 
@@ -113,14 +145,14 @@ export default function KeyDetails() {
                     transform: `rotateY(${i * angleStep}deg) translateZ(${radius}px)`,
                   }}
                   animate={{
-                    opacity: isActive ? 1 : 0.3,
-                    filter: isActive ? "blur(0px)" : "blur(2px)",
+                    opacity: isActive ? 1 : 1,
+                    filter: isActive ? "blur(0px)" : "blur(0px)",
                   }}
                   transition={{ duration: 0.6 }}
                 >
                   {/* The Actual Card UI */}
                   <div
-                    className={`group flex flex-col h-full bg-white border rounded-3xl overflow-hidden shadow-2xl transition-all duration-300
+                    className={`group flex flex-col h-full bg-white border rounded-3xl overflow-hidden transition-all duration-300
                       ${isActive ? "border-blue-600 shadow-blue-100" : "border-gray-200"}`}
                     style={{ backfaceVisibility: "hidden" }}
                   >

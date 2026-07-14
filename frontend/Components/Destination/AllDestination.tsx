@@ -26,23 +26,23 @@ interface AllDestinationProps {
 type Category = "ALL" | "NATIONAL" | "INTERNATIONAL";
 
 const LOCATIONS = [
-  "All",
-  "Dehradun",
-  "Dalhousie",
-  "Varanasi",
-  "Kufri",
-  "Coimbatore",
-  "Chennai",
-  "Pondicherry",
-  "Coorg",
-  "Ayodhya",
-  "Vrindavan",
-  "Lucknow",
-  "Mahabaleshwar",
-  "Zirakpur",
-  "Lonavala",
-  "Indore",
-  "Vadodara",
+  { name: "All", count: 0 }, // 0 or empty for 'All'
+  { name: "Dehradun", count: 4 },
+  { name: "Dalhousie", count: 3 },
+  { name: "Varanasi", count: 5 },
+  { name: "Kufri", count: 2 },
+  { name: "Coimbatore", count: 4 },
+  { name: "Chennai", count: 6 },
+  { name: "Pondicherry", count: 3 },
+  { name: "Coorg", count: 5 },
+  { name: "Ayodhya", count: 2 },
+  { name: "Vrindavan", count: 3 },
+  { name: "Lucknow", count: 4 },
+  { name: "Mahabaleshwar", count: 2 },
+  { name: "Zirakpur", count: 1 },
+  { name: "Lonavala", count: 4 },
+  { name: "Indore", count: 3 },
+  { name: "Vadodara", count: 2 },
 ];
 
 export default function AllDestination({ type = "all" }: AllDestinationProps) {
@@ -169,12 +169,12 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
           <div className="flex p-4 shadow-xs rounded-3xl max-w-4xl">
             <div className="flex flex-wrap justify-center gap-2 items-center w-full">
               {LOCATIONS.map((loc) => {
-                const isActive = activeLocation === loc;
+                const isActive = activeLocation === loc.name;
                 return (
                   <button
-                    key={loc}
-                    onClick={() => handleLocationClick(loc)}
-                    className={`relative whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
+                    key={loc.name}
+                    onClick={() => handleLocationClick(loc.name)}
+                    className={`relative cursor-pointer whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
                       isActive
                         ? "bg-neutral-950 text-white shadow-md"
                         : "text-gray-500 hover:text-gray-900 border border-neutral-200"
@@ -187,7 +187,20 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
                         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                       />
                     )}
-                    {loc}
+                    <span className="flex items-center justify-center gap-1.5">
+                      <span>{loc.name}</span>
+                      {loc.name !== "All" && loc.count > 0 && (
+                        <span
+                          className={`flex items-center justify-center min-w-5 h-5 px-1 rounded-full text-[10px] font-bold transition-colors duration-300 ${
+                            isActive
+                              ? "bg-white text-neutral-950"
+                              : "bg-neutral-100 text-neutral-600 border border-neutral-200"
+                          }`}
+                        >
+                          {loc.count}
+                        </span>
+                      )}
+                    </span>
                   </button>
                 );
               })}

@@ -71,7 +71,13 @@ export default function StayCategoryPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-neutral-200 pb-8">
           <div className="flex flex-col gap-4">
-            <Badge text="429+ Properties Available" variant="black" size="lg" icon={Minus} className="w-fit" />
+            <Badge
+              text="429+ Properties Available"
+              variant="black"
+              size="lg"
+              icon={Minus}
+              className="w-fit"
+            />
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-950">
               {data.title}
             </h1>
@@ -126,7 +132,7 @@ export default function StayCategoryPage() {
                   {prop.description}
                 </p>
 
-                <div className="mt-auto pt-5 border-t border-neutral-100 flex items-center justify-end">
+                <div className="my-2">
                   <CtaButton text="View" size="sm" variant="blue" />
                 </div>
               </div>
