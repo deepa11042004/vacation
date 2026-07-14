@@ -13,7 +13,7 @@ export default function Book() {
     <section className="w-full bg-white py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Main Search Container */}
-        <div className="w-full bg-blue-50 rounded-4xl p-6 sm:p-8 border border-gray-200 hover:border-blue-600 transition-colors duration-300 ease-in-out">
+        <div className="w-full bg-linear-to-br from-blue-50 to-blue-200 rounded-4xl p-6 sm:p-8 border border-gray-200 hover:border-blue-600 transition-colors duration-300 ease-in-out">
           {/* Header Title */}
           <h2 className="text-3xl md:text-4xl font-bold text-black tracking-tight mb-6 pl-1">
             Plan Your Stays

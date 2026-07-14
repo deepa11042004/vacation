@@ -39,7 +39,24 @@ const PARTNER_CATEGORIES = [
     imagePrefix: "/associates/ass_partner",
     imageClassName: "w-auto h-8 object-cover",
   },
-
+  
+  {
+    title: "Associate Properties",
+    partners: [
+      "Taj Hotels",
+      "Oberoi Group",
+      "The Leela",
+      "ITC Hotels",
+      "Marriott",
+      "Hilton",
+      "Radisson",
+    ],
+    direction: "marquee-right",
+    speed: 42,
+    imagePrefix: "/hotels/hotels",
+    imageClassName: "w-auto h-14 object-contain",
+  },
+  
   {
     title: "Preferred Airlines",
     partners: [

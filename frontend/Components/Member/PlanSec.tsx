@@ -71,7 +71,7 @@ const MEMBERSHIPS = [
   {
     title: "IVORY",
     subtitle: "Experience destinations during the peak of their popularity",
-    bgClass: "bg-black text-white border-neutral-800",
+    bgClass: "bg-[#040B31] text-white border-neutral-800",
     benefits: [
       "7N/8D holidays every year across 46 weeks",
       "Complimentary breakfast for 2 per room per night",
@@ -82,7 +82,7 @@ const MEMBERSHIPS = [
   {
     title: "JADE",
     subtitle: "Enjoy your favourite destinations during quieter seasons",
-    bgClass: "bg-black text-white border-neutral-800",
+    bgClass: "bg-[#004B23] text-white border-neutral-800",
     benefits: [
       "7N/8D holidays every year across 24 weeks",
       "Complimentary breakfast for 2 per room per night",
@@ -255,7 +255,7 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
         </div>
 
         {/* Glossy Overlay */}
-        <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent pointer-events-none rounded-3xl" />
+        {/* <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent pointer-events-none rounded-3xl" /> */}
 
         {/* Card Content */}
         <div className="relative z-10 flex flex-col h-full">

@@ -88,8 +88,7 @@ export const stayTypes = [
     subtitle: "Stay Above the Forest",
     description: "Unique treehouse escapes surrounded by nature.",
     propertyCount: 420,
-    image:
-      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.pexels.com/photos/1795508/pexels-photo-1795508.jpeg",
   },
   {
     id: 8,
@@ -100,7 +99,7 @@ export const stayTypes = [
     description: "Geodesic domes offering unforgettable views.",
     propertyCount: 180,
     image:
-      "https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNUo4rV1_9djgtxnxURxH--oqfDRrKrxdB5upl-MQWMDAUS79fC7oUkUA&s=10",
   },
   {
     id: 20,
@@ -111,7 +110,7 @@ export const stayTypes = [
     description: "Sleep beneath the Northern Lights in glass igloos.",
     propertyCount: 42,
     image:
-      "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1771762210836-a0f3c96c402b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGlnbG9vJTIwc3RheXxlbnwwfHwwfHx8MA%3D%3D",
   },
   {
     id: 12,
@@ -122,7 +121,7 @@ export const stayTypes = [
     description: "Rustic cabins surrounded by forests and mountains.",
     propertyCount: 1780,
     image:
-      "https://images.pexels.com/photos/32334284/pexels-photo-32334284.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/32/8f/05/3a/hillside-country-cabins.jpg?w=900&h=500&s=1",
   },
   {
     id: 25,
@@ -133,7 +132,7 @@ export const stayTypes = [
     description: "Luxury tents and camps under star-filled skies.",
     propertyCount: 320,
     image:
-      "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&w=800&q=80",
+      "https://5.imimg.com/data5/QM/FF/EP/ANDROID-10975077/product-jpeg.jpg",
   },
   {
     id: 1,
@@ -144,7 +143,7 @@ export const stayTypes = [
     description: "From budget-friendly to premium hotels in every destination.",
     propertyCount: 15420,
     image:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     id: 2,
@@ -189,7 +188,7 @@ export const stayTypes = [
     description: "Wake up to sea views and sandy beaches.",
     propertyCount: 1250,
     image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+      "https://a0.muscache.com/im/pictures/3078a462-73d2-4716-9ec0-fbaf6f65e401.jpg?im_w=720",
   },
   {
     id: 9,
@@ -199,8 +198,7 @@ export const stayTypes = [
     subtitle: "Panoramic Views",
     description: "Modern cabins with floor-to-ceiling glass walls.",
     propertyCount: 215,
-    image:
-      "https://images.pexels.com/photos/23999340/pexels-photo-23999340.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image: "https://gos3.ibcdn.com/1e7e600a-de7b-4c82-b9f7-340d79d7accb.jpg",
   },
   {
     id: 10,
@@ -211,7 +209,7 @@ export const stayTypes = [
     description: "Floating accommodations on lakes, rivers, and canals.",
     propertyCount: 340,
     image:
-      "https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTswbYBCsUg4tiZYqyjD0hTaeEcthSlDNP-fV9IYnqFbVGRjl9QFrUAI6A&s=10",
   },
   {
     id: 11,
@@ -233,7 +231,7 @@ export const stayTypes = [
     description: "Luxury camping with hotel-style comforts.",
     propertyCount: 760,
     image:
-      "https://images.pexels.com/photos/9491328/pexels-photo-9491328.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://assets.culturetravel.in/ct-assets/4a84d526-d4a7-4d48-99f8-b81753311e94/thumbnail.jpg",
   },
   {
     id: 14,
@@ -244,7 +242,7 @@ export const stayTypes = [
     description: "Eco-friendly accommodations in natural settings.",
     propertyCount: 630,
     image:
-      "https://images.pexels.com/photos/23999340/pexels-photo-23999340.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://soultravelindia.com/wp-content/uploads/2021/10/Eco-Resorts-in-India.jpeg",
   },
   {
     id: 15,
@@ -255,7 +253,7 @@ export const stayTypes = [
     description: "Experience authentic countryside hospitality.",
     propertyCount: 540,
     image:
-      "https://images.pexels.com/photos/2132227/pexels-photo-2132227.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsRQ_Yk_t6jYb0rUDQSt7BX3Q_ZPapMr2r4GwY16xm2A&s=10",
   },
   {
     id: 16,
@@ -266,7 +264,7 @@ export const stayTypes = [
     description: "Luxury tents and camps under star-filled skies.",
     propertyCount: 190,
     image:
-      "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/17/50/06/eb/sunrise-view.jpg?w=900&h=500&s=1",
   },
   {
     id: 17,
@@ -276,8 +274,7 @@ export const stayTypes = [
     subtitle: "Stay Underground",
     description: "Unique cave accommodations carved into rock formations.",
     propertyCount: 88,
-    image:
-      "https://images.pexels.com/photos/1619317/pexels-photo-1619317.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image: "https://gos3.ibcdn.com/6f28d1ee921411eb8eed0242ac110004.jpeg",
   },
   {
     id: 18,
@@ -288,7 +285,7 @@ export const stayTypes = [
     description: "Historic mansions, palaces, and restored homes.",
     propertyCount: 310,
     image:
-      "https://images.pexels.com/photos/38190567/pexels-photo-38190567.png?auto=compress&cs=tinysrgb&w=600",
+      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/06/a1/4e/e5/riverside-heritage-homestay.jpg?w=900&h=500&s=1",
   },
   {
     id: 19,
@@ -299,7 +296,7 @@ export const stayTypes = [
     description: "Stay in magnificent castles with centuries of history.",
     propertyCount: 64,
     image:
-      "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=800&q=80",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMmg_4UDXgQWvgw9A2xmCEemPeGdBG1ICsoMYCfsGSm8JAGKCVZ3uu574&s=10",
   },
   {
     id: 21,
@@ -310,7 +307,7 @@ export const stayTypes = [
     description: "Compact designer homes with everything you need.",
     propertyCount: 290,
     image:
-      "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.squarespace-cdn.com/content/v1/5e8b80824d662840f6bb71a6/1715807115279-YDES1ZK7AHMGJ5F0RQNI/A54I0460+%281%29.jpg",
   },
   {
     id: 22,
@@ -321,7 +318,7 @@ export const stayTypes = [
     description: "Exclusive floating villas with panoramic water views.",
     propertyCount: 38,
     image:
-      "https://images.pexels.com/photos/753626/pexels-photo-753626.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8oefRXd_gxgoZexgczLnmECZYn2gqQHHKWxIuJfl-7mmx5OgN1h-wmrs&s=10",
   },
   {
     id: 23,
@@ -332,7 +329,7 @@ export const stayTypes = [
     description: "Spa, yoga, meditation, and holistic wellness stays.",
     propertyCount: 520,
     image:
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=800&q=80",
+      "https://www.viceroybali.com/wp-content/uploads/2024/10/what-is-a-wellness-retreat-1.png",
   },
   {
     id: 24,
@@ -343,7 +340,7 @@ export const stayTypes = [
     description: "Discover unforgettable accommodations unlike anywhere else.",
     propertyCount: 970,
     image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
+      "https://bunkout.in/wp-content/uploads/2023/07/WhatsApp-Image-2023-07-02-at-12.59.39-AM.jpeg",
   },
 ];
 
@@ -388,9 +385,9 @@ export default function Stay() {
     return s.slug === activeFilter;
   });
 
-  // Limit items in "All" view to keep grid manageable, or just show all
+  // "All"
   const displayStays =
-    activeFilter === "all" ? filteredStays.slice(0, 9) : filteredStays;
+    activeFilter === "all" ? filteredStays.slice(0, 24) : filteredStays;
 
   const phase12Ref = useRef<HTMLDivElement>(null);
 
@@ -625,11 +622,6 @@ export default function Stay() {
                 ))}
               </motion.div>
             </AnimatePresence>
-          </div>
-
-          {/* CTA */}
-          <div className="flex justify-center mt-4">
-            <CtaButton text="View More Options" variant="blue" size="sm" />
           </div>
         </div>
       </section>
