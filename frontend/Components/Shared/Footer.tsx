@@ -112,6 +112,9 @@ export default function Footer() {
               <Mail className="w-4 h-4 shrink-0" />
               Support Email
             </span>
+            <a href="mailto:info@mandarinworldwidevacations.com" className="">
+              info@mandarinworldwidevacations.com
+            </a>
             <a href="mailto:support@mwvpl.com" className="">
               support@mwvpl.com
             </a>
@@ -130,8 +133,8 @@ export default function Footer() {
               </svg>
               Phone
             </span>
-            <a href="tel:9990942211" className="">
-              9990942211
+            <a href="tel:+919990942211" className="">
+              +91 9990942211
             </a>
           </div>
           <div className="flex flex-col gap-2">
@@ -140,9 +143,9 @@ export default function Footer() {
             </span>
 
             <span>
-              MANDARIN WORLDWIDE VACATION PVT. LTD. <br /> D-22, LGF, PANDAV
-              NAGAR, NEAR RAM LEELA PARK, <br /> D-BLOCK, OPPOSITE MOTHER DAIRY
-              MAIN PLANT, <br /> LAXMI NAGAR, PANDAV NAGAR, NEW DELHI – 110092
+              Mandarin Worldwide Vacation PVT LTD <br /> D-22, LGF, Pandav
+              Nagar, Near Ram Leela Park, <br /> D-Block, Opposite Mother Dairy
+              Main Plant, <br /> Laxmi Nagar, Pandav Nagar, New Delhi – 110092
             </span>
           </div>
           <div className="flex flex-col gap-2">

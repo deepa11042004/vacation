@@ -25,9 +25,9 @@ export default function LuxuryContactBooking() {
           <div className="space-y-3 pt-4">
             <h3 className="text-4xl font-bold text-black">Location</h3>
             <p className="text-base font-medium leading-relaxed text-black">
-              D-22, LGF, PANDAV NAGAR, NEAR RAM LEELA PARK, <br /> D-BLOCK,
-              OPPOSITE MOTHER DAIRY MAIN PLANT, <br /> LAXMI NAGAR, PANDAV NAGAR, NEW
-              DELHI – 110092
+              Mandarin Worldwide Vacation PVT LTD <br /> D-22, LGF, Pandav
+              Nagar, Near Ram Leela Park, <br /> D-Block, Opposite Mother Dairy
+              Main Plant, <br /> Laxmi Nagar, Pandav Nagar, New Delhi – 110092
             </p>
             <div>
               <CtaButton text="Map" variant="white" size="sm" />
@@ -62,7 +62,7 @@ export default function LuxuryContactBooking() {
                 size="sm"
               />
               <CtaButton
-                href="tel:9990942211"
+                href="tel:+919990942211"
                 text="Call Us"
                 variant="white"
                 size="sm"
