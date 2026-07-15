@@ -143,7 +143,7 @@ export default function Footer() {
             </span>
 
             <span>
-              Mandarin Worldwide Vacation PVT LTD <br /> D-22, LGF, Pandav
+              Mandarin Worldwide Vacation Pvt. Ltd. <br /> D-22, LGF, Pandav
               Nagar, Near Ram Leela Park, <br /> D-Block, Opposite Mother Dairy
               Main Plant, <br /> Laxmi Nagar, Pandav Nagar, New Delhi – 110092
             </span>

@@ -25,7 +25,7 @@ export default function LuxuryContactBooking() {
           <div className="space-y-3 pt-4">
             <h3 className="text-4xl font-bold text-black">Location</h3>
             <p className="text-base font-medium leading-relaxed text-black">
-              Mandarin Worldwide Vacation PVT LTD <br /> D-22, LGF, Pandav
+              Mandarin Worldwide Vacation Pvt. Ltd. <br /> D-22, LGF, Pandav
               Nagar, Near Ram Leela Park, <br /> D-Block, Opposite Mother Dairy
               Main Plant, <br /> Laxmi Nagar, Pandav Nagar, New Delhi – 110092
             </p>
