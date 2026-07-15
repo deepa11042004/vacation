@@ -17,7 +17,7 @@ const marcellus = Marcellus({
 });
 
 export const metadata: Metadata = {
-  title: "Peltown Vacation",
+  title: "Mandarin Vacation",
   description: "Holiday Membership & Timeshare CRM",
 };
 
