@@ -358,22 +358,32 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             </h3>
             <div className="space-y-4">
               {[
-                "Aaram Baagh Agra",
-                "Crystal Sarovar Premiere",
-                "DoubleTree by Hilton Agra",
-                "Hotel Atulyaa Taj",
+                { name: "Aaram Baagh Agra", image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=100&h=100&auto=format&fit=crop&q=80" },
+                { name: "Crystal Sarovar Premiere", image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=100&h=100&auto=format&fit=crop&q=80" },
+                { name: "DoubleTree by Hilton Agra", image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=100&h=100&auto=format&fit=crop&q=80" },
+                { name: "Hotel Atulyaa Taj", image: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=100&h=100&auto=format&fit=crop&q=80" },
               ].map((dest, i) => (
                 <div
                   key={i}
-                  className="group cursor-pointer flex items-center justify-between py-1"
+                  className="group cursor-pointer flex items-center justify-between py-2"
                 >
-                  <div>
-                    <h4 className="text-sm font-bold text-neutral-800 group-hover:text-blue-600 transition-colors">
-                      {dest}
-                    </h4>
-                    <span className="text-xs text-neutral-400">Agra</span>
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-neutral-100">
+                      <Image
+                        src={dest.image}
+                        alt={dest.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-neutral-800 group-hover:text-blue-600 transition-colors">
+                        {dest.name}
+                      </h4>
+                      <span className="text-xs text-neutral-400">Agra</span>
+                    </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-neutral-600 transition-colors" />
+                  <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-neutral-600 transition-colors shrink-0" />
                 </div>
               ))}
             </div>

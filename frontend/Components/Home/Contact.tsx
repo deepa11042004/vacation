@@ -25,7 +25,9 @@ export default function LuxuryContactBooking() {
           <div className="space-y-3 pt-4">
             <h3 className="text-4xl font-bold text-black">Location</h3>
             <p className="text-base font-medium leading-relaxed text-black">
-              7 Basta Lane, Mala Strana <br /> Prague 1, 11800
+              D-22, LGF, PANDAV NAGAR, NEAR RAM LEELA PARK, <br /> D-BLOCK,
+              OPPOSITE MOTHER DAIRY MAIN PLANT, <br /> LAXMI NAGAR, PANDAV NAGAR, NEW
+              DELHI – 110092
             </p>
             <div>
               <CtaButton text="Map" variant="white" size="sm" />
@@ -53,8 +55,18 @@ export default function LuxuryContactBooking() {
               every day.
             </p>
             <div className="flex flex-wrap gap-4">
-              <CtaButton text="Email Us" variant="white" size="sm" />
-              <CtaButton text="Call Us" variant="white" size="sm" />
+              <CtaButton
+                href="mailto:info@mandarinworldwidevacations.com"
+                text="Email Us"
+                variant="white"
+                size="sm"
+              />
+              <CtaButton
+                href="tel:9990942211"
+                text="Call Us"
+                variant="white"
+                size="sm"
+              />
             </div>
           </div>
 

@@ -58,7 +58,7 @@ export default function LoginPage() {
       <div className="z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 lg:gap-24 items-center mt-16 md:mt-0">
         <div className="text-white space-y-4 md:space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start">
           <Badge
-            text="PELTOWN VACATIONS"
+            text="Mandarin Vacation"
             size="lg"
             variant="white"
             icon={Minus}
