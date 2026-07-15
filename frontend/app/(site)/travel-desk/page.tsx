@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plane,
@@ -46,8 +47,17 @@ export default function TravelDesk() {
   return (
     <div className="min-h-screen w-full">
       {/* --- HERO SECTION --- */}
-      <section className="relative bg-blue-600 text-white py-40 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
+      <section className="relative text-white py-40 px-4 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.pexels.com/photos/8828679/pexels-photo-8828679.jpeg"
+            alt="Travel Desk Background"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
+        </div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <motion.span
             initial={{ opacity: 0 }}
