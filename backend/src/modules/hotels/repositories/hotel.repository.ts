@@ -1,6 +1,7 @@
 import { Op, Transaction } from 'sequelize';
 import { Hotel } from '../models/Hotel.model';
 import { HotelImage } from '../models/HotelImage.model';
+import { Location } from '../../locations/models/Location.model';
 import { UpdateHotelDTO } from '../dto/hotel.dto';
 import { HotelFilterOptions } from '../types/hotel.types';
 import { IHotel, IHotelImage } from '../interfaces/hotel.interface';
@@ -14,7 +15,10 @@ export class HotelRepository {
 
   async findById(hotel_id: number): Promise<Hotel | null> {
     return await Hotel.findByPk(hotel_id, {
-      include: [{ model: HotelImage, as: 'images' }],
+      include: [
+        { model: HotelImage, as: 'images' },
+        { model: Location, as: 'location' },
+      ],
     });
   }
 
@@ -61,7 +65,10 @@ export class HotelRepository {
       limit: cappedLimit,
       offset,
       order: [['created_at', 'DESC']],
-      include: [{ model: HotelImage, as: 'images' }],
+      include: [
+        { model: HotelImage, as: 'images' },
+        { model: Location, as: 'location' },
+      ],
       distinct: true,
       paranoid: !includeDeleted,
     });
