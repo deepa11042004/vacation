@@ -2,5 +2,13 @@
   "invoice": {
     "subject": "Invoice {{invoice_no}} — Peltown Vacations",
     "body": "Dear {{client_name}},\n\nThank you for choosing Peltown Vacations.\n\nPlease find your invoice attached to this email.\n\nInvoice No: {{invoice_no}}\nDate: {{issue_date}}\nAmount: Rs. {{amount}}\n\nIf you have any questions regarding this invoice, please feel free to contact us.\n\nWarm regards,\nPeltown Vacations Team"
+  },
+  "birthday": {
+    "subject": "Happy Birthday {{client_name}}! 🎂 — Peltown Vacations",
+    "body": "Dear {{client_name}},\n\nWishing you a very Happy Birthday! 🎂\n\nOn this special day, the entire Peltown Vacations family sends you warm wishes and lots of love. May this year bring you wonderful journeys, beautiful destinations, and unforgettable memories.\n\nWe look forward to making your travels even more special this year.\n\nWith warm wishes,\nPeltown Vacations Team"
+  },
+  "anniversary": {
+    "subject": "Happy Anniversary {{client_name}} & {{spouse_name}}! 💍 — Peltown Vacations",
+    "body": "Dear {{client_name}} & {{spouse_name}},\n\nWishing you a very Happy Wedding Anniversary! 💍\n\nThe entire Peltown Vacations family celebrates this special milestone with you. May your bond grow stronger with every passing year and may you create many more beautiful memories together.\n\nPerhaps this is the perfect time to plan your next getaway together — we would love to make it special!\n\nWith warm wishes,\nPeltown Vacations Team"
   }
 }

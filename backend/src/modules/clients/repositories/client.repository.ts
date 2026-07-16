@@ -1,4 +1,4 @@
-import { Op, Transaction } from 'sequelize';
+import { Op, Transaction, fn, col, where, literal } from 'sequelize';
 import { Client } from '../models/Client.model';
 import { UpdateClientDTO } from '../dto/client.dto';
 import { ClientFilterOptions } from '../types/client.types';
@@ -77,5 +77,55 @@ export class ClientRepository {
 
   async permanentDelete(client_id: number, transaction?: Transaction): Promise<void> {
     await Client.destroy({ where: { client_id }, force: true, transaction });
+  }
+
+  async findTodaysBirthdays(currentYear: number): Promise<Client[]> {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    return await Client.findAll({
+      where: {
+        date_of_birth: { [Op.not]: null },
+        [Op.and]: [
+          where(fn('MONTH', col('date_of_birth')), month),
+          where(fn('DAY', col('date_of_birth')), day),
+          {
+            [Op.or]: [
+              { birthday_mail_sent_year: null },
+              { birthday_mail_sent_year: { [Op.lt]: currentYear } },
+            ],
+          },
+        ],
+      },
+    });
+  }
+
+  async findTodaysAnniversaries(currentYear: number): Promise<Client[]> {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    return await Client.findAll({
+      where: {
+        marriage_anniversary: { [Op.not]: null },
+        [Op.and]: [
+          where(fn('MONTH', col('marriage_anniversary')), month),
+          where(fn('DAY', col('marriage_anniversary')), day),
+          {
+            [Op.or]: [
+              { anniversary_mail_sent_year: null },
+              { anniversary_mail_sent_year: { [Op.lt]: currentYear } },
+            ],
+          },
+        ],
+      },
+    });
+  }
+
+  async markBirthdayMailSent(client_id: number, year: number): Promise<void> {
+    await Client.update({ birthday_mail_sent_year: year }, { where: { client_id } });
+  }
+
+  async markAnniversaryMailSent(client_id: number, year: number): Promise<void> {
+    await Client.update({ anniversary_mail_sent_year: year }, { where: { client_id } });
   }
 }

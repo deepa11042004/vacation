@@ -6,11 +6,15 @@ import { ResponseUtil } from '@/shared/utils/response.util';
 import { getTemplates, saveTemplates } from '@/shared/utils/email.service';
 import { UserRole } from '@/modules/users/types/user.types';
 
+const SingleTemplate = z.object({
+  subject: z.string().min(1, 'Subject is required'),
+  body:    z.string().min(1, 'Body is required'),
+});
+
 const TemplateSchema = z.object({
-  invoice: z.object({
-    subject: z.string().min(1, 'Subject is required'),
-    body:    z.string().min(1, 'Body is required'),
-  }),
+  invoice:     SingleTemplate,
+  birthday:    SingleTemplate,
+  anniversary: SingleTemplate,
 });
 
 /**

@@ -92,6 +92,14 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
 
   @AllowNull(true)
   @Column(DataType.INTEGER)
+  birthday_mail_sent_year?: number | null;
+
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  anniversary_mail_sent_year?: number | null;
+
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
   created_by?: number | null;
 
   @AllowNull(true)

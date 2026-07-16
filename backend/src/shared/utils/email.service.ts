@@ -40,6 +40,8 @@ interface EmailTemplate {
 
 interface TemplateFile {
   invoice: EmailTemplate;
+  birthday: EmailTemplate;
+  anniversary: EmailTemplate;
 }
 
 function getTemplatePath() {
@@ -60,6 +62,14 @@ export function getTemplates(): TemplateFile {
       invoice: {
         subject: 'Invoice {{invoice_no}} — Peltown Vacations',
         body: 'Dear {{client_name}},\n\nPlease find your invoice attached.\n\nInvoice No: {{invoice_no}}\nDate: {{issue_date}}\nAmount: Rs. {{amount}}\n\nWarm regards,\nPeltown Vacations Team',
+      },
+      birthday: {
+        subject: 'Happy Birthday {{client_name}}! 🎂 — Peltown Vacations',
+        body: 'Dear {{client_name}},\n\nWishing you a very Happy Birthday! 🎂\n\nWarm wishes,\nPeltown Vacations Team',
+      },
+      anniversary: {
+        subject: 'Happy Anniversary {{client_name}} & {{spouse_name}}! 💍 — Peltown Vacations',
+        body: 'Dear {{client_name}} & {{spouse_name}},\n\nWishing you a very Happy Wedding Anniversary! 💍\n\nWarm wishes,\nPeltown Vacations Team',
       },
     };
   }
@@ -119,6 +129,41 @@ export async function sendInvoiceEmail(to: string, data: InvoiceData): Promise<v
 }
 
 export async function sendCustomEmail(to: string, subject: string, bodyText: string): Promise<void> {
+  const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM || '"Peltown Vacations" <peltowninfra@gmail.com>',
+    to,
+    subject,
+    text: bodyText,
+    html: bodyHtml,
+  });
+}
+
+export async function sendBirthdayEmail(to: string, clientName: string): Promise<void> {
+  const templates = getTemplates();
+  const tpl = templates.birthday;
+  const vars: Record<string, string> = { client_name: clientName };
+  const subject = interpolate(tpl.subject, vars);
+  const bodyText = interpolate(tpl.body, vars);
+  const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM || '"Peltown Vacations" <peltowninfra@gmail.com>',
+    to,
+    subject,
+    text: bodyText,
+    html: bodyHtml,
+  });
+}
+
+export async function sendAnniversaryEmail(to: string, clientName: string, spouseName: string): Promise<void> {
+  const templates = getTemplates();
+  const tpl = templates.anniversary;
+  const vars: Record<string, string> = {
+    client_name: clientName,
+    spouse_name: spouseName || 'your partner',
+  };
+  const subject = interpolate(tpl.subject, vars);
+  const bodyText = interpolate(tpl.body, vars);
   const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
   await transporter.sendMail({
     from: process.env.EMAIL_FROM || '"Peltown Vacations" <peltowninfra@gmail.com>',
