@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Loader2 } from "lucide-react";
+import { Search, X, Loader2, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CtaButton from "@/UI/CtaButton";
 import { locationImageUrl } from "@/lib/imageUrl";
@@ -25,30 +25,18 @@ interface AllDestinationProps {
 
 type Category = "ALL" | "NATIONAL" | "INTERNATIONAL";
 
-const LOCATIONS = [
-  { name: "All", count: 0 }, // 0 or empty for 'All'
-  { name: "Dehradun", count: 4 },
-  { name: "Dalhousie", count: 3 },
-  { name: "Varanasi", count: 5 },
-  { name: "Kufri", count: 2 },
-  { name: "Coimbatore", count: 4 },
-  { name: "Chennai", count: 6 },
-  { name: "Pondicherry", count: 3 },
-  { name: "Coorg", count: 5 },
-  { name: "Ayodhya", count: 2 },
-  { name: "Vrindavan", count: 3 },
-  { name: "Lucknow", count: 4 },
-  { name: "Mahabaleshwar", count: 2 },
-  { name: "Zirakpur", count: 1 },
-  { name: "Lonavala", count: 4 },
-  { name: "Indore", count: 3 },
-  { name: "Vadodara", count: 2 },
-];
+const PAGE_LIMIT = 6;
+
+interface LocationTab {
+  location_id: number;
+  location_name: string;
+}
 
 export default function AllDestination({ type = "all" }: AllDestinationProps) {
   const router = useRouter();
-  const [locations, setLocations] = useState<Location[]>([]);
+  const [allLocations, setAllLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -57,33 +45,56 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [activeLocation, setActiveLocation] = useState("All");
+  const [activePlace, setActivePlace] = useState("All");
+  const [placeTabs, setPlaceTabs] = useState<LocationTab[]>([]);
+  const [showAllTabs, setShowAllTabs] = useState(false);
+  const TAB_LIMIT = 20;
+  const isFirstRender = useRef(true);
 
-  const handleLocationClick = (loc: string) => {
-    setActiveLocation(loc);
-    if (loc === "All") {
-      setSearchQuery("");
-    } else {
-      setSearchQuery(loc);
-    }
+  // Re-fetch place tabs whenever category changes
+  useEffect(() => {
+    setShowAllTabs(false);
+    const params = new URLSearchParams({ status: "ACTIVE", limit: "200" });
+    if (activeCategory === "NATIONAL") params.set("type", "DOMESTIC");
+    if (activeCategory === "INTERNATIONAL") params.set("type", "INTERNATIONAL");
+    fetch(`/api/locations?${params}`)
+      .then((r) => r.json())
+      .then((res) => {
+        if (res?.success) setPlaceTabs(res.data?.locations ?? []);
+      })
+      .catch(() => {});
+  }, [activeCategory]);
+
+  const handlePlaceClick = (place: string) => {
+    setActivePlace(place);
+    setSearchQuery(place === "All" ? "" : place);
   };
 
-  const limit = 12;
-
+  // Debounce search
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery), 400);
     return () => clearTimeout(t);
   }, [searchQuery]);
 
+  // When filters change, reset list back to page 1
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setAllLocations([]);
     setPage(1);
   }, [activeCategory, debouncedSearch]);
 
+  // Fetch — appends on load more, replaces on filter change
   useEffect(() => {
-    setLoading(true);
+    const isMore = page > 1;
+    if (isMore) setLoadingMore(true);
+    else setLoading(true);
+
     const params = new URLSearchParams({
       page: String(page),
-      limit: String(limit),
+      limit: String(PAGE_LIMIT),
       status: "ACTIVE",
     });
     if (activeCategory === "NATIONAL") params.set("type", "DOMESTIC");
@@ -95,18 +106,27 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
       .then((r) => r.json())
       .then((res) => {
         if (!res?.success) throw new Error(res?.message ?? "API error");
-        setLocations(res?.data?.locations ?? []);
+        const incoming: Location[] = res?.data?.locations ?? [];
         setTotal(res?.data?.total ?? 0);
+        setAllLocations((prev) => (page === 1 ? incoming : [...prev, ...incoming]));
       })
-      .catch((e) => { console.error("Locations API:", e); setError(e.message); setLocations([]); })
-      .finally(() => setLoading(false));
+      .catch((e) => {
+        console.error("Locations API:", e);
+        setError(e.message);
+        if (page === 1) setAllLocations([]);
+      })
+      .finally(() => {
+        setLoading(false);
+        setLoadingMore(false);
+      });
   }, [page, activeCategory, debouncedSearch]);
 
-  const totalPages = Math.ceil(total / limit);
+  const hasMore = allLocations.length < total;
 
   return (
     <section className="bg-white text-black py-24 px-6 sm:px-12 relative overflow-hidden w-full select-none">
       <div className="max-w-7xl mx-auto relative z-10">
+
         {/* Category filter */}
         {type === "all" && (
           <div className="flex flex-wrap gap-3 items-center justify-center mb-16 border-b border-neutral-100 pb-8">
@@ -115,7 +135,11 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
               return (
                 <button
                   key={cat}
-                  onClick={() => { setActiveCategory(cat); setSearchQuery(""); }}
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    setSearchQuery("");
+                    setActivePlace("All");
+                  }}
                   className={`relative px-6 py-2.5 rounded-full text-sm font-medium transition-colors duration-300 ${
                     isSelected
                       ? "text-white"
@@ -145,7 +169,7 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setActiveLocation("");
+                setActivePlace("");
               }}
               placeholder="Search by name or country..."
               className="bg-transparent text-sm text-neutral-950 placeholder-neutral-400 focus:outline-none w-full font-medium"
@@ -154,7 +178,7 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
               <button
                 onClick={() => {
                   setSearchQuery("");
-                  setActiveLocation("All");
+                  setActivePlace("All");
                 }}
                 className="p-1 hover:bg-neutral-200 rounded-full transition-colors shrink-0"
               >
@@ -164,16 +188,35 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
           </div>
         </div>
 
-        {/* Location Tabs */}
+        {/* Place Tabs — static shortcuts */}
         <div className="flex justify-center w-full mb-12 px-2">
-          <div className="flex p-4 shadow-xs rounded-3xl max-w-4xl">
+          <div className="flex p-4 shadow-xs rounded-3xl max-w-5xl">
             <div className="flex flex-wrap justify-center gap-2 items-center w-full">
-              {LOCATIONS.map((loc) => {
-                const isActive = activeLocation === loc.name;
+              {/* All tab */}
+              <button
+                onClick={() => handlePlaceClick("All")}
+                className={`relative cursor-pointer whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
+                  activePlace === "All"
+                    ? "bg-neutral-950 text-white shadow-md"
+                    : "text-gray-500 hover:text-gray-900 border border-neutral-200"
+                }`}
+              >
+                {activePlace === "All" && (
+                  <motion.span
+                    layoutId="dest-place-pill"
+                    className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                )}
+                All
+              </button>
+
+              {(showAllTabs ? placeTabs : placeTabs.slice(0, TAB_LIMIT)).map((loc) => {
+                const isActive = activePlace === loc.location_name;
                 return (
                   <button
-                    key={loc.name}
-                    onClick={() => handleLocationClick(loc.name)}
+                    key={loc.location_id}
+                    onClick={() => handlePlaceClick(loc.location_name)}
                     className={`relative cursor-pointer whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
                       isActive
                         ? "bg-neutral-950 text-white shadow-md"
@@ -182,28 +225,25 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
                   >
                     {isActive && (
                       <motion.span
-                        layoutId="destination-location-filter-pill"
+                        layoutId="dest-place-pill"
                         className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
-                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                       />
                     )}
-                    <span className="flex items-center justify-center gap-1.5">
-                      <span>{loc.name}</span>
-                      {loc.name !== "All" && loc.count > 0 && (
-                        <span
-                          className={`flex items-center justify-center min-w-5 h-5 px-1 rounded-full text-[10px] font-bold transition-colors duration-300 ${
-                            isActive
-                              ? "bg-white text-neutral-950"
-                              : "bg-neutral-100 text-neutral-600 border border-neutral-200"
-                          }`}
-                        >
-                          {loc.count}
-                        </span>
-                      )}
-                    </span>
+                    {loc.location_name}
                   </button>
                 );
               })}
+
+              {/* More / Less toggle */}
+              {placeTabs.length > TAB_LIMIT && (
+                <button
+                  onClick={() => setShowAllTabs((v) => !v)}
+                  className="whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest uppercase border border-dashed border-neutral-300 text-neutral-400 hover:text-neutral-700 hover:border-neutral-500 transition-colors duration-300"
+                >
+                  {showAllTabs ? "Less" : `+${placeTabs.length - TAB_LIMIT} More`}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -222,7 +262,7 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 items-stretch"
             >
               <AnimatePresence mode="popLayout">
-                {locations.length === 0 && (
+                {allLocations.length === 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -237,7 +277,7 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
                   </motion.div>
                 )}
 
-                {locations.map((loc) => (
+                {allLocations.map((loc) => (
                   <motion.div
                     layout
                     initial={{ opacity: 0, scale: 0.96, y: 15 }}
@@ -279,22 +319,20 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
               </AnimatePresence>
             </motion.div>
 
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 mt-14">
+            {/* Load More */}
+            {hasMore && (
+              <div className="flex justify-center mt-14">
                 <button
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="px-5 py-2 text-sm font-medium rounded-full border border-neutral-200 hover:bg-neutral-100 disabled:opacity-30 transition-colors"
-                >
-                  Previous
-                </button>
-                <span className="text-sm text-neutral-400">{page} / {totalPages}</span>
-                <button
-                  disabled={page === totalPages}
                   onClick={() => setPage((p) => p + 1)}
-                  className="px-5 py-2 text-sm font-medium rounded-full border border-neutral-200 hover:bg-neutral-100 disabled:opacity-30 transition-colors"
+                  disabled={loadingMore}
+                  className="flex items-center gap-2 px-8 py-3 rounded-full border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-950 hover:text-white hover:border-neutral-950 transition-all duration-300 disabled:opacity-50"
                 >
-                  Next
+                  {loadingMore ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                  {loadingMore ? "Loading..." : `Load More (${total - allLocations.length} remaining)`}
                 </button>
               </div>
             )}

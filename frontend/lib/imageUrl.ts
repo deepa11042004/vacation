@@ -1,6 +1,6 @@
 export function hotelImageUrl(
   imagePath: string | null | undefined,
-  fallback = "/Img/room.png"
+  fallback = "/Img/logo.png"
 ): string {
   if (!imagePath) return fallback;
   if (imagePath.startsWith("/") || imagePath.startsWith("http")) return imagePath;
@@ -9,7 +9,7 @@ export function hotelImageUrl(
 
 export function locationImageUrl(
   imagePath: string | null | undefined,
-  fallback = "/Img/mountain.png"
+  fallback = "/Img/logo.png"
 ): string {
   if (!imagePath) return fallback;
   if (imagePath.startsWith("/") || imagePath.startsWith("http")) return imagePath;

@@ -28,31 +28,18 @@ interface Hotel {
   images?: HotelImage[];
 }
 
+interface LocationTab {
+  location_id: number;
+  location_name: string;
+}
+
 interface AllHotelsProps {
   type?: "all" | "associated" | "internal";
 }
 
 type Category = "ALL" | "ASSOCIATED" | "INTERNAL";
 
-const LOCATIONS = [
-  { name: "All", count: 0 }, // 0 or empty for 'All'
-  { name: "Delhi", count: 12 },
-  { name: "Goa", count: 8 },
-  { name: "Mumbai", count: 15 },
-  { name: "Jaipur", count: 6 },
-  { name: "Kerala", count: 10 },
-  { name: "Agra", count: 4 },
-  { name: "Udaipur", count: 5 },
-  { name: "Bengaluru", count: 11 },
-  { name: "Chennai", count: 7 },
-  { name: "Kolkata", count: 9 },
-  { name: "Hyderabad", count: 8 },
-  { name: "Pune", count: 6 },
-  { name: "Shimla", count: 5 },
-  { name: "Manali", count: 4 },
-  { name: "Darjeeling", count: 3 },
-  { name: "Varanasi", count: 6 },
-];
+const limit = 12;
 
 export default function AllHotels({ type = "all" }: AllHotelsProps) {
   const router = useRouter();
@@ -66,18 +53,28 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [activeLocation, setActiveLocation] = useState("All");
 
-  const handleLocationClick = (loc: string) => {
-    setActiveLocation(loc);
-    if (loc === "All") {
-      setSearchQuery("");
-    } else {
-      setSearchQuery(loc);
-    }
+  // Dynamic location tabs
+  const [locationTabs, setLocationTabs] = useState<LocationTab[]>([]);
+  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
+  const [activeLocationName, setActiveLocationName] = useState("All");
+  const [showAllTabs, setShowAllTabs] = useState(false);
+  const TAB_LIMIT = 20;
+
+  // Fetch location tabs on mount
+  useEffect(() => {
+    fetch("/api/locations?status=ACTIVE&limit=100")
+      .then((r) => r.json())
+      .then((res) => {
+        if (res?.success) setLocationTabs(res.data?.locations ?? []);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleLocationClick = (locationId: number | null, locationName: string) => {
+    setSelectedLocationId(locationId);
+    setActiveLocationName(locationName);
   };
-
-  const limit = 12;
 
   // Debounce search
   useEffect(() => {
@@ -88,7 +85,7 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
   // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1);
-  }, [activeCategory, debouncedSearch]);
+  }, [activeCategory, debouncedSearch, selectedLocationId]);
 
   useEffect(() => {
     setLoading(true);
@@ -97,11 +94,10 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
       limit: String(limit),
       status: "ACTIVE",
     });
-    if (activeCategory === "ASSOCIATED")
-      params.set("property_type", "ASSOCIATED_PROPERTY");
-    if (activeCategory === "INTERNAL")
-      params.set("property_type", "INTERNAL_PROPERTY");
+    if (activeCategory === "ASSOCIATED") params.set("property_type", "ASSOCIATED_PROPERTY");
+    if (activeCategory === "INTERNAL") params.set("property_type", "INTERNAL_PROPERTY");
     if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
+    if (selectedLocationId !== null) params.set("location_id", String(selectedLocationId));
 
     setError("");
     fetch(`/api/hotels?${params}`)
@@ -117,14 +113,12 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
         setHotels([]);
       })
       .finally(() => setLoading(false));
-  }, [page, activeCategory, debouncedSearch]);
+  }, [page, activeCategory, debouncedSearch, selectedLocationId]);
 
   const totalPages = Math.ceil(total / limit);
 
   function coverImage(h: Hotel): string {
-    const sorted = [...(h.images ?? [])].sort(
-      (a, b) => a.sort_order - b.sort_order,
-    );
+    const sorted = [...(h.images ?? [])].sort((a, b) => a.sort_order - b.sort_order);
     return hotelImageUrl(sorted[0]?.image_path);
   }
 
@@ -153,16 +147,10 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                     <motion.div
                       layoutId="hotels-filter-pill"
                       className="absolute inset-0 bg-neutral-900 rounded-full -z-10"
-                      transition={{
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 0.6,
-                      }}
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
-                  <span className="relative z-10 text-xs tracking-widest uppercase">
-                    {cat}
-                  </span>
+                  <span className="relative z-10 text-xs tracking-widest uppercase">{cat}</span>
                 </button>
               );
             })}
@@ -176,19 +164,13 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setActiveLocation(""); // clear active location if manually typing
-              }}
-              placeholder="Search by name or location..."
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by name or address..."
               className="bg-transparent text-sm text-neutral-950 placeholder-neutral-400 focus:outline-none w-full font-medium"
             />
             {searchQuery && (
               <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setActiveLocation("All");
-                }}
+                onClick={() => setSearchQuery("")}
                 className="p-1 hover:bg-neutral-200 rounded-full transition-colors shrink-0"
               >
                 <X className="w-3.5 h-3.5 text-neutral-500" />
@@ -197,52 +179,69 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
           </div>
         </div>
 
-        {/* Location Tabs */}
-        <div className="flex justify-center w-full mb-12 px-2">
-          <div className="flex p-4 shadow-xs rounded-3xl max-w-4xl">
-            <div className="flex flex-wrap justify-center gap-2 items-center w-full">
-              {LOCATIONS.map((loc) => {
-                const isActive = activeLocation === loc.name;
-                return (
-                  <button
-                    key={loc.name}
-                    onClick={() => handleLocationClick(loc.name)}
-                    className={`relative cursor-pointer whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
-                      isActive
-                        ? "bg-neutral-950 text-white shadow-md"
-                        : "text-gray-500 hover:text-gray-900 border border-neutral-200"
-                    }`}
-                  >
-                    {isActive && (
-                      <motion.span
-                        layoutId="hotel-location-filter-pill"
-                        className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
-                        transition={{
-                          duration: 0.35,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
-                      />
-                    )}
-                    <span className="flex items-center justify-center gap-1.5">
-                      <span>{loc.name}</span>
-                      {loc.name !== "All" && loc.count > 0 && (
-                        <span
-                          className={`flex items-center justify-center min-w-5 h-5 px-1 rounded-full text-[10px] font-bold transition-colors duration-300 ${
-                            isActive
-                              ? "bg-white text-neutral-950"
-                              : "bg-neutral-100 text-neutral-600 border border-neutral-200"
-                          }`}
-                        >
-                          {loc.count}
-                        </span>
+        {/* Location Tabs — dynamic from API */}
+        {locationTabs.length > 0 && (
+          <div className="flex justify-center w-full mb-12 px-2">
+            <div className="flex p-4 shadow-xs rounded-3xl max-w-4xl">
+              <div className="flex flex-wrap justify-center gap-2 items-center w-full">
+                {/* All tab */}
+                <button
+                  key="all"
+                  onClick={() => handleLocationClick(null, "All")}
+                  className={`relative cursor-pointer whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
+                    activeLocationName === "All"
+                      ? "bg-neutral-950 text-white shadow-md"
+                      : "text-gray-500 hover:text-gray-900 border border-neutral-200"
+                  }`}
+                >
+                  {activeLocationName === "All" && (
+                    <motion.span
+                      layoutId="hotel-location-filter-pill"
+                      className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
+                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  )}
+                  All
+                </button>
+
+                {/* Dynamic location tabs */}
+                {(showAllTabs ? locationTabs : locationTabs.slice(0, TAB_LIMIT)).map((loc) => {
+                  const isActive = activeLocationName === loc.location_name;
+                  return (
+                    <button
+                      key={loc.location_id}
+                      onClick={() => handleLocationClick(loc.location_id, loc.location_name)}
+                      className={`relative cursor-pointer whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest transition-colors uppercase duration-300 ${
+                        isActive
+                          ? "bg-neutral-950 text-white shadow-md"
+                          : "text-gray-500 hover:text-gray-900 border border-neutral-200"
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.span
+                          layoutId="hotel-location-filter-pill"
+                          className="absolute inset-0 rounded-full bg-neutral-950 shadow-md -z-10"
+                          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        />
                       )}
-                    </span>
+                      {loc.location_name}
+                    </button>
+                  );
+                })}
+
+                {/* More / Less toggle */}
+                {locationTabs.length > TAB_LIMIT && (
+                  <button
+                    onClick={() => setShowAllTabs((v) => !v)}
+                    className="whitespace-nowrap shrink-0 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 text-[10px] sm:text-xs font-bold tracking-widest uppercase border border-dashed border-neutral-300 text-neutral-400 hover:text-neutral-700 hover:border-neutral-500 transition-colors duration-300"
+                  >
+                    {showAllTabs ? "Less" : `+${locationTabs.length - TAB_LIMIT} More`}
                   </button>
-                );
-              })}
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Grid */}
         {loading ? (
@@ -266,9 +265,7 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                     className="col-span-full py-20 text-center flex flex-col items-center justify-center text-neutral-500"
                   >
                     <Search className="w-10 h-10 text-neutral-300 mb-4" />
-                    <p className="text-xl font-bold text-neutral-900 mb-2">
-                      No hotels found
-                    </p>
+                    <p className="text-xl font-bold text-neutral-900 mb-2">No hotels found</p>
                     <p className="text-sm text-neutral-400 font-light max-w-sm mx-auto leading-relaxed">
                       Try a different search or category.
                     </p>
@@ -290,7 +287,7 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                     <div className="w-full relative aspect-4/3 rounded-3xl overflow-hidden shadow-xs mb-6 bg-neutral-100">
                       <Image
                         src={coverImage(hotel)}
-                        alt={`${hotel.hotel_name} - ${hotel.location?.location_name ?? ""}`}
+                        alt={hotel.hotel_name}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out brightness-[0.96]"
@@ -302,9 +299,7 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                     <div className="grow mb-6">
                       <span className="text-[11px] font-bold text-neutral-400 tracking-wider uppercase mb-1 block">
                         {hotel.location?.location_name ?? ""}
-                        {hotel.location?.country
-                          ? `, ${hotel.location.country}`
-                          : ""}
+                        {hotel.location?.country ? `, ${hotel.location.country}` : ""}
                       </span>
                       <h3 className="text-xl md:text-2xl font-bold tracking-tight text-neutral-900 mb-3 group-hover:text-neutral-600 transition-colors leading-snug">
                         {hotel.hotel_name}
@@ -332,9 +327,7 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                 >
                   Previous
                 </button>
-                <span className="text-sm text-neutral-400">
-                  {page} / {totalPages}
-                </span>
+                <span className="text-sm text-neutral-400">{page} / {totalPages}</span>
                 <button
                   disabled={page === totalPages}
                   onClick={() => setPage((p) => p + 1)}
