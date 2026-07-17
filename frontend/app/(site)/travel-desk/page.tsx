@@ -47,25 +47,27 @@ export default function TravelDesk() {
   return (
     <div className="min-h-screen w-full">
       {/* --- HERO SECTION --- */}
-      <section className="relative text-white py-40 px-4 overflow-hidden">
+      <section className="relative h-[60vh] w-full text-white py-40 px-4 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.pexels.com/photos/8828679/pexels-photo-8828679.jpeg"
+            src="/Img/bg.png"
             alt="Travel Desk Background"
             fill
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-black/60 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-black/15 mix-blend-multiply"></div>
+          <div className="absolute top-30 right-60 h-[50vh] w-[70%]">
+            <Image
+              src="/Img/plane.png"
+              alt="plane"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
         </div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="bg-white/10 text-blue-200 px-3 py-2 rounded-full text-sm font-medium tracking-wide uppercase mb-4 inline-block"
-          >
-            Corporate & Leisure Travel Desk
-          </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -77,7 +79,7 @@ export default function TravelDesk() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-lg md:text-xl text-slate-200 max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-white max-w-2xl mx-auto"
           >
             Book flights, reserve stays, manage car rentals, arrange transfers,
             and get visa support all in one premium corporate ecosystem.
