@@ -8,8 +8,10 @@ import Modal from "@/Components/Admin/Modal";
 import {
   ArrowLeft, Loader2, User, Pencil,
   LayoutList, CalendarDays, Wrench, Tag, CreditCard, PhoneCall, FileCheck,
-  Plus, Trash2, AlertCircle, X, Mail, CheckCircle2, XCircle, FileText
+  Plus, Trash2, AlertCircle, X, Mail, CheckCircle2, XCircle, FileText,
+  QrCode, RefreshCw, Copy, Check, Download, Share2, ChevronRight,
 } from "lucide-react";
+import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 
 interface Client {
   client_id: number;
@@ -19,6 +21,7 @@ interface Client {
   status: string;
   is_welcome_mail_sent?: boolean;
   marriage_anniversary?: string; spouse_name?: string;
+  qr_token?: string | null;
   created_at: string; updated_at?: string;
 }
 
@@ -340,6 +343,10 @@ export default function ClientDetailPage() {
   const [editForm,   setEditForm]   = useState<Record<string, string>>({});
   const [editSaving, setEditSaving] = useState(false);
   const [editErr,    setEditErr]    = useState("");
+
+  const [qrGenerating, setQrGenerating] = useState(false);
+  const [qrCopied,     setQrCopied]     = useState(false);
+  const [showQrModal,  setShowQrModal]  = useState(false);
 
   function loadData() {
     const safe = <T,>(p: Promise<T>) => p.catch(() => null);
@@ -703,6 +710,39 @@ export default function ClientDetailPage() {
     } finally { setKycSaving(false); }
   }
 
+  async function generateQrToken() {
+    setQrGenerating(true);
+    try {
+      const res = await api.post<{ data: { qr_token: string } }>(`/clients/${id}/generate-qr-token`, {});
+      const token = res?.data?.qr_token;
+      if (token) setClient(prev => prev ? { ...prev, qr_token: token } : prev);
+    } catch { /* silent */ }
+    finally { setQrGenerating(false); }
+  }
+
+  async function copyQrUrl(url: string) {
+    await navigator.clipboard.writeText(url);
+    setQrCopied(true);
+    setTimeout(() => setQrCopied(false), 2000);
+  }
+
+  function downloadQr(name: string) {
+    const canvas = document.getElementById("qr-download-canvas") as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const link = document.createElement("a");
+    link.download = `${name.replace(/\s+/g, "-").toLowerCase()}-qr-login.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }
+
+  async function shareQr(url: string, name: string) {
+    if (navigator.share) {
+      await navigator.share({ title: `${name} — QR Login`, url });
+    } else {
+      copyQrUrl(url);
+    }
+  }
+
   function openEdit() {
     if (!client) return;
     setEditForm({
@@ -788,6 +828,32 @@ export default function ClientDetailPage() {
               <Pencil className="w-3 h-3" /> Edit
             </button>
           </div>
+        </div>
+
+        {/* QR Login field — click to open modal */}
+        <div className="mt-4 pt-4 border-t border-slate-100">
+          <button
+            onClick={() => setShowQrModal(true)}
+            className="w-full flex items-center justify-between gap-3 group hover:bg-slate-50 rounded-lg px-1 py-1.5 transition-colors text-left"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center shrink-0">
+                <QrCode className="w-3.5 h-3.5 text-violet-600" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-700 leading-tight">Client QR Login</p>
+                <p className="text-[10px] text-slate-400 leading-tight">Tap to view or generate QR code</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {client.qr_token ? (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600">Generated</span>
+              ) : (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">Not generated</span>
+              )}
+              <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 transition-colors" />
+            </div>
+          </button>
         </div>
       </div>
 
@@ -897,6 +963,7 @@ export default function ClientDetailPage() {
               </div>
             );
           })()}
+
 
           {tab === "holiday-chart" && (() => {
             if (!membership) return (
@@ -1950,6 +2017,104 @@ export default function ClientDetailPage() {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* QR Code Modal */}
+      <Modal open={showQrModal} title="Client QR Login" onClose={() => setShowQrModal(false)}>
+        {(() => {
+          const frontendUrl = typeof window !== "undefined" ? window.location.origin : "";
+          const qrUrl = client?.qr_token ? `${frontendUrl}/auth/qr-login?token=${client.qr_token}` : null;
+          return (
+            <div className="p-6 space-y-6">
+              {qrUrl ? (
+                <>
+                  {/* QR code */}
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="p-4 bg-white border-2 border-slate-200 rounded-2xl">
+                      <QRCodeSVG value={qrUrl} size={200} level="M" />
+                      {/* Hidden canvas used for PNG download */}
+                      <div className="hidden">
+                        <QRCodeCanvas id="qr-download-canvas" value={qrUrl} size={400} level="M" />
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-semibold text-slate-800">{fullName}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">Scan to log in — no password needed</p>
+                    </div>
+                  </div>
+
+                  {/* URL row */}
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Login URL</p>
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                      <code className="text-xs text-slate-600 break-all flex-1">{qrUrl}</code>
+                      <button
+                        onClick={() => copyQrUrl(qrUrl)}
+                        className="shrink-0 p-1.5 hover:bg-slate-200 rounded-lg transition-colors"
+                        title="Copy URL"
+                      >
+                        {qrCopied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-400" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <button
+                      onClick={() => downloadQr(fullName)}
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
+                    >
+                      <Download className="w-4 h-4 text-slate-600" />
+                      <span className="text-xs font-medium text-slate-600">Download</span>
+                    </button>
+                    <button
+                      onClick={() => shareQr(qrUrl, fullName)}
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
+                    >
+                      <Share2 className="w-4 h-4 text-slate-600" />
+                      <span className="text-xs font-medium text-slate-600">Share</span>
+                    </button>
+                    <button
+                      onClick={async () => { await generateQrToken(); }}
+                      disabled={qrGenerating}
+                      className="flex flex-col items-center gap-1.5 py-3 rounded-xl border border-slate-200 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                    >
+                      {qrGenerating ? <Loader2 className="w-4 h-4 text-slate-600 animate-spin" /> : <RefreshCw className="w-4 h-4 text-slate-600" />}
+                      <span className="text-xs font-medium text-slate-600">Regenerate</span>
+                    </button>
+                  </div>
+
+                  {/* Warning */}
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-amber-700 mb-0.5">Security note</p>
+                    <p className="text-xs text-amber-600 leading-relaxed">
+                      Anyone with this QR code can log in as this client. Share it only directly with them.
+                      Use <strong>Regenerate</strong> to invalidate the old code if it is compromised.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-5 py-6">
+                  <div className="w-20 h-20 rounded-2xl bg-violet-50 flex items-center justify-center">
+                    <QrCode className="w-10 h-10 text-violet-300" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-slate-700">No QR code yet</p>
+                    <p className="text-xs text-slate-400 mt-1">Generate one to let this client log in by scanning</p>
+                  </div>
+                  <button
+                    onClick={generateQrToken}
+                    disabled={qrGenerating}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-xl disabled:opacity-60 transition-colors"
+                  >
+                    {qrGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <QrCode className="w-4 h-4" />}
+                    Generate QR Code
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </Modal>
     </div>
   );
