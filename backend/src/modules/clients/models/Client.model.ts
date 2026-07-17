@@ -91,6 +91,11 @@ export class Client extends Model<IClient, Partial<IClient>> implements IClient 
   spouse_name?: string | null;
 
   @AllowNull(true)
+  @Unique
+  @Column(DataType.STRING(64))
+  qr_token?: string | null;
+
+  @AllowNull(true)
   @Column(DataType.INTEGER)
   birthday_mail_sent_year?: number | null;
 

@@ -1,4 +1,5 @@
-import { Op, Transaction, fn, col, where, literal } from 'sequelize';
+import { Op, Transaction, fn, col, where } from 'sequelize';
+import crypto from 'crypto';
 import { Client } from '../models/Client.model';
 import { UpdateClientDTO } from '../dto/client.dto';
 import { ClientFilterOptions } from '../types/client.types';
@@ -77,6 +78,16 @@ export class ClientRepository {
 
   async permanentDelete(client_id: number, transaction?: Transaction): Promise<void> {
     await Client.destroy({ where: { client_id }, force: true, transaction });
+  }
+
+  async generateQrToken(client_id: number): Promise<string> {
+    const token = crypto.randomBytes(32).toString('hex');
+    await Client.update({ qr_token: token }, { where: { client_id } });
+    return token;
+  }
+
+  async findByQrToken(token: string): Promise<Client | null> {
+    return await Client.findOne({ where: { qr_token: token } });
   }
 
   async findTodaysBirthdays(currentYear: number): Promise<Client[]> {

@@ -67,5 +67,5 @@ export function startCronJobs(): void {
     timezone: 'Asia/Kolkata',
   });
 
-  console.log('[Cron] Birthday & anniversary job scheduled for 09:00 IST daily.');
+  console.log('[Cron] Birthday & anniversary job scheduled for 9:00 AM IST daily.');
 }
