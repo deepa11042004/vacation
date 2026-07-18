@@ -14,6 +14,7 @@ import { AmcPayment } from '../../modules/amc-payments/models/AmcPayment.model';
 import { CallRecording } from '../../modules/call-recordings/models/CallRecording.model';
 import { KycDocument } from '../../modules/kyc-documents/models/KycDocument.model';
 import { Staff } from '../../modules/staff/models/Staff.model';
+import { TravelQuery } from '../../modules/travel-queries/models/TravelQuery.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -50,6 +51,7 @@ export const sequelize = new Sequelize({
     CallRecording,
     KycDocument,
     Staff,
+    TravelQuery,
   ],
 });
 
