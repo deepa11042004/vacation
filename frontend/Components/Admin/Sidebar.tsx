@@ -11,6 +11,7 @@ import {
   MapPin,
   LogOut,
   Hotel,
+  Plane,
   Mail,
   ReceiptText,
   FilePlus,
@@ -35,6 +36,7 @@ const sections = [
 
       { href: "/admin/clients",                   label: "All Clients", icon: Users,          subtitle: null,                    section: "clients" },
       { href: "/admin/staff",                     label: "Staff",              icon: UserCog,         subtitle: null,                    section: "staff" },
+      { href: "/admin/travel-queries",             label: "Travel Queries",     icon: Plane,           subtitle: null,                    section: "travel_queries" },
       { href: "/admin/create-invoice",            label: "Create New Invoice", icon: FilePlus,        subtitle: "For existing clients",   section: "create_invoice" },
       { href: "/admin/invoices",                  label: "All Invoices",       icon: ReceiptText,     subtitle: null,                    section: "invoices" },
     ],
@@ -76,7 +78,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
   }
 
   return (
-    <aside className={`print:hidden flex flex-col min-h-screen bg-slate-900 shrink-0 transition-all duration-300 fixed inset-y-0 left-0 z-50 md:relative md:translate-x-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} ${isCollapsed ? "md:w-20 w-64" : "w-64 md:w-60"}`}>
+    <aside className={`print:hidden flex flex-col h-screen overflow-hidden bg-slate-900 shrink-0 transition-all duration-300 fixed inset-y-0 left-0 z-50 md:relative md:translate-x-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} ${isCollapsed ? "md:w-20 w-64" : "w-64 md:w-60"}`}>
       <div className={`flex items-center px-5 py-5 border-b border-slate-800 ${isCollapsed ? "justify-center" : "justify-between"}`}>
         {!isCollapsed && (
           <div className="flex items-center gap-2">
@@ -94,7 +96,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
         </button>
       </div>
 
-      <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
+      <nav className="flex-1 px-3 py-4 space-y-5">
         {sections.map((section, si) => {
           const visibleItems = section.items.filter((item) => hasAccess(user, item.section));
           if (visibleItems.length === 0) return null;
