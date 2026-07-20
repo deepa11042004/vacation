@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import FallbackImage from "@/Components/Shared/FallbackImage";
+import { hotelImageUrl, hotelImageFallback } from "@/lib/imageUrl";
 import {
   MapPin,
   Star,
@@ -32,32 +34,57 @@ export interface PropertyData {
   title: string;
   location: string;
   description: string;
-  image: string;
+  images: string[];
   rating?: number;
-  subImages?: string[];
+  address?: string | null;
+  mapLink?: string | null;
+  locationId?: number;
+}
+
+interface RelatedHotel {
+  hotel_id: number;
+  hotel_name: string;
+  images?: { image_path: string; sort_order: number }[];
 }
 
 interface PropertyDetailsProps {
   property: PropertyData;
 }
 
+const FALLBACK_IMAGE = "/Img/logo.png";
+
 export default function PropertyDetails({ property }: PropertyDetailsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [relatedHotels, setRelatedHotels] = useState<RelatedHotel[]>([]);
 
-  const galleryImages = [
-    "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1200&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=600&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&auto=format&fit=crop&q=80",
-  ];
+  const galleryImages =
+    property.images && property.images.length > 0
+      ? property.images
+      : [FALLBACK_IMAGE];
 
   const openGallery = (index: number) => {
     setCurrentIndex(index);
     setIsOpen(true);
   };
+
+  // Fetch other active hotels in the same destination
+  useEffect(() => {
+    if (!property.locationId) return;
+    const params = new URLSearchParams({
+      location_id: String(property.locationId),
+      status: "ACTIVE",
+      limit: "5",
+    });
+    fetch(`/api/hotels?${params}`)
+      .then((r) => r.json())
+      .then((res) => {
+        if (!res?.success) return;
+        const hotels: RelatedHotel[] = res?.data?.hotels ?? [];
+        setRelatedHotels(hotels.filter((h) => h.hotel_id !== property.id).slice(0, 4));
+      })
+      .catch(() => {});
+  }, [property.locationId, property.id]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 bg-neutral-50/30 min-h-screen text-neutral-900">
@@ -68,8 +95,9 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
           className="relative w-full h-[45vh] md:h-120 rounded-xl overflow-hidden cursor-pointer group shadow-xs"
           onClick={() => openGallery(0)}
         >
-          <Image
+          <FallbackImage
             src={galleryImages[0]}
+            fallbackSrc={hotelImageFallback(property.id)}
             alt={property.title}
             fill
             className="object-cover group-hover:scale-[1.01] transition-transform duration-500"
@@ -83,6 +111,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
           {galleryImages.slice(1, 7).map((img, index) => {
             const actualIndex = index + 1;
             const isLast = index === 5;
+            const remaining = galleryImages.length - 7;
 
             return (
               <div
@@ -90,17 +119,18 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
                 className="relative w-full h-full rounded-xl overflow-hidden cursor-pointer group shadow-xs"
                 onClick={() => openGallery(actualIndex)}
               >
-                <Image
+                <FallbackImage
                   src={img}
+                  fallbackSrc={hotelImageFallback(property.id)}
                   alt={`Gallery tile ${actualIndex}`}
                   fill
                   className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
                   unoptimized
                 />
-                {isLast && (
+                {isLast && remaining > 0 && (
                   <div className="absolute inset-0 bg-neutral-900/40 group-hover:bg-neutral-900/50 transition-colors flex items-center justify-center">
                     <span className="text-white font-bold text-sm md:text-base border-b-2 border-white pb-0.5 tracking-wider">
-                      +45 photos
+                      +{remaining} photos
                     </span>
                   </div>
                 )}
@@ -139,8 +169,9 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             </button>
 
             <div className="relative w-full h-full max-h-[55vh]">
-              <Image
+              <FallbackImage
                 src={galleryImages[currentIndex]}
+                fallbackSrc={hotelImageFallback(property.id)}
                 alt={`Active lightroom frame ${currentIndex}`}
                 fill
                 className="object-contain"
@@ -170,8 +201,9 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
                       : "border-transparent opacity-40 hover:opacity-70"
                   }`}
                 >
-                  <Image
+                  <FallbackImage
                     src={img}
+                    fallbackSrc={hotelImageFallback(property.id)}
                     alt={`Thumb tracker ${idx}`}
                     fill
                     className="object-cover"
@@ -338,56 +370,67 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
           </div>
 
           {/* Location Map Widget */}
-          <div className="border border-neutral-200 rounded-2xl p-6 bg-white shadow-xs">
-            <h3 className="text-lg font-bold mb-3 text-neutral-900">
-              Location
-            </h3>
-            <p className="text-neutral-500 text-xs leading-relaxed mb-4">
-              Fatehabad Rd, Taj Nagri Phase 2, Ii, Agra, Basai, Uttar Pradesh
-              282006
-            </p>
-            <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold rounded-xl bg-neutral-900 text-white hover:bg-neutral-800 transition-colors">
-              <Navigation className="w-4 h-4" /> View on Map
-            </button>
-          </div>
+          {property.address && (
+            <div className="border border-neutral-200 rounded-2xl p-6 bg-white shadow-xs">
+              <h3 className="text-lg font-bold mb-3 text-neutral-900">
+                Location
+              </h3>
+              <p className="text-neutral-500 text-xs leading-relaxed mb-4">
+                {property.address}
+              </p>
+              <a
+                href={
+                  property.mapLink ||
+                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(property.address)}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold rounded-xl bg-neutral-900 text-white hover:bg-neutral-800 transition-colors"
+              >
+                <Navigation className="w-4 h-4" /> View on Map
+              </a>
+            </div>
+          )}
 
           {/* Explore More Destinations */}
-          <div className="border border-neutral-200 rounded-2xl p-6 bg-white shadow-xs">
-            <h3 className="text-lg font-bold mb-4 text-neutral-900 border-b border-neutral-100 pb-3">
-              Explore More Destinations
-            </h3>
-            <div className="space-y-4">
-              {[
-                { name: "Aaram Baagh Agra", image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=100&h=100&auto=format&fit=crop&q=80" },
-                { name: "Crystal Sarovar Premiere", image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=100&h=100&auto=format&fit=crop&q=80" },
-                { name: "DoubleTree by Hilton Agra", image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=100&h=100&auto=format&fit=crop&q=80" },
-                { name: "Hotel Atulyaa Taj", image: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=100&h=100&auto=format&fit=crop&q=80" },
-              ].map((dest, i) => (
-                <div
-                  key={i}
-                  className="group cursor-pointer flex items-center justify-between py-2"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-neutral-100">
-                      <Image
-                        src={dest.image}
-                        alt={dest.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-neutral-800 group-hover:text-blue-600 transition-colors">
-                        {dest.name}
-                      </h4>
-                      <span className="text-xs text-neutral-400">Agra</span>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-neutral-600 transition-colors shrink-0" />
-                </div>
-              ))}
+          {relatedHotels.length > 0 && (
+            <div className="border border-neutral-200 rounded-2xl p-6 bg-white shadow-xs">
+              <h3 className="text-lg font-bold mb-4 text-neutral-900 border-b border-neutral-100 pb-3">
+                Explore More Hotels
+              </h3>
+              <div className="space-y-4">
+                {relatedHotels.map((hotel) => {
+                  const sorted = [...(hotel.images ?? [])].sort((a, b) => a.sort_order - b.sort_order);
+                  return (
+                    <Link
+                      key={hotel.hotel_id}
+                      href={`/hotels/${hotel.hotel_id}`}
+                      className="group cursor-pointer flex items-center justify-between py-2"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-neutral-100">
+                          <FallbackImage
+                            src={hotelImageUrl(sorted[0]?.image_path, hotel.hotel_id)}
+                            fallbackSrc={hotelImageFallback(hotel.hotel_id)}
+                            alt={hotel.hotel_name}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-neutral-800 group-hover:text-blue-600 transition-colors line-clamp-1">
+                            {hotel.hotel_name}
+                          </h4>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-neutral-600 transition-colors shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

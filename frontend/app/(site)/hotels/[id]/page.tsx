@@ -14,6 +14,8 @@ interface ApiHotel {
   hotel_name: string;
   description?: string | null;
   address?: string | null;
+  map_link?: string | null;
+  location_id: number;
   location?: { location_name: string; country: string };
   images?: HotelImage[];
 }
@@ -51,8 +53,10 @@ export default async function HotelDetailsPage({
       ? `${hotel.location.location_name}, ${hotel.location.country}`
       : hotel.address ?? "",
     description: stripHtml(hotel.description),
-    image: hotelImageUrl(sortedImages[0]?.image_path),
-    subImages: sortedImages.slice(1, 3).map((img) => hotelImageUrl(img.image_path)),
+    images: sortedImages.map((img) => hotelImageUrl(img.image_path, hotel.hotel_id)),
+    address: hotel.address ?? null,
+    mapLink: hotel.map_link ?? null,
+    locationId: hotel.location_id,
     rating: 5,
   };
 

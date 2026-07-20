@@ -2,12 +2,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CtaButton from "@/UI/CtaButton";
-import { hotelImageUrl } from "@/lib/imageUrl";
+import FallbackImage from "@/Components/Shared/FallbackImage";
+import { hotelImageUrl, hotelImageFallback } from "@/lib/imageUrl";
 import { stripHtml } from "@/lib/text";
 
 interface HotelImage {
@@ -154,7 +154,7 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
 
   function coverImage(h: Hotel): string {
     const sorted = [...(h.images ?? [])].sort((a, b) => a.sort_order - b.sort_order);
-    return hotelImageUrl(sorted[0]?.image_path);
+    return hotelImageUrl(sorted[0]?.image_path, h.hotel_id);
   }
 
   return (
@@ -320,8 +320,9 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
                   >
                     {/* Image */}
                     <div className="w-full relative aspect-4/3 rounded-3xl overflow-hidden shadow-xs mb-6 bg-neutral-100">
-                      <Image
+                      <FallbackImage
                         src={coverImage(hotel)}
+                        fallbackSrc={hotelImageFallback(hotel.hotel_id)}
                         alt={hotel.hotel_name}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"

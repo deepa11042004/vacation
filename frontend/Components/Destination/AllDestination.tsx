@@ -2,12 +2,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CtaButton from "@/UI/CtaButton";
-import { locationImageUrl } from "@/lib/imageUrl";
+import FallbackImage from "@/Components/Shared/FallbackImage";
+import { locationImageUrl, locationImageFallback } from "@/lib/imageUrl";
 import { stripHtml } from "@/lib/text";
 
 interface Location {
@@ -145,7 +145,7 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
   }, [hasMore, loading, loadingMore]);
 
   return (
-    <section className="bg-white text-black py-24 px-6 sm:px-12 relative overflow-hidden w-full select-none">
+    <section id="destinations" className="bg-white text-black py-24 px-6 sm:px-12 relative overflow-hidden w-full select-none">
       <div className="max-w-7xl mx-auto relative z-10">
 
         {/* Category filter */}
@@ -310,8 +310,9 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
                     className="flex flex-col justify-between items-start group cursor-pointer w-full bg-white rounded-3xl"
                   >
                     <div className="w-full relative aspect-4/3 rounded-3xl overflow-hidden shadow-xs mb-6 bg-neutral-100">
-                      <Image
-                        src={locationImageUrl(loc.location_image)}
+                      <FallbackImage
+                        src={locationImageUrl(loc.location_image, loc.location_id)}
+                        fallbackSrc={locationImageFallback(loc.location_id)}
                         alt={`${loc.location_name} - ${loc.country}`}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"

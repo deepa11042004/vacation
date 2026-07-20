@@ -156,7 +156,7 @@ function ItineraryCard({ item, onPlay }: CardProps) {
             text="Explore"
             variant="white"
             size="sm"
-            href={`/itinerary/${item.id}`}
+            href="/travel-desk"
           />
         </div>
       </div>
@@ -246,7 +246,7 @@ export default function Itinerary() {
                 text="See More Itineraries"
                 variant="white"
                 size="md"
-                href="/itinerary"
+                href="/destination#destinations"
                 className="self-start sm:self-auto"
               />
             </div>

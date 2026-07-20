@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Minus } from "lucide-react";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
-import { locationImageUrl } from "@/lib/imageUrl";
+import FallbackImage from "@/Components/Shared/FallbackImage";
+import { locationImageUrl, locationImageFallback } from "@/lib/imageUrl";
 
 interface SlideData {
   id: number;
@@ -32,7 +32,7 @@ const Destination = () => {
             id: l.location_id,
             country: l.country,
             title: l.location_name,
-            imageUrl: locationImageUrl(l.location_image),
+            imageUrl: locationImageUrl(l.location_image, l.location_id),
             type: l.type === "DOMESTIC" ? "National" : "International",
           }))
         );
@@ -107,8 +107,9 @@ const Destination = () => {
                   }}
                 >
                   <div className="relative w-full h-full">
-                    <Image
+                    <FallbackImage
                       src={slide.imageUrl}
+                      fallbackSrc={locationImageFallback(slide.id)}
                       alt={slide.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 400px"

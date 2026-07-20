@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Minus } from "lucide-react";
-import Image from "next/image";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
-import { hotelImageUrl } from "@/lib/imageUrl";
+import FallbackImage from "@/Components/Shared/FallbackImage";
+import { hotelImageUrl, hotelImageFallback } from "@/lib/imageUrl";
 
 interface Hotel {
   hotel_id: number;
@@ -127,7 +127,7 @@ export default function Properties() {
             >
               {hotels.map((hotel, i) => {
                 const sorted = [...(hotel.images ?? [])].sort((a, b) => a.sort_order - b.sort_order);
-                const img = hotelImageUrl(sorted[0]?.image_path);
+                const img = hotelImageUrl(sorted[0]?.image_path, hotel.hotel_id);
                 return (
                   <motion.div
                     key={hotel.hotel_id}
@@ -141,9 +141,10 @@ export default function Properties() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05, duration: 0.5, ease: "easeOut" }}
                   >
-                    <Image
+                    <FallbackImage
                       fill
                       src={img}
+                      fallbackSrc={hotelImageFallback(hotel.hotel_id)}
                       alt={hotel.hotel_name}
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
