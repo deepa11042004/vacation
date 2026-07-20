@@ -16,4 +16,5 @@ export interface LocationFilterOptions {
   limit?: number;
   deleted?: boolean;
   includeDeleted?: boolean;
+  sort?: 'name' | 'created_at';
 }

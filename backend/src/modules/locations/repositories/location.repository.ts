@@ -24,7 +24,7 @@ export class LocationRepository {
   }
 
   async findAll(filters: LocationFilterOptions = {}): Promise<{ rows: Location[]; count: number }> {
-    const { search, type, status, deleted = false, includeDeleted = false, page = 1, limit = 10 } = filters;
+    const { search, type, status, deleted = false, includeDeleted = false, page = 1, limit = 10, sort } = filters;
     const cappedLimit = Math.min(limit, MAX_LIMIT);
     const offset = (page - 1) * cappedLimit;
 
@@ -50,7 +50,9 @@ export class LocationRepository {
       paranoid: !deleted && !includeDeleted,
       limit: cappedLimit,
       offset,
-      order: [['created_at', 'DESC']],
+      order: sort === 'name'
+        ? [['location_name', 'ASC'], ['location_id', 'ASC']]
+        : [['created_at', 'DESC'], ['location_id', 'DESC']],
     });
   }
 

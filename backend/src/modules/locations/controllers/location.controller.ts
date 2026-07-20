@@ -54,8 +54,9 @@ export class LocationController {
       const includeDeleted = searchParams.get('includeDeleted') === 'true';
       const page = parseInt(searchParams.get('page') || '1', 10);
       const limit = parseInt(searchParams.get('limit') || '10', 10);
+      const sort = searchParams.get('sort') as 'name' | 'created_at' | undefined;
 
-      const result = await locationService.getAllLocations({ search, type, status, deleted, includeDeleted, page, limit });
+      const result = await locationService.getAllLocations({ search, type, status, deleted, includeDeleted, page, limit, sort });
 
       return NextResponse.json(
         ResponseUtil.success('Locations retrieved successfully', result),

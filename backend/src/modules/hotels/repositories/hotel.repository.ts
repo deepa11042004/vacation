@@ -64,7 +64,7 @@ export class HotelRepository {
       where,
       limit: cappedLimit,
       offset,
-      order: [['created_at', 'DESC']],
+      order: [['created_at', 'DESC'], ['hotel_id', 'DESC']],
       include: [
         { model: HotelImage, as: 'images' },
         { model: Location, as: 'location' },
