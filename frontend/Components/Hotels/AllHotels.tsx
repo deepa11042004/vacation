@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Loader2 } from "lucide-react";
@@ -45,9 +45,11 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
   const router = useRouter();
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const isFirstRender = useRef(true);
   const [activeCategory, setActiveCategory] = useState<Category>(
     type === "all" ? "ALL" : type === "associated" ? "ASSOCIATED" : "INTERNAL",
   );
@@ -82,13 +84,22 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  // Reset to page 1 when filters change
+  // Reset list back to page 1 when filters change
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setHotels([]);
     setPage(1);
   }, [activeCategory, debouncedSearch, selectedLocationId]);
 
+  // Fetch — appends on load more, replaces on filter change
   useEffect(() => {
-    setLoading(true);
+    const isMore = page > 1;
+    if (isMore) setLoadingMore(true);
+    else setLoading(true);
+
     const params = new URLSearchParams({
       page: String(page),
       limit: String(limit),
@@ -104,18 +115,42 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
       .then((r) => r.json())
       .then((res) => {
         if (!res?.success) throw new Error(res?.message ?? "API error");
-        setHotels(res?.data?.hotels ?? []);
+        const incoming: Hotel[] = res?.data?.hotels ?? [];
         setTotal(res?.data?.total ?? 0);
+        setHotels((prev) => {
+          if (page === 1) return incoming;
+          const seen = new Set(prev.map((h) => h.hotel_id));
+          return [...prev, ...incoming.filter((h) => !seen.has(h.hotel_id))];
+        });
       })
       .catch((e) => {
         console.error("Hotels API:", e);
         setError(e.message);
-        setHotels([]);
+        if (page === 1) setHotels([]);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setLoadingMore(false);
+      });
   }, [page, activeCategory, debouncedSearch, selectedLocationId]);
 
-  const totalPages = Math.ceil(total / limit);
+  const hasMore = hotels.length < total;
+
+  // Auto-load the next page when the sentinel scrolls into view
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!hasMore || loading || loadingMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setPage((p) => p + 1);
+      },
+      { rootMargin: "600px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore]);
 
   function coverImage(h: Hotel): string {
     const sorted = [...(h.images ?? [])].sort((a, b) => a.sort_order - b.sort_order);
@@ -317,24 +352,10 @@ export default function AllHotels({ type = "all" }: AllHotelsProps) {
               </AnimatePresence>
             </motion.div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 mt-14">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="px-5 py-2 text-sm font-medium rounded-full border border-neutral-200 hover:bg-neutral-100 disabled:opacity-30 transition-colors"
-                >
-                  Previous
-                </button>
-                <span className="text-sm text-neutral-400">{page} / {totalPages}</span>
-                <button
-                  disabled={page === totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="px-5 py-2 text-sm font-medium rounded-full border border-neutral-200 hover:bg-neutral-100 disabled:opacity-30 transition-colors"
-                >
-                  Next
-                </button>
+            {/* Infinite scroll sentinel */}
+            {hasMore && (
+              <div ref={sentinelRef} className="flex justify-center mt-14 h-10">
+                {loadingMore && <Loader2 className="w-5 h-5 animate-spin text-neutral-400" />}
               </div>
             )}
           </>

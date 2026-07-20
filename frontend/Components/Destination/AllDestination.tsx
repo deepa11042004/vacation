@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Loader2, ChevronDown } from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CtaButton from "@/UI/CtaButton";
 import { locationImageUrl } from "@/lib/imageUrl";
@@ -54,7 +54,7 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
   // Re-fetch place tabs whenever category changes
   useEffect(() => {
     setShowAllTabs(false);
-    const params = new URLSearchParams({ status: "ACTIVE", limit: "200" });
+    const params = new URLSearchParams({ status: "ACTIVE", limit: "200", sort: "name" });
     if (activeCategory === "NATIONAL") params.set("type", "DOMESTIC");
     if (activeCategory === "INTERNATIONAL") params.set("type", "INTERNATIONAL");
     fetch(`/api/locations?${params}`)
@@ -96,6 +96,7 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
       page: String(page),
       limit: String(PAGE_LIMIT),
       status: "ACTIVE",
+      sort: "name",
     });
     if (activeCategory === "NATIONAL") params.set("type", "DOMESTIC");
     if (activeCategory === "INTERNATIONAL") params.set("type", "INTERNATIONAL");
@@ -108,7 +109,11 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
         if (!res?.success) throw new Error(res?.message ?? "API error");
         const incoming: Location[] = res?.data?.locations ?? [];
         setTotal(res?.data?.total ?? 0);
-        setAllLocations((prev) => (page === 1 ? incoming : [...prev, ...incoming]));
+        setAllLocations((prev) => {
+          if (page === 1) return incoming;
+          const seen = new Set(prev.map((l) => l.location_id));
+          return [...prev, ...incoming.filter((l) => !seen.has(l.location_id))];
+        });
       })
       .catch((e) => {
         console.error("Locations API:", e);
@@ -122,6 +127,22 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
   }, [page, activeCategory, debouncedSearch]);
 
   const hasMore = allLocations.length < total;
+
+  // Auto-load the next page when the sentinel scrolls into view
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!hasMore || loading || loadingMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setPage((p) => p + 1);
+      },
+      { rootMargin: "600px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore]);
 
   return (
     <section className="bg-white text-black py-24 px-6 sm:px-12 relative overflow-hidden w-full select-none">
@@ -319,21 +340,10 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
               </AnimatePresence>
             </motion.div>
 
-            {/* Load More */}
+            {/* Infinite scroll sentinel */}
             {hasMore && (
-              <div className="flex justify-center mt-14">
-                <button
-                  onClick={() => setPage((p) => p + 1)}
-                  disabled={loadingMore}
-                  className="flex items-center gap-2 px-8 py-3 rounded-full border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-950 hover:text-white hover:border-neutral-950 transition-all duration-300 disabled:opacity-50"
-                >
-                  {loadingMore ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                  {loadingMore ? "Loading..." : `Load More (${total - allLocations.length} remaining)`}
-                </button>
+              <div ref={sentinelRef} className="flex justify-center mt-14 h-10">
+                {loadingMore && <Loader2 className="w-5 h-5 animate-spin text-neutral-400" />}
               </div>
             )}
           </>
