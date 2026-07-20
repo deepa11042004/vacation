@@ -6,8 +6,10 @@ import { ResponseUtil } from '@/shared/utils/response.util';
 import { errorHandler, AppError } from '@/shared/middlewares/error.middleware';
 import { authenticateRequest, requireRoles } from '@/shared/middlewares/auth.middleware';
 import { UserRole } from '@/modules/users/types/user.types';
+import { MembershipRepository } from '@/modules/memberships/repositories/membership.repository';
 
 const repo = new TravelQueryRepository();
+const membershipRepo = new MembershipRepository();
 
 // GET /api/travel-queries — admin list
 export async function GET(req: NextRequest) {
@@ -50,9 +52,16 @@ export async function POST(req: NextRequest) {
       throw new AppError('Card number is required', 400);
     }
 
+    const trimmedCardNumber = String(card_number).trim();
+    const membership = await membershipRepo.findByMembershipNumber(trimmedCardNumber);
+    if (!membership) {
+      throw new AppError('Invalid card number. Please check your membership card and try again.', 400);
+    }
+
     const query = await repo.create({
       query_type,
-      card_number: String(card_number).trim(),
+      card_number: trimmedCardNumber,
+      client_id: membership.client_id,
       details: details ?? null,
       status: TravelQueryStatus.NEW,
     });
