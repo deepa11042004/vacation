@@ -75,7 +75,7 @@ const Destination = () => {
               Top destinations <br />
               handpicked for you.
             </h2>
-            <CtaButton text="View All Destinations" variant="white" size="md" className="self-start sm:self-auto" />
+            <CtaButton text="View All Destinations" variant="white" size="md" className="self-start sm:self-auto" href="/destination" />
           </div>
         </div>
 

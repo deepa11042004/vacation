@@ -214,7 +214,7 @@ export default function Book() {
                   <input
                     type="text"
                     autoFocus
-                    placeholder="e.g. MV-20240001"
+                    placeholder="e.g. MEM-00001"
                     value={cardNumber}
                     onChange={e => { setCardNumber(e.target.value); setCardError(""); }}
                     onKeyDown={e => e.key === "Enter" && submitWithCard()}

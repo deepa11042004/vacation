@@ -83,6 +83,7 @@ export default function Hero() {
             text="Book Now"
             variant="white"
             size="sm"
+            href="/travel-desk"
           />
         </motion.div>
       </motion.div>

@@ -87,7 +87,7 @@ export default function Properties() {
             <h2 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl md:text-5xl">
               Most Popular Resorts
             </h2>
-            <CtaButton text="View All Resorts" variant="white" size="md" className="self-start sm:self-auto" />
+            <CtaButton text="View All Resorts" variant="white" size="md" className="self-start sm:self-auto" href="/stays" />
           </div>
         </div>
 

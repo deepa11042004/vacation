@@ -133,6 +133,7 @@ export default function BookingDetail() {
               variant="white"
               size="md"
               className="self-start"
+              href="/join"
             />
           </div>
         </div>
