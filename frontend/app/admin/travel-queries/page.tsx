@@ -64,8 +64,8 @@ function QueryRow({ q, onUpdated }: { q: TravelQuery; onUpdated: () => void }) {
   const [notes,   setNotes]   = useState(q.admin_notes ?? "");
   const [saving,  setSaving]  = useState(false);
 
-  const type   = TYPE_META[q.query_type];
-  const status = STATUS_META[q.status];
+  const type   = TYPE_META[q.query_type]   ?? { label: q.query_type || "Unknown", icon: <FileText className="w-3.5 h-3.5" />, color: "bg-slate-100 text-slate-500" };
+  const status = STATUS_META[q.status]     ?? { label: q.status || "Unknown", icon: <AlertCircle className="w-3.5 h-3.5" />, color: "bg-slate-100 text-slate-500 border border-slate-300", idle: "bg-slate-50 text-slate-400 border border-slate-200" };
 
   async function updateStatus(newStatus: QueryStatus) {
     setSaving(true);
