@@ -57,7 +57,7 @@ export default function Story() {
             <div className="w-full flex flex-col sm:flex-row sm:items-end justify-between gap-8 mt-4">
               {/* Custom Integrated CTA Button */}
               <div className="shrink-0">
-                <CtaButton text="Contact Us" variant="white" size="md" />
+                <CtaButton text="Contact Us" variant="white" size="md" href="/contact" />
               </div>
 
               {/* Smaller Asymmetric Floating Image Card */}

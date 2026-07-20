@@ -94,7 +94,7 @@ const MEMBERSHIPS = [
 
 export default function PlanSec() {
   return (
-    <section className="w-full overflow-hidden select-none">
+    <section id="plans" className="w-full overflow-hidden select-none">
       {/* SECTION 1: Club Elevate INFO */}
       <div className="bg-black relative pt-24 pb-16 px-6 w-full mx-auto text-center z-10">
         <div className="absolute top-0 left-0 w-44 h-44 opacity-20 pointer-events-none select-none">

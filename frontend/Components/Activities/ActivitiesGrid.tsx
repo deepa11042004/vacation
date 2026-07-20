@@ -71,7 +71,7 @@ const DURATIONS = [30, 35, 40];
 
 export default function Activities() {
   return (
-    <section className="bg-blue-50 text-black py-24 px-4 sm:px-6 lg:px-8 w-full overflow-hidden select-none font-display">
+    <section id="activities-grid" className="bg-blue-50 text-black py-24 px-4 sm:px-6 lg:px-8 w-full overflow-hidden select-none font-display">
       <style>{`
         @keyframes marqueeUp {
           from { transform: translateY(0); }

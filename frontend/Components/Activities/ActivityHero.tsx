@@ -81,6 +81,7 @@ export default function ActivityHero() {
             text="Explore Activites"
             variant="white"
             size="sm"
+            href="#activities-grid"
           />
         </motion.div>
       </motion.div>

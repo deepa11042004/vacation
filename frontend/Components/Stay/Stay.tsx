@@ -822,7 +822,7 @@ export default function Stay() {
           <h2 className="font-bold text-5xl md:text-7xl tracking-wide leading-tight text-black">
             Ready for Your Next Vacation?
           </h2>
-          <CtaButton text="Book Now" variant="blue" size="md" />
+          <CtaButton text="Book Now" variant="blue" size="md" href="/travel-desk" />
         </div>
 
         <div className="absolute w-175 h-175 md:w-225 md:h-225 flex items-center justify-center rounded-full animate-[spin_60s_linear_infinite]">

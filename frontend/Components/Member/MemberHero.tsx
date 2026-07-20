@@ -81,6 +81,7 @@ export default function MemberHero() {
             text="Explore Membership"
             variant="white"
             size="sm"
+            href="#plans"
           />
         </motion.div>
       </motion.div>

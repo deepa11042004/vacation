@@ -80,6 +80,7 @@ export default function AboutHero() {
             text="Explore Packages"
             variant="white"
             size="sm"
+            href="/join"
           />
         </motion.div>
       </motion.div>

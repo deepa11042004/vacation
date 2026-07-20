@@ -458,6 +458,7 @@ export default function JoinDetail() {
                                 text="Buy Now"
                                 variant={tier.btnVariant}
                                 size="sm"
+                                href="/contact"
                               />
                               <button
                                 className={`text-[11px] font-bold tracking-wide hover:underline cursor-pointer whitespace-nowrap ${tier.mutedTextClass}`}

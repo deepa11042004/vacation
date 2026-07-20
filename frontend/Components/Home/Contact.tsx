@@ -30,7 +30,12 @@ export default function LuxuryContactBooking() {
               Main Plant, <br /> Laxmi Nagar, Pandav Nagar, New Delhi – 110092
             </p>
             <div>
-              <CtaButton text="Map" variant="white" size="sm" />
+              <CtaButton
+                text="Map"
+                variant="white"
+                size="sm"
+                href="https://www.google.com/maps/search/?api=1&query=Mandarin+Worldwide+Vacation+Pvt.+Ltd.+D-22+LGF+Pandav+Nagar+Laxmi+Nagar+New+Delhi+110092"
+              />
             </div>
           </div>
 
@@ -43,7 +48,7 @@ export default function LuxuryContactBooking() {
               Need help booking your stay or managing an existing reservation?
             </p>
             <div>
-              <CtaButton text="Book Now" variant="white" size="sm" />
+              <CtaButton text="Book Now" variant="white" size="sm" href="/travel-desk" />
             </div>
           </div>
 

@@ -177,7 +177,7 @@ function FeatureActivityCard({
             {description2}
           </p>
         )}
-        <CtaButton text={buttonText} variant="blue" />
+        <CtaButton text={buttonText} variant="blue" href="/travel-desk" />
       </div>
     </div>
   );
@@ -205,6 +205,7 @@ export default function ActivitiesDetails() {
             variant="white"
             size="md"
             className="self-start sm:self-auto"
+            href="#activities-grid"
           />
         </div>
       </div>
