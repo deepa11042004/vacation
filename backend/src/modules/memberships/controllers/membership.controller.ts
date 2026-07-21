@@ -117,6 +117,29 @@ export class MembershipController {
     }
   }
 
+  static async getReferralsByClientId(req: NextRequest, clientIdStr: string) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+
+      const clientId = this.parseId(clientIdStr);
+
+      if (currentUser.role === UserRole.CLIENT && currentUser.client_id !== clientId) {
+        throw new AppError('Forbidden: Access denied', 403);
+      }
+
+      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER, UserRole.AGENT, UserRole.CLIENT]);
+      const result = await membershipService.getReferralsByClientId(clientId);
+
+      return NextResponse.json(
+        ResponseUtil.success('Client referrals retrieved successfully', result),
+        { status: 200 },
+      );
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
+
   static async update(req: NextRequest, idStr: string) {
     try {
       await connectDB();

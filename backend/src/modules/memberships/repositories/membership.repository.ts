@@ -42,6 +42,15 @@ export class MembershipRepository {
     });
   }
 
+  async findReferralsByMembershipIds(membershipIds: number[]): Promise<Membership[]> {
+    if (membershipIds.length === 0) return [];
+    return await Membership.findAll({
+      where: { referrer_membership_id: { [Op.in]: membershipIds } },
+      include: [{ model: Client, as: 'client', attributes: ['client_id', 'first_name', 'last_name', 'email', 'mobile'] }],
+      order: [['created_at', 'DESC']],
+    });
+  }
+
   async findAll(filters: MembershipFilterOptions = {}): Promise<{ rows: Membership[]; count: number }> {
     const { search, client_id, status, page = 1, limit = 10 } = filters;
     const cappedLimit = Math.min(limit, MAX_LIMIT);

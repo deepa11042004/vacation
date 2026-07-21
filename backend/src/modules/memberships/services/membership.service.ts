@@ -146,6 +146,37 @@ export class MembershipService {
     return memberships.map((m) => m.toJSON());
   }
 
+  async getReferralsByClientId(client_id: number) {
+    const memberships = await this.membershipRepository.findByClientId(client_id);
+    const membershipIds = memberships.map((m) => m.membership_id);
+
+    const referralMemberships = await this.membershipRepository.findReferralsByMembershipIds(membershipIds);
+    const referrals = referralMemberships.map((m) => {
+      const json = m.toJSON() as any;
+      return {
+        membership_id: json.membership_id,
+        membership_number: json.membership_number,
+        status: json.status,
+        sale_date: json.sale_date,
+        client: json.client
+          ? {
+              client_id: json.client.client_id,
+              first_name: json.client.first_name,
+              last_name: json.client.last_name,
+              email: json.client.email,
+              mobile: json.client.mobile,
+            }
+          : null,
+      };
+    });
+
+    const total_referrals = referrals.length;
+    const points_per_referral = MEMBERSHIP_CONSTANTS.REFERRAL_POINTS_PER_REFERRAL;
+    const total_points = total_referrals * points_per_referral;
+
+    return { referrals, total_referrals, points_per_referral, total_points };
+  }
+
   async updateMembership(membership_id: number, data: UpdateMembershipDTO) {
     const membership = await this.membershipRepository.findById(membership_id);
     if (!membership) {

@@ -8,4 +8,5 @@ export const MEMBERSHIP_CONSTANTS = {
     DISCOUNT_EXCEEDS_PRICE: 'Discount amount cannot exceed total price',
     DOWN_PAYMENT_EXCEEDS_NET: 'Down payment cannot exceed the net price',
   },
+  REFERRAL_POINTS_PER_REFERRAL: 500,
 };
