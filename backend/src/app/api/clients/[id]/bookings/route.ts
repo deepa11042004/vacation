@@ -94,10 +94,14 @@ export async function GET(
 ) {
   try {
     await connectDB();
-    await authenticateRequest(request);
+    const currentUser = await authenticateRequest(request);
     const { id } = await props.params;
     const client_id = parseInt(id, 10);
     if (isNaN(client_id)) return NextResponse.json(ResponseUtil.failure('Invalid client id'), { status: 400 });
+
+    if (currentUser.role === UserRole.CLIENT && currentUser.client_id !== client_id) {
+      return NextResponse.json(ResponseUtil.failure('Forbidden: Access denied'), { status: 403 });
+    }
 
     const bookings = await service.getByClientId(client_id);
     return NextResponse.json(ResponseUtil.success('Bookings fetched', { bookings }));
