@@ -52,7 +52,10 @@ export default function ProfileLayout({
 
     const stored = getStoredMemberUser<MeUser>();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setUser(stored);
+    if (stored) {
+      setUser(stored);
+      setAuthChecked(true);
+    }
 
     memberApi
       .get<{ success: boolean; data: MeUser }>("/auth/me")
@@ -79,7 +82,6 @@ export default function ProfileLayout({
     { url: "/profile/booking-history", name: "Booking History" },
     { url: "/profile/hotels-benefits", name: "Hotels & Benefits" },
     { url: "/profile/my-offers", name: "My Offers" },
-    { url: "/profile/invoices", name: "Invoices" },
   ];
 
   const fullName =
@@ -88,7 +90,7 @@ export default function ProfileLayout({
     "Member";
   const memberNo = user?.membership?.membership_number ?? "";
 
-  if (!authChecked && !getStoredMemberUser()) {
+  if (!authChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -99,19 +101,19 @@ export default function ProfileLayout({
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       {/* Mobile Header */}
-      <div className="md:hidden flex items-center rounded-b-2xl justify-between bg-white p-4 border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+      <div className="md:hidden flex items-center rounded-b-2xl justify-between bg-[#040B31] px-4 py-6 sticky top-0 z-50 shadow-sm">
         <Link href="/" className="flex items-center">
           <Image
-            src="/Img/fulllogo.png"
+            src="/Img/fanlogo.png"
             alt="Logo"
             width={120}
             height={24}
-            className="h-15 md:h-20 w-auto object-contain"
+            className="h-14 w-auto object-contain"
           />
         </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 -mr-2 text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+          className="p-2 -mr-2 text-white bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
         >
           {mobileMenuOpen ? (
             <X className="w-5 h-5" />
@@ -130,14 +132,14 @@ export default function ProfileLayout({
         }`}
       >
         {/* Desktop Logo */}
-        <div className="hidden md:flex items-center p-16 border-b border-slate-100 h-20 shrink-0">
-          <Link href="/">
+        <div className="hidden md:flex items-center justify-center bg-[#040B31] p-6 h-36 shrink-0">
+          <Link href="/" className="flex items-center">
             <Image
-              src="/Img/fulllogo.png"
+              src="/Img/fanlogo.png"
               alt="Logo"
               width={150}
               height={30}
-              className="h-15 md:h-20 w-auto object-contain"
+              className="h-20 w-auto object-contain"
             />
           </Link>
         </div>
