@@ -82,6 +82,7 @@ export default function ProfileLayout({
     { url: "/profile/booking-history", name: "Booking History" },
     { url: "/profile/hotels-benefits", name: "Hotels & Benefits" },
     { url: "/profile/my-offers", name: "My Offers" },
+    { url: "/profile/referrals", name: "Referrals" },
   ];
 
   const fullName =

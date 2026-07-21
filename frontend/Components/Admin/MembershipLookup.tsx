@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Loader2, CheckCircle2, XCircle, X } from "lucide-react";
+import { api } from "@/lib/api";
 
 interface ReferrerInfo {
   membership_id: number;
@@ -47,11 +48,10 @@ export default function MembershipLookup({ value, onChange, onSelect, error }: P
     setState("loading");
     debounceRef.current = setTimeout(async () => {
       try {
-        const res = await fetch(
-          `/api/memberships/lookup?membership_no=${encodeURIComponent(trimmed)}`
+        const json = await api.get<{ success: boolean; data: ReferrerInfo | null }>(
+          `/memberships/lookup?membership_no=${encodeURIComponent(trimmed)}`
         );
-        const json = await res.json();
-        if (res.ok && json?.success && json?.data) {
+        if (json?.success && json?.data) {
           const data: ReferrerInfo = json.data;
           setInfo(data);
           setState("found");
