@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { CallRecordingRepository } from '../repositories/call-recording.repository';
 import { CallRecording } from '../models/CallRecording.model';
+import { AppError } from '@/shared/middlewares/error.middleware';
 
 const repo = new CallRecordingRepository();
 
@@ -17,6 +18,9 @@ export class CallRecordingService {
   }
 
   async create(client_id: number, note: string, file: File): Promise<CallRecording> {
+    if (!file.type.startsWith('audio/')) {
+      throw new AppError('Only audio files are allowed', 400);
+    }
     ensureDir();
     const ext = path.extname(file.name) || '.mp3';
     const storedName = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;

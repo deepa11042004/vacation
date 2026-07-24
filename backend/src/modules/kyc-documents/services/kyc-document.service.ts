@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { KycDocumentRepository } from '../repositories/kyc-document.repository';
 import { KycDocument } from '../models/KycDocument.model';
+import { AppError } from '@/shared/middlewares/error.middleware';
 
 const repo = new KycDocumentRepository();
 
@@ -17,8 +18,11 @@ export class KycDocumentService {
   }
 
   async create(client_id: number, title: string, file: File): Promise<KycDocument> {
+    if (file.type !== 'application/pdf') {
+      throw new AppError('Only PDF files are allowed', 400);
+    }
     ensureDir();
-    const ext = path.extname(file.name) || '.pdf';
+    const ext = '.pdf';
     const storedName = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
     fs.writeFileSync(path.join(UPLOAD_DIR, storedName), buffer);
