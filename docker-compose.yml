@@ -23,6 +23,7 @@ services:
       EMAIL_FROM: ${EMAIL_FROM}
       CRON_SECRET: ${CRON_SECRET}
       FRONTEND_URL: ${FRONTEND_URL}
+      BACKEND_URL: ${BACKEND_URL}
     volumes:
       - uploads_data:/app/public/uploads
     networks:

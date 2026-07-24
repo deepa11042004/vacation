@@ -5,6 +5,7 @@ import {
   ForeignKey, BelongsTo,
 } from 'sequelize-typescript';
 import { Client } from '../../clients/models/Client.model';
+import { resolveUrl } from '@/shared/utils/media-url.util';
 
 export interface IKycDocument {
   kyc_document_id: number;
@@ -38,7 +39,12 @@ export class KycDocument extends Model<IKycDocument, Partial<IKycDocument>> impl
   file_name!: string;
 
   @AllowNull(false)
-  @Column(DataType.STRING(500))
+  @Column({
+    type: DataType.STRING(500),
+    get(this: KycDocument) {
+      return resolveUrl(this.getDataValue('file_path' as never));
+    },
+  })
   file_path!: string;
 
   @CreatedAt

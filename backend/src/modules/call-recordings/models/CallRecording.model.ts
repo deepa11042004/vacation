@@ -5,6 +5,7 @@ import {
   ForeignKey, BelongsTo,
 } from 'sequelize-typescript';
 import { Client } from '../../clients/models/Client.model';
+import { resolveUrl } from '@/shared/utils/media-url.util';
 
 export interface ICallRecording {
   call_recording_id: number;
@@ -38,7 +39,12 @@ export class CallRecording extends Model<ICallRecording, Partial<ICallRecording>
   file_name!: string;
 
   @AllowNull(false)
-  @Column(DataType.STRING(500))
+  @Column({
+    type: DataType.STRING(500),
+    get(this: CallRecording) {
+      return resolveUrl(this.getDataValue('file_path' as never));
+    },
+  })
   file_path!: string;
 
   @CreatedAt

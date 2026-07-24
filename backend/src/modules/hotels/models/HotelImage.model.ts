@@ -14,6 +14,7 @@ import {
 } from 'sequelize-typescript';
 import { IHotelImage } from '../interfaces/hotel.interface';
 import { Hotel } from './Hotel.model';
+import { resolveUrl } from '@/shared/utils/media-url.util';
 
 @Table({
   tableName: 'hotel_images',
@@ -35,7 +36,12 @@ export class HotelImage extends Model<IHotelImage, Partial<IHotelImage>> impleme
   hotel!: Hotel;
 
   @AllowNull(false)
-  @Column(DataType.TEXT)
+  @Column({
+    type: DataType.TEXT,
+    get(this: HotelImage) {
+      return resolveUrl(this.getDataValue('image_path' as never));
+    },
+  })
   image_path!: string;
 
   @Default(0)

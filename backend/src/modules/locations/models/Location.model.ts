@@ -16,6 +16,7 @@ import {
 import { ILocation } from '../interfaces/location.interface';
 import { LocationType, LocationStatus } from '../types/location.types';
 import type { Hotel } from '../../hotels/models/Hotel.model';
+import { resolveUrl } from '@/shared/utils/media-url.util';
 
 @Table({
   tableName: 'locations',
@@ -52,7 +53,12 @@ export class Location extends Model<ILocation, Partial<ILocation>> implements IL
   map_link?: string | null;
 
   @AllowNull(true)
-  @Column(DataType.TEXT)
+  @Column({
+    type: DataType.TEXT,
+    get(this: Location) {
+      return resolveUrl(this.getDataValue('location_image' as never));
+    },
+  })
   location_image?: string | null;
 
   @AllowNull(true)
