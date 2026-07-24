@@ -56,7 +56,14 @@ export class Location extends Model<ILocation, Partial<ILocation>> implements IL
   @Column({
     type: DataType.TEXT,
     get(this: Location) {
-      return resolveUrl(this.getDataValue('location_image' as never));
+      const val: string | null | undefined = this.getDataValue('location_image' as never);
+      if (!val) return null;
+      // Stored as absolute URL (e.g. Unsplash) — pass through unchanged
+      if (/^https?:\/\//i.test(val)) return val;
+      // Stored as full relative path — resolve to absolute
+      if (val.startsWith('/')) return resolveUrl(val);
+      // Stored as bare filename — normalize to full path first
+      return resolveUrl(`/uploads/locations/${val}`);
     },
   })
   location_image?: string | null;

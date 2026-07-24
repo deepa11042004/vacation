@@ -148,8 +148,9 @@ export class HotelService {
       throw new AppError(HOTEL_CONSTANTS.ERRORS.IMAGE_NOT_FOUND, 404);
     }
 
-    // Attempt to delete physical file
-    const absolutePath = path.join(process.cwd(), 'public', image.image_path);
+    // Attempt to delete physical file (use getDataValue to bypass the URL getter)
+    const rawPath: string = image.getDataValue('image_path' as never);
+    const absolutePath = path.join(process.cwd(), 'public', rawPath);
     try {
       await fs.unlink(absolutePath);
     } catch (err) {
