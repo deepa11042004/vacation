@@ -31,12 +31,28 @@ export function locationImageFallback(seed?: number | string): string {
   return pickFallback(LOCATION_FALLBACKS, seed);
 }
 
+// If the API returns an absolute URL for a backend upload (e.g. when BACKEND_URL
+// is set in production), extract just the path so it routes through the
+// Next.js /api/* rewrite proxy instead of hitting the backend domain directly.
+function toProxiedPath(url: string): string {
+  try {
+    const pathname = new URL(url).pathname; // e.g. /api/uploads/hotels/img.jpg
+    // Ensure it goes through /api/... so the frontend rewrite picks it up
+    if (pathname.startsWith("/api/uploads/")) return pathname;
+    if (pathname.startsWith("/uploads/")) return `/api${pathname}`;
+  } catch {
+    // not a valid URL, fall through
+  }
+  return url; // external URL (Unsplash, etc.) — use as-is
+}
+
 export function hotelImageUrl(
   imagePath: string | null | undefined,
   seed?: number | string
 ): string {
   if (!imagePath) return pickFallback(HOTEL_FALLBACKS, seed);
-  if (imagePath.startsWith("/") || imagePath.startsWith("http")) return imagePath;
+  if (imagePath.startsWith("http")) return toProxiedPath(imagePath);
+  if (imagePath.startsWith("/")) return imagePath;
   return `/uploads/hotels/${encodeURIComponent(imagePath)}`;
 }
 
@@ -45,6 +61,7 @@ export function locationImageUrl(
   seed?: number | string
 ): string {
   if (!imagePath) return pickFallback(LOCATION_FALLBACKS, seed);
-  if (imagePath.startsWith("/") || imagePath.startsWith("http")) return imagePath;
+  if (imagePath.startsWith("http")) return toProxiedPath(imagePath);
+  if (imagePath.startsWith("/")) return imagePath;
   return `/uploads/locations/${encodeURIComponent(imagePath)}`;
 }
