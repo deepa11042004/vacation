@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { api } from "@/lib/api";
 import Modal from "@/Components/Admin/Modal";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import {
   Search, ChevronLeft, ChevronRight, Loader2, Plus, Pencil,
-  MapPin, Trash2, RotateCcw, ShieldAlert, Globe, Home,
+  MapPin, Trash2, RotateCcw, ShieldAlert, Globe, Home, Upload, X,
 } from "lucide-react";
 
 interface Location {
@@ -86,6 +86,10 @@ export default function LocationsPage() {
   const [confirm, setConfirm] = useState<{ type: "soft" | "permanent" | "restore"; loc: Location } | null>(null);
   const [busy, setBusy]       = useState(false);
 
+  const [imageFile, setImageFile]       = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const limit = 15;
 
   const load = useCallback(async () => {
@@ -119,6 +123,8 @@ export default function LocationsPage() {
     setEditLoc(null);
     setForm({ ...EMPTY });
     setFormErr("");
+    setImageFile(null);
+    setImagePreview("");
     setShowModal(true);
   }
 
@@ -138,7 +144,16 @@ export default function LocationsPage() {
       remarks:           loc.remarks ?? "",
     });
     setFormErr("");
+    setImageFile(null);
+    setImagePreview(loc.location_image ?? "");
     setShowModal(true);
+  }
+
+  function handleImagePick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
   }
 
   async function handleSave() {
@@ -164,11 +179,26 @@ export default function LocationsPage() {
           : null,
         remarks: form.remarks || null,
       };
+
+      let locationId = editLoc?.location_id;
       if (editLoc) {
         await api.put(`/locations/${editLoc.location_id}`, payload);
       } else {
-        await api.post("/locations", payload);
+        const res = await api.post<{ data: { location: { location_id: number } } }>("/locations", payload);
+        locationId = res?.data?.location?.location_id;
       }
+
+      // Upload image if a new file was selected
+      if (imageFile && locationId) {
+        const fd = new FormData();
+        fd.append("file", imageFile);
+        await fetch(`/api/locations/${locationId}/image`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+          body: fd,
+        });
+      }
+
       setShowModal(false);
       load();
     } catch (e: any) {
@@ -377,10 +407,28 @@ export default function LocationsPage() {
                 onChange={e => f("map_link", e.target.value)}
                 placeholder="https://maps.google.com/…" />
             </Field>
-            <Field label="Image Filename">
-              <input className={inp} value={form.location_image}
-                onChange={e => f("location_image", e.target.value)}
-                placeholder="goa.jpg" />
+            <Field label="Location Image">
+              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleImagePick} />
+              {imagePreview ? (
+                <div className="relative w-full h-28 rounded-lg overflow-hidden border border-slate-200 group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+                  <button type="button" onClick={() => { setImageFile(null); setImagePreview(""); f("location_image", ""); }}
+                    className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                  <button type="button" onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-1.5 right-1.5 flex items-center gap-1 text-xs px-2 py-1 rounded bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Upload className="w-3 h-3" /> Change
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-20 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center gap-1 text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-colors">
+                  <Upload className="w-5 h-5" />
+                  <span className="text-xs">Click to upload image</span>
+                </button>
+              )}
             </Field>
           </div>
 

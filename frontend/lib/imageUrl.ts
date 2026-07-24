@@ -32,14 +32,15 @@ export function locationImageFallback(seed?: number | string): string {
 }
 
 // If the API returns an absolute URL for a backend upload (e.g. when BACKEND_URL
-// is set in production), extract just the path so it routes through the
-// Next.js /api/* rewrite proxy instead of hitting the backend domain directly.
+// is set in production), extract just the /uploads/... path so it routes through
+// the Next.js /uploads/* rewrite → Next.js static file serving on the backend.
+// This is the same mechanism that was working before BACKEND_URL was introduced.
 function toProxiedPath(url: string): string {
   try {
-    const pathname = new URL(url).pathname; // e.g. /api/uploads/hotels/img.jpg
-    // Ensure it goes through /api/... so the frontend rewrite picks it up
-    if (pathname.startsWith("/api/uploads/")) return pathname;
-    if (pathname.startsWith("/uploads/")) return `/api${pathname}`;
+    const pathname = new URL(url).pathname;
+    // Strip /api prefix so the /uploads/* rewrite (static serving) is used
+    if (pathname.startsWith("/api/uploads/")) return pathname.slice(4); // → /uploads/...
+    if (pathname.startsWith("/uploads/")) return pathname;
   } catch {
     // not a valid URL, fall through
   }
