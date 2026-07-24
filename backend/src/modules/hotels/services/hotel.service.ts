@@ -149,8 +149,9 @@ export class HotelService {
     }
 
     // Attempt to delete physical file (use getDataValue to bypass the URL getter)
-    const rawPath: string = image.getDataValue('image_path' as never);
-    const absolutePath = path.join(process.cwd(), 'public', rawPath);
+    const rawPath = image.getDataValue('image_path' as never) as string;
+    const normalizedPath = rawPath.startsWith('/') ? rawPath : `/uploads/hotels/${rawPath}`;
+    const absolutePath = path.join(process.cwd(), 'public', normalizedPath);
     try {
       await fs.unlink(absolutePath);
     } catch (err) {

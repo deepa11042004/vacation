@@ -39,7 +39,11 @@ export class HotelImage extends Model<IHotelImage, Partial<IHotelImage>> impleme
   @Column({
     type: DataType.TEXT,
     get(this: HotelImage) {
-      return resolveUrl(this.getDataValue('image_path' as never));
+      const val = this.getDataValue('image_path' as never) as string | null | undefined;
+      if (!val) return null;
+      if (/^https?:\/\//i.test(val)) return val;
+      if (val.startsWith('/')) return resolveUrl(val);
+      return resolveUrl(`/uploads/hotels/${val}`);
     },
   })
   image_path!: string;
