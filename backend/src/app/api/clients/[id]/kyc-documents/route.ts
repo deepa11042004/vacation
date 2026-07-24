@@ -42,11 +42,16 @@ const service = new KycDocumentService();
  *             type: object
  *             required: [file, title]
  *             properties:
- *               file:  { type: string, format: binary }
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: PDF file only (application/pdf)
  *               title: { type: string, example: "Aadhaar Card" }
  *     responses:
  *       201:
  *         description: Document uploaded successfully
+ *       400:
+ *         description: Non-PDF file or missing required fields
  */
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {

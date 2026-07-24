@@ -42,11 +42,16 @@ const service = new CallRecordingService();
  *             type: object
  *             required: [file, note]
  *             properties:
- *               file: { type: string, format: binary }
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Audio file only (mp3, wav, aac, ogg, flac, m4a, webm, etc.)
  *               note: { type: string, example: "Follow-up call" }
  *     responses:
  *       201:
  *         description: Recording uploaded successfully
+ *       400:
+ *         description: Non-audio file or missing required fields
  */
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   try {
