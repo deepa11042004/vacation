@@ -60,10 +60,10 @@ export default function Navbar() {
           <Link href="/" className="flex items-center shrink-0">
             <Image
               src="/Img/fanlogo.png"
-              alt="Logo"
+              alt="Mandarin Worldwide Vacations Logo"
               width={150}
               height={40}
-              className="h-12 md:h-18 w-auto object-contain"
+              className="h-9 sm:h-12 md:h-16 w-auto max-w-[140px] sm:max-w-[200px] md:max-w-none object-contain"
               priority
             />
           </Link>

@@ -22,7 +22,7 @@ const KEY_TENETS: TenetItem[] = [
     image:
       "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80",
     benefits: [
-      "Keystone gives you 7 nights/8 days of holidays every year. If you miss your vacation, you can carry forward up to 14 nights.",
+      "Keystone gives you 6 nights/7 days of holidays every year. If you miss your vacation, you can carry forward up to 14 nights.",
       "Breakfast is on us. Other meals come with special savings.",
       "Protect your long-term holiday goals with future-proof pricing.",
       "Pick a plan based on your preferences with three unique Keys and flexible tenures.",

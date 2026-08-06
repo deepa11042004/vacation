@@ -405,7 +405,7 @@ export default function JoinDetail() {
                             {/* Top row containing Logo, Labels, and Duration */}
                             <div className="relative z-10 flex justify-between items-center gap-4">
                               <div className="flex items-center gap-3">
-                                <div className="relative h-15 w-30 shrink-0 mb-2">
+                                <div className="relative h-10 w-24 sm:h-12 sm:w-28 shrink-0">
                                   <Image
                                     src="/Img/fanlogo.png"
                                     alt="Logo"

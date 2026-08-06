@@ -8,8 +8,8 @@ function LogoAbout() {
     <section className="bg-white w-full py-20 px-6 sm:px-10 lg:px-14 select-none">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 lg:gap-20">
         {/* Left Side - Video */}
-        <div className="w-full md:w-1/2 flex justify-center md:justify-end">
-          <div className="relative w-full max-w-lg aspect-4/3 rounded-4xl overflow-hidden shadow-2xl bg-[#0a192f]">
+        <div className="w-full md:w-1/2 lg:w-7/12 flex justify-center md:justify-start">
+          <div className="relative w-full max-w-xl lg:max-w-2xl aspect-video rounded-3xl md:rounded-4xl overflow-hidden shadow-2xl bg-[#0a192f]">
             <video
               src="/Video/logovideo.mp4"
               poster="/Img/newlogo.jpeg"
@@ -25,7 +25,7 @@ function LogoAbout() {
         </div>
 
         {/* Right Side - Content */}
-        <div className="w-full md:w-1/2 flex flex-col items-start text-left">
+        <div className="w-full md:w-1/2 lg:w-5/12 flex flex-col items-start text-left">
           <Badge
             text="ABOUT US"
             variant="black"

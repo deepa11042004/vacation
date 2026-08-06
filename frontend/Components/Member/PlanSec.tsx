@@ -11,7 +11,7 @@ import CtaButton from "@/UI/CtaButton";
 const CAROUSEL_PRIVILEGES = [
   {
     id: 1,
-    title: "7N/8D a year, your way",
+    title: "6N/7D a year, your way",
     image:
       "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
     size: "short",
@@ -62,7 +62,7 @@ const MEMBERSHIPS = [
     subtitle: "Your year-round access to unforgettable family gateways",
     bgClass: "bg-black text-white border-neutral-800",
     benefits: [
-      "7N/8D holidays every year across 52 weeks",
+      "6N/7D holidays every year across 52 weeks",
       "Complimentary breakfast for 2 per room per night",
       "Priority access to signature experiences",
       "Access to 140+ international resorts",
@@ -73,7 +73,7 @@ const MEMBERSHIPS = [
     subtitle: "Experience destinations during the peak of their popularity",
     bgClass: "bg-[#040B31] text-white border-neutral-800",
     benefits: [
-      "7N/8D holidays every year across 46 weeks",
+      "6N/7D holidays every year across 46 weeks",
       "Complimentary breakfast for 2 per room per night",
       "Priority access to signature experiences",
       "Access to 140+ international resorts",
@@ -84,7 +84,7 @@ const MEMBERSHIPS = [
     subtitle: "Enjoy your favourite destinations during quieter seasons",
     bgClass: "bg-[#004B23] text-white border-neutral-800",
     benefits: [
-      "7N/8D holidays every year across 24 weeks",
+      "6N/7D holidays every year across 24 weeks",
       "Complimentary breakfast for 2 per room per night",
       "Priority access to signature experiences",
       "Access to 140+ international resorts",
@@ -122,7 +122,7 @@ export default function PlanSec() {
 
         <p className="text-neutral-300 font-medium text-sm md:text-base max-w-3xl mx-auto leading-relaxed mb-16">
           Club Elevate unlocks privileged access to 140+ premium resorts,
-          offering 7 nights/8 days holidays every year — filled with cherished
+          offering 6 nights/7 days holidays every year — filled with cherished
           family moments and thoughtfully crafted experiences.
         </p>
 
@@ -259,20 +259,17 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
 
         {/* Card Content */}
         <div className="relative z-10 flex flex-col h-full">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 gap-2">
             <Image
               src="/Img/fanlogo.png"
-              alt="Fan Icon"
-              width={48}
+              alt="Mandarin Worldwide Vacations"
+              width={160}
               height={48}
-              className="w-24 h-24 md:w-30 md:h-12 object-cover"
+              className="h-10 md:h-12 w-auto max-w-[130px] sm:max-w-[170px] object-contain shrink-0"
             />
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] md:text-xs font-bold tracking-wider uppercase backdrop-blur-md text-white">
                 Studio
-              </span>
-              <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] md:text-xs font-bold tracking-wider uppercase backdrop-blur-md text-white">
-                1BR
               </span>
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { ChevronDown, X, CreditCard, Loader2, CheckCircle2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -63,115 +64,128 @@ export default function Book() {
   return (
     <section className="w-full bg-white py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="w-full bg-linear-to-br from-blue-50 to-blue-200 rounded-4xl p-6 sm:p-8 border border-gray-200 hover:border-blue-600 transition-colors duration-300 ease-in-out">
-          <h2 className="text-3xl md:text-4xl font-bold text-black tracking-tight mb-6 pl-1">
-            Plan Your Stays
-          </h2>
+        <div className="relative w-full overflow-hidden rounded-4xl p-6 sm:p-8 border border-blue-100/80 shadow-xl transition-colors duration-300 ease-in-out">
+          {/* Background Sky Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/Img/bg.png"
+              alt="Sky background"
+              fill
+              className="object-cover object-center"
+              priority
+            />
+          </div>
 
-          {success ? (
-            <div className="flex flex-col items-center justify-center py-10 gap-4 text-center">
-              <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center">
-                <CheckCircle2 className="w-7 h-7 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-base font-bold text-slate-800">Request Submitted!</p>
-                <p className="text-sm text-slate-500 mt-1">Our team will contact you shortly to confirm your stay.</p>
-              </div>
-              <button onClick={() => setSuccess(false)} className="text-sm text-blue-600 hover:underline">
-                Plan another stay
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          <div className="relative z-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-black tracking-tight mb-6 pl-1">
+              Plan Your Stays
+            </h2>
 
-              {/* Destination */}
-              <div className="md:col-span-3 flex flex-col gap-2">
-                <label className="text-sm font-medium text-black pl-1">Destination</label>
-                <div className="border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
-                  <input
-                    type="text"
-                    placeholder="Where do you want to go?"
-                    value={destination}
-                    onChange={e => setDestination(e.target.value)}
-                    className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full outline-none"
-                  />
+            {success ? (
+              <div className="flex flex-col items-center justify-center py-10 gap-4 text-center">
+                <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <CheckCircle2 className="w-7 h-7 text-emerald-600" />
                 </div>
-              </div>
-
-              {/* Check-in */}
-              <div className="md:col-span-2 flex flex-col gap-2">
-                <label className="text-sm font-medium text-black pl-1">Check-in</label>
-                <div className="border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
-                  <input
-                    type="date"
-                    value={checkIn}
-                    onChange={e => setCheckIn(e.target.value)}
-                    className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full appearance-none outline-none"
-                  />
+                <div>
+                  <p className="text-base font-bold text-slate-800">Request Submitted!</p>
+                  <p className="text-sm text-slate-500 mt-1">Our team will contact you shortly to confirm your stay.</p>
                 </div>
-              </div>
-
-              {/* Check-out */}
-              <div className="md:col-span-2 flex flex-col gap-2">
-                <label className="text-sm font-medium text-black pl-1">Check-out</label>
-                <div className="border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
-                  <input
-                    type="date"
-                    value={checkOut}
-                    min={checkIn || undefined}
-                    onChange={e => setCheckOut(e.target.value)}
-                    className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full appearance-none outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Adults */}
-              <div className="md:col-span-2 flex flex-col gap-2">
-                <label className="text-sm font-medium text-black pl-1">Adults</label>
-                <div className="relative border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
-                  <select
-                    value={adults}
-                    onChange={e => setAdults(e.target.value)}
-                    className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full appearance-none outline-none cursor-pointer"
-                  >
-                    <option value="" disabled hidden>Adults</option>
-                    <option value="1 Adult">1 Adult</option>
-                    <option value="2 Adults">2 Adults</option>
-                    <option value="3 Adults">3 Adults</option>
-                    <option value="4+ Adults">4+ Adults</option>
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-black/80 h-4 w-4 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Rooms */}
-              <div className="md:col-span-3 flex flex-col gap-2">
-                <label className="text-sm font-medium text-black pl-1">Number Of Rooms</label>
-                <div className="relative border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
-                  <select
-                    value={rooms}
-                    onChange={e => setRooms(e.target.value)}
-                    className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-black font-normal h-14 px-4 rounded-full appearance-none outline-none cursor-pointer"
-                  >
-                    <option value="1 Bed Room">1 Bed Room</option>
-                    <option value="2 Bed Rooms">2 Bed Rooms</option>
-                    <option value="3 Bed Rooms">3 Bed Rooms</option>
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-black/80 h-4 w-4 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Search button */}
-              <div className="md:col-span-12 w-full flex justify-center mt-4">
-                <button
-                  onClick={openModal}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-10 py-3.5 rounded-full shadow-lg shadow-blue-600/20 transition duration-200"
-                >
-                  Search
+                <button onClick={() => setSuccess(false)} className="text-sm text-blue-600 hover:underline">
+                  Plan another stay
                 </button>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+
+                {/* Destination */}
+                <div className="md:col-span-3 flex flex-col gap-2">
+                  <label className="text-sm font-medium text-black pl-1">Destination</label>
+                  <div className="border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
+                    <input
+                      type="text"
+                      placeholder="Where do you want to go?"
+                      value={destination}
+                      onChange={e => setDestination(e.target.value)}
+                      className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Check-in */}
+                <div className="md:col-span-2 flex flex-col gap-2">
+                  <label className="text-sm font-medium text-black pl-1">Check-in</label>
+                  <div className="border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
+                    <input
+                      type="date"
+                      value={checkIn}
+                      onChange={e => setCheckIn(e.target.value)}
+                      className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full appearance-none outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Check-out */}
+                <div className="md:col-span-2 flex flex-col gap-2">
+                  <label className="text-sm font-medium text-black pl-1">Check-out</label>
+                  <div className="border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
+                    <input
+                      type="date"
+                      value={checkOut}
+                      min={checkIn || undefined}
+                      onChange={e => setCheckOut(e.target.value)}
+                      className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full appearance-none outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Adults */}
+                <div className="md:col-span-2 flex flex-col gap-2">
+                  <label className="text-sm font-medium text-black pl-1">Adults</label>
+                  <div className="relative border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
+                    <select
+                      value={adults}
+                      onChange={e => setAdults(e.target.value)}
+                      className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-neutral-600 font-normal h-14 px-4 rounded-full appearance-none outline-none cursor-pointer"
+                    >
+                      <option value="" disabled hidden>Adults</option>
+                      <option value="1 Adult">1 Adult</option>
+                      <option value="2 Adults">2 Adults</option>
+                      <option value="3 Adults">3 Adults</option>
+                      <option value="4+ Adults">4+ Adults</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-black/80 h-4 w-4 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Rooms */}
+                <div className="md:col-span-3 flex flex-col gap-2">
+                  <label className="text-sm font-medium text-black pl-1">Number Of Rooms</label>
+                  <div className="relative border border-gray-200 rounded-full hover:border-blue-600 transition-colors duration-300 ease-in-out">
+                    <select
+                      value={rooms}
+                      onChange={e => setRooms(e.target.value)}
+                      className="w-full bg-white hover:bg-white/50 transition-colors text-sm text-black font-normal h-14 px-4 rounded-full appearance-none outline-none cursor-pointer"
+                    >
+                      <option value="1 Bed Room">1 Bed Room</option>
+                      <option value="2 Bed Rooms">2 Bed Rooms</option>
+                      <option value="3 Bed Rooms">3 Bed Rooms</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-black/80 h-4 w-4 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Search button */}
+                <div className="md:col-span-12 w-full flex justify-center mt-4">
+                  <button
+                    onClick={openModal}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-10 py-3.5 rounded-full shadow-lg shadow-blue-600/20 transition duration-200"
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

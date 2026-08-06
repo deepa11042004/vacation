@@ -37,7 +37,7 @@ const PARTNER_CATEGORIES = [
     direction: "marquee-right",
     speed: 45,
     imagePrefix: "/associates/ass_partner",
-    imageClassName: "w-auto h-8 object-cover",
+    imageClassName: "w-auto h-8 object-contain",
   },
   
   {
