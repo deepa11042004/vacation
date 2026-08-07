@@ -112,7 +112,10 @@ function FeatureCard({ data, index }: { data: Feature; index: number }) {
 
 export default function BookingDetail() {
   return (
-    <section className="relative w-full overflow-hidden bg-linear-to-b from-blue-50 to-white px-6 py-24 md:px-40">
+    <section
+      className="relative w-full overflow-hidden px-6 py-24 md:px-12 lg:px-20 xl:px-28 bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/sky-bg.jpg')" }}
+    >
       <div className="relative">
         {/* Header */}
         <div className="mb-16 w-full">
@@ -138,8 +141,8 @@ export default function BookingDetail() {
           </div>
         </div>
 
-        {/* Card Grid - 2 Columns */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        {/* Card Grid - 3 Columns */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature, i) => (
             <FeatureCard key={feature.id} data={feature} index={i} />
           ))}

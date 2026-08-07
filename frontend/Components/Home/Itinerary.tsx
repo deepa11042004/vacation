@@ -226,7 +226,7 @@ export default function Itinerary() {
 
   return (
     <>
-      <section className="w-full rounded-b-[6vw] bg-white px-6 py-20 sm:px-10 lg:px-14 font-display">
+      <section className="w-full rounded-b-[6vw] bg-[#D4AF37] px-6 py-20 sm:px-10 lg:px-14 font-display">
         <div className="mx-auto max-w-7xl">
           {/* ── Header Layout ── */}
           <div className="mb-12 w-full">

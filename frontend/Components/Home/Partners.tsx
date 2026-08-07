@@ -77,7 +77,10 @@ const PARTNER_CATEGORIES = [
 
 export default function Partners() {
   return (
-    <section className="bg-blue-50 py-24 px-4 sm:px-6 lg:px-8 overflow-hidden font-display selection:bg-blue-100">
+    <section
+      className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden font-display selection:bg-blue-100 bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/sky-bg.jpg')" }}
+    >
       <style>{`
         @keyframes marquee-left {
           from { transform: translateX(0); }
