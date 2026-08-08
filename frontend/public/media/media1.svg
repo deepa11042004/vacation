@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 70" width="280" height="70">
+  <g transform="translate(25, 5)">
+    <!-- Crest Emblem -->
+    <g transform="translate(115, 2) scale(0.6)">
+      <!-- Sunburst & Shield -->
+      <circle cx="0" cy="15" r="14" fill="#1A2B4C"/>
+      <path d="M-10,15 Q0,0 10,15 Q0,30 -10,15" fill="#C5A059"/>
+      <!-- Elephants Left & Right -->
+      <path d="M-22,25 C-30,18 -32,8 -20,5 C-15,3 -10,10 -12,18 C-14,24 -18,25 -22,25 Z" fill="#1A2B4C"/>
+      <path d="M22,25 C30,18 32,8 20,5 C15,3 10,10 12,18 C14,24 18,25 22,25 Z" fill="#1A2B4C"/>
+      <!-- Crown Top -->
+      <path d="M-8,-2 L0,-8 L8,-2 L5,4 L-5,4 Z" fill="#C5A059"/>
+    </g>
+    
+    <!-- Logotype -->
+    <text x="115" y="38" dominant-baseline="middle" text-anchor="middle" font-family="'Times New Roman', Times, serif" font-weight="900" font-size="16" fill="#1A2B4C" letter-spacing="2.5">THE TIMES OF INDIA</text>
+    <line x1="20" y1="46" x2="210" y2="46" stroke="#1A2B4C" stroke-width="1.2"/>
+    <text x="115" y="56" dominant-baseline="middle" text-anchor="middle" font-family="'Georgia', serif" font-style="italic" font-size="9.5" fill="#666666">LET TRUTH PREVAIL</text>
+  </g>
+</svg>

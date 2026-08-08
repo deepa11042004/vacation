@@ -5,17 +5,25 @@ import Image from "next/image";
 import Badge from "@/UI/Badge";
 import { Minus } from "lucide-react";
 
-const PARTNER_CATEGORIES = [
+const PARTNER_CATEGORIES: {
+  title: string;
+  partners: { name: string; id: number }[];
+  direction: string;
+  speed: number;
+  imagePrefix: string;
+  imageExt?: string;
+  imageClassName: string;
+}[] = [
   {
     title: "Travel Partners",
     partners: [
-      "Booking.com",
-      "EaseMyTrip",
-      "Goibibo",
-      "MakeMyTrip",
-      "Yatra",
-      "Agoda",
-      "Expedia",
+      { name: "Booking.com", id: 1 },
+      { name: "EaseMyTrip", id: 2 },
+      { name: "Goibibo", id: 3 },
+      { name: "MakeMyTrip", id: 4 },
+      { name: "Yatra", id: 5 },
+      { name: "Agoda", id: 6 },
+      { name: "Expedia", id: 7 },
     ],
     direction: "marquee-left",
     speed: 38,
@@ -26,13 +34,13 @@ const PARTNER_CATEGORIES = [
   {
     title: "Associates Brands",
     partners: [
-      "TBO.com",
-      "Unimoni",
-      "AirIQ",
-      "RezLive",
-      "TravelBoutique",
-      "RateHawk",
-      "Hotelbeds",
+      { name: "TBO.com", id: 1 },
+      { name: "Unimoni", id: 2 },
+      { name: "AirIQ", id: 3 },
+      { name: "RezLive", id: 4 },
+      { name: "TravelBoutique", id: 5 },
+      { name: "RateHawk", id: 6 },
+      { name: "Hotelbeds", id: 7 },
     ],
     direction: "marquee-right",
     speed: 45,
@@ -43,13 +51,10 @@ const PARTNER_CATEGORIES = [
   {
     title: "Associate Properties",
     partners: [
-      "Taj Hotels",
-      "Oberoi Group",
-      "The Leela",
-      "ITC Hotels",
-      "Marriott",
-      "Hilton",
-      "Radisson",
+      { name: "ITC Hotels", id: 4 },
+      { name: "Marriott", id: 5 },
+      { name: "Hilton", id: 6 },
+      { name: "Radisson", id: 7 },
     ],
     direction: "marquee-right",
     speed: 42,
@@ -60,18 +65,36 @@ const PARTNER_CATEGORIES = [
   {
     title: "Preferred Airlines",
     partners: [
-      "Emirates",
-      "IndiGo",
-      "Qatar Airways",
-      "Vistara",
-      "AirAsia",
-      "SpiceJet",
-      "Air India",
+      { name: "Emirates", id: 1 },
+      { name: "IndiGo", id: 2 },
+      { name: "Qatar Airways", id: 3 },
+      { name: "Vistara", id: 4 },
+      { name: "AirAsia", id: 5 },
+      { name: "SpiceJet", id: 6 },
+      { name: "Air India", id: 7 },
     ],
     direction: "marquee-left",
     speed: 35,
     imagePrefix: "/airlines/air",
     imageClassName: "w-auto h-16 object-contain",
+  },
+
+  {
+    title: "Preferred Media Partners",
+    partners: [
+      { name: "The Times of India", id: 1 },
+      { name: "NDTV", id: 2 },
+      { name: "India Today", id: 3 },
+      { name: "Hindustan Times", id: 4 },
+      { name: "The Economic Times", id: 5 },
+      { name: "The Hindu", id: 6 },
+      { name: "CNBC TV18", id: 7 },
+    ],
+    direction: "marquee-right",
+    speed: 40,
+    imagePrefix: "/media/media",
+    imageExt: ".svg",
+    imageClassName: "w-auto h-12 object-contain",
   },
 ];
 
@@ -136,11 +159,11 @@ export default function Partners() {
                   ].map((partner, pIdx) => (
                     <div
                       key={`${idx}-${pIdx}`}
-                      className="w-48 h-24 md:w-56 md:h-28 shrink-0 bg-white border border-neutral-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-full flex items-center justify-center hover:scale-105 hover:shadow-[0_8px_20px_-4px_rgba(0,100,255,0.15)] hover:border-blue-100 transition-all duration-300 ease-out cursor-pointer group"
+                      className="w-48 h-24 md:w-56 md:h-28 shrink-0 bg-white border border-neutral-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-full flex items-center justify-center hover:scale-105 hover:shadow-[0_8px_20px_-4px_rgba(0,100,255,0.15)] hover:border-blue-100 transition-all duration-300 ease-out cursor-pointer group px-4"
                     >
                       <Image
-                        src={`${category.imagePrefix}${(pIdx % 7) + 1}.png`}
-                        alt={partner}
+                        src={`${category.imagePrefix}${partner.id}${category.imageExt || ".png"}`}
+                        alt={partner.name}
                         width={120}
                         height={48}
                         className={category.imageClassName}

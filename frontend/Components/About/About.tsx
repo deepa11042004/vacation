@@ -48,7 +48,7 @@ export default function About() {
           <div className="flex flex-col justify-between rounded-3xl bg-[#edf3ff] p-6 md:col-span-3 min-h-95">
             <div className="flex flex-col gap-1">
               <div className="text-4xl font-bold tracking-tight text-black sm:text-5xl flex items-center">
-                <Counter value={5000} />
+                <Counter value={6500} />
                 <span className="text-blue-600 ml-0.5">+</span>
               </div>
               <p className="text-sm font-medium text-gray-500">

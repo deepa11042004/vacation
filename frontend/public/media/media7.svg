@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 70" width="250" height="70">
+  <g transform="translate(10, 8)">
+    <!-- 6-feather CNBC Peacock Emblem -->
+    <g transform="translate(30, 26) scale(0.65)">
+      <!-- Feather 1 (Yellow) -->
+      <path d="M-8,-2 C-16,-22 -36,-14 -32,8 Z" fill="#FFC20E"/>
+      <!-- Feather 2 (Orange) -->
+      <path d="M-4,-4 C-6,-28 -22,-28 -20,-4 Z" fill="#F7931E"/>
+      <!-- Feather 3 (Red) -->
+      <path d="M0,-5 C5,-30 -10,-32 -8,-5 Z" fill="#ED1C24"/>
+      <!-- Feather 4 (Purple) -->
+      <path d="M4,-5 C12,-32 -3,-30 0,-5 Z" fill="#92278F"/>
+      <!-- Feather 5 (Blue) -->
+      <path d="M5,-4 C22,-28 6,-28 4,-4 Z" fill="#00AEEF"/>
+      <!-- Feather 6 (Green) -->
+      <path d="M8,-2 C36,-14 16,-22 8,-2 Z" fill="#00A651"/>
+    </g>
+
+    <!-- CNBC TV18 Text -->
+    <g transform="translate(68, 6)">
+      <text x="0" y="24" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="22" fill="#002D62" letter-spacing="1">CNBC</text>
+      <text x="0" y="44" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="18" fill="#E53935" letter-spacing="1">TV18</text>
+    </g>
+  </g>
+</svg>
