@@ -69,7 +69,7 @@ export default function Footer() {
             </h4>
             <nav className="flex flex-col gap-2 text-sm font-medium text-neutral-300">
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/mandarinvacations?igsh=MXU1NHZnajBnM2Vwcw=="
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-white transition-colors"
@@ -85,7 +85,7 @@ export default function Footer() {
                 Linkedin
               </a>
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/share/14kMSQaGfzA/?mibextid=wwXIfr"
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-white transition-colors"
@@ -93,7 +93,7 @@ export default function Footer() {
                 Facebook
               </a>
               <a
-                href="https://youtube.com"
+                href="https://youtube.com/@mandarinvacations?si=jPoBXrl7nDNzASQe"
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-white transition-colors"

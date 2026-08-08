@@ -7,7 +7,7 @@ import { Minus } from "lucide-react";
 
 const PARTNER_CATEGORIES: {
   title: string;
-  partners: { name: string; id: number }[];
+  partners: { name: string; id: number; ext?: string }[];
   direction: string;
   speed: number;
   imagePrefix: string;
@@ -65,12 +65,12 @@ const PARTNER_CATEGORIES: {
   {
     title: "Preferred Airlines",
     partners: [
-      { name: "Emirates", id: 1 },
-      { name: "IndiGo", id: 2 },
-      { name: "Qatar Airways", id: 3 },
-      { name: "Vistara", id: 4 },
-      { name: "AirAsia", id: 5 },
-      { name: "SpiceJet", id: 6 },
+      { name: "IndiGo", id: 1 },
+      { name: "Qatar Airways", id: 2 },
+      { name: "Vistara", id: 3 },
+      { name: "Emirates", id: 4 },
+      { name: "Akasa Air", id: 5 },
+      { name: "AirAsia", id: 6 },
       { name: "Air India", id: 7 },
     ],
     direction: "marquee-left",
@@ -93,7 +93,6 @@ const PARTNER_CATEGORIES: {
     direction: "marquee-right",
     speed: 40,
     imagePrefix: "/media/media",
-    imageExt: ".svg",
     imageClassName: "w-auto h-12 object-contain",
   },
 ];
@@ -162,7 +161,7 @@ export default function Partners() {
                       className="w-48 h-24 md:w-56 md:h-28 shrink-0 bg-white border border-neutral-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-full flex items-center justify-center hover:scale-105 hover:shadow-[0_8px_20px_-4px_rgba(0,100,255,0.15)] hover:border-blue-100 transition-all duration-300 ease-out cursor-pointer group px-4"
                     >
                       <Image
-                        src={`${category.imagePrefix}${partner.id}${category.imageExt || ".png"}`}
+                        src={`${category.imagePrefix}${partner.id}${partner.ext || category.imageExt || ".png"}`}
                         alt={partner.name}
                         width={120}
                         height={48}
