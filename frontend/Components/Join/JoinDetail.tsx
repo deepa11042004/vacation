@@ -452,7 +452,6 @@ export default function JoinDetail() {
                 {/* Render Function for Card Grids */}
                 {[
                   { title: "Studios", data: studioCards },
-                  { title: "1 Bedroom Suites", data: oneBrCards },
                 ].map((group, groupIdx) => (
                   <div
                     key={group.title}
