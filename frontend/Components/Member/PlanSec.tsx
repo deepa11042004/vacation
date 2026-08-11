@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
-import { Minus, Check } from "lucide-react";
+import { Minus, Check, ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
@@ -11,7 +11,7 @@ import CtaButton from "@/UI/CtaButton";
 const CAROUSEL_PRIVILEGES = [
   {
     id: 1,
-    title: "6N/7D a year, your way",
+    title: "7N/8D a year, your way",
     image:
       "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
     size: "short",
@@ -60,7 +60,7 @@ const MEMBERSHIPS = [
   {
     title: "EBONY",
     subtitle: "Your year-round access to unforgettable family gateways",
-    bgClass: "bg-black text-white border-neutral-800",
+    bgClass: "bg-gradient-to-br from-[#2a2a2a] via-[#141414] to-[#050505] text-white border-neutral-700",
     benefits: [
       "6N/7D holidays every year across 52 weeks",
       "Complimentary breakfast for 2 per room per night",
@@ -71,7 +71,7 @@ const MEMBERSHIPS = [
   {
     title: "IVORY",
     subtitle: "Experience destinations during the peak of their popularity",
-    bgClass: "bg-[#040B31] text-white border-neutral-800",
+    bgClass: "bg-gradient-to-br from-[#ECE0CD] via-[#D8C7B0] to-[#BEAD95] text-neutral-900 border-[#BEAD95]/50",
     benefits: [
       "6N/7D holidays every year across 46 weeks",
       "Complimentary breakfast for 2 per room per night",
@@ -82,7 +82,7 @@ const MEMBERSHIPS = [
   {
     title: "JADE",
     subtitle: "Enjoy your favourite destinations during quieter seasons",
-    bgClass: "bg-[#004B23] text-white border-neutral-800",
+    bgClass: "bg-gradient-to-br from-[#14574E] via-[#0B3D37] to-[#042420] text-white border-emerald-500/40",
     benefits: [
       "6N/7D holidays every year across 24 weeks",
       "Complimentary breakfast for 2 per room per night",
@@ -93,6 +93,18 @@ const MEMBERSHIPS = [
 ];
 
 export default function PlanSec() {
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (carouselRef.current) {
+      const scrollAmount = 304; // card width (280) + gap (24)
+      carouselRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <section id="plans" className="w-full overflow-hidden select-none">
       {/* SECTION 1: Club Elevate INFO */}
@@ -126,50 +138,69 @@ export default function PlanSec() {
           family moments and thoughtfully crafted experiences.
         </p>
 
-        {/* HORIZONTAL SLIDING PRIVILEGES CAROUSEL */}
-        <div className="w-full relative flex flex-col items-center mt-4">
+        {/* HORIZONTAL PRIVILEGES CAROUSEL */}
+        <div className="w-full relative flex flex-col items-center mt-4 px-4">
           <h4 className="text-3xl font-bold tracking-wider text-white mb-10">
             Handpicked Privileges
           </h4>
 
           <style>{`
-            @keyframes marqueeLeft {
-              from { transform: translateX(0); }
-              to   { transform: translateX(-50%); }
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+            .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
             }
           `}</style>
-          <div className="relative w-full mt-2">
+
+          {/* Carousel Wrapper */}
+          <div className="relative w-full max-w-6xl overflow-hidden">
             <div
-              className="flex w-max items-center"
-              style={{ animation: "marqueeLeft 30s linear infinite" }}
+              ref={carouselRef}
+              className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-4"
             >
-              {[...CAROUSEL_PRIVILEGES, ...CAROUSEL_PRIVILEGES].map(
-                (card, idx) => (
-                  <div
-                    key={`${card.id}-${idx}`}
-                    className={`relative shrink-0 overflow-hidden rounded-2xl bg-neutral-900 shadow-xs group mr-5 ${
-                      card.size === "short"
-                        ? "h-80 w-70 md:h-90 md:w-70"
-                        : "h-100 w-80 md:h-110 md:w-120"
-                    }`}
-                  >
-                    <Image
-                      fill
-                      src={card.image}
-                      alt={card.title}
-                      sizes="(max-width: 768px) 350px, 450px"
-                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10" />
-                    <div className="absolute left-6 bottom-6 z-20 flex items-center gap-1.5 rounded-lg bg-black/40 px-3 py-1.5 backdrop-blur-md border border-white/10">
-                      <span className="text-sm font-medium text-white tracking-wide">
-                        {card.title}
-                      </span>
-                    </div>
+              {CAROUSEL_PRIVILEGES.map((card) => (
+                <div
+                  key={card.id}
+                  className="relative shrink-0 w-[280px] h-[360px] overflow-hidden rounded-3xl bg-neutral-900 shadow-lg group snap-start"
+                >
+                  <Image
+                    fill
+                    src={card.image}
+                    alt={card.title}
+                    sizes="280px"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
+                  
+                  {/* Floating White Title Card */}
+                  <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-center rounded-2xl bg-white/95 py-4 px-3 shadow-md backdrop-blur-xs">
+                    <span className="text-sm font-semibold text-neutral-900 text-center tracking-wide leading-tight">
+                      {card.title}
+                    </span>
                   </div>
-                ),
-              )}
+                </div>
+              ))}
             </div>
+          </div>
+
+          {/* Navigation Arrows */}
+          <div className="flex justify-center items-center gap-4 mt-8 w-full">
+            <button
+              onClick={() => scroll("left")}
+              className="w-12 h-12 flex items-center justify-center rounded-full border border-neutral-300 bg-white text-black hover:bg-neutral-100 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer shadow-md"
+              aria-label="Previous slide"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              className="w-12 h-12 flex items-center justify-center rounded-full border border-neutral-300 bg-white text-black hover:bg-neutral-100 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer shadow-md"
+              aria-label="Next slide"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
@@ -232,6 +263,8 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
 
   const transform = useMotionTemplate`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
+  const isLight = card.title === "IVORY";
+
   return (
     <motion.div
       ref={cardRef}
@@ -244,12 +277,14 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
         className={`relative w-full h-full rounded-3xl p-6 md:p-8 flex flex-col justify-between text-left shadow-2xl overflow-hidden border transition-all duration-300 group-hover:shadow-white/10 ${card.bgClass}`}
       >
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className={`absolute inset-0 pointer-events-none mix-blend-overlay ${
+          isLight ? "opacity-45 invert" : "opacity-35"
+        }`}>
           <Image
             src="/Img/pattern.png"
             alt="Background pattern"
             fill
-            className="object-cover mix-blend-overlay"
+            className="object-cover scale-125"
             unoptimized
           />
         </div>
@@ -265,10 +300,16 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
               alt="Mandarin Worldwide Vacations"
               width={160}
               height={48}
-              className="h-10 md:h-12 w-auto max-w-[130px] sm:max-w-[170px] object-contain shrink-0"
+              className={`h-10 md:h-12 w-auto max-w-[130px] sm:max-w-[170px] object-contain shrink-0 ${
+                isLight ? "" : "brightness-200"
+              }`}
             />
             <div className="flex gap-2 shrink-0">
-              <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[10px] md:text-xs font-bold tracking-wider uppercase backdrop-blur-md text-white">
+              <span className={`px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold tracking-wider uppercase backdrop-blur-md ${
+                isLight 
+                  ? "bg-black/10 border border-black/20 text-neutral-900" 
+                  : "bg-white/10 border border-white/20 text-white"
+              }`}>
                 Studio
               </span>
             </div>
@@ -278,7 +319,9 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
             <h4 className="text-3xl md:text-4xl font-extrabold tracking-wide mb-3 font-sans">
               {card.title}
             </h4>
-            <p className="text-sm opacity-80 leading-relaxed font-medium">
+            <p className={`text-sm leading-relaxed font-medium ${
+              isLight ? "text-neutral-800" : "text-white/80"
+            }`}>
               {card.subtitle}
             </p>
           </div>
@@ -288,10 +331,16 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
             <ul className="space-y-3 mb-8">
               {card.benefits.map((benefit, index) => (
                 <li key={index} className="flex items-start gap-3">
-                  <div className="mt-0.5 w-5 h-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-                    <Check className="w-3 h-3 text-white" />
+                  <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                    isLight 
+                      ? "bg-black/10 border border-black/20" 
+                      : "bg-white/10 border border-white/20"
+                  }`}>
+                    <Check className={`w-3 h-3 ${isLight ? "text-neutral-900" : "text-white"}`} />
                   </div>
-                  <span className="text-sm text-white/80 font-medium leading-snug">
+                  <span className={`text-sm font-medium leading-snug ${
+                    isLight ? "text-neutral-800" : "text-white/80"
+                  }`}>
                     {benefit}
                   </span>
                 </li>

@@ -35,7 +35,7 @@ const TIER_DATA: Record<string, TierGroup> = {
     name: "EBONY",
     description:
       "Premium access to signature gateways during golden peak seasons.",
-    cardBgClass: "bg-black border-neutral-800 text-white",
+    cardBgClass: "bg-gradient-to-br from-[#2a2a2a] via-[#141414] to-[#050505] border-neutral-700 text-white",
     textClass: "text-white",
     mutedTextClass: "text-neutral-400",
     linePatternOpacity: "opacity-40",
@@ -106,10 +106,10 @@ const TIER_DATA: Record<string, TierGroup> = {
     name: "IVORY",
     description:
       "Exceptional experiences timed beautifully for popular global travels.",
-    cardBgClass: "bg-[#040B30] border-gray-400 text-white",
-    textClass: "text-white",
-    mutedTextClass: "text-gray-200/70",
-    linePatternOpacity: "opacity-25",
+    cardBgClass: "bg-gradient-to-br from-[#ECE0CD] via-[#D8C7B0] to-[#BEAD95] border-[#BEAD95]/50 text-neutral-900",
+    textClass: "text-neutral-900",
+    mutedTextClass: "text-neutral-700",
+    linePatternOpacity: "opacity-45",
     btnVariant: "white",
     cards: [
       // Studios
@@ -177,10 +177,10 @@ const TIER_DATA: Record<string, TierGroup> = {
     name: "JADE",
     description:
       "Curated quiet retreats optimized for serene personal exploration.",
-    cardBgClass: "bg-[#004B23] border-gray-400 text-white",
+    cardBgClass: "bg-gradient-to-br from-[#14574E] via-[#0B3D37] to-[#042420] border-emerald-500/40 text-white",
     textClass: "text-white",
-    mutedTextClass: "text-gray-200/70",
-    linePatternOpacity: "opacity-30",
+    mutedTextClass: "text-emerald-100/70",
+    linePatternOpacity: "opacity-35",
     btnVariant: "outline",
     cards: [
       // Studios
@@ -478,13 +478,15 @@ export default function JoinDetail() {
                             className={`relative flex flex-col justify-between p-6 xl:p-8 rounded-3xl border shadow-xs hover:shadow-lg transition-shadow duration-300 w-full h-67.5 overflow-hidden ${tier.cardBgClass}`}
                           >
                             <div
-                              className={`absolute inset-0 pointer-events-none z-0 ${tier.linePatternOpacity}`}
+                              className={`absolute inset-0 pointer-events-none z-0 mix-blend-overlay ${tier.linePatternOpacity} ${
+                                tier.slug === "ivory" ? "invert" : ""
+                              }`}
                             >
                               <Image
                                 fill
                                 src="/Img/pattern.png"
                                 alt=""
-                                className="object-cover"
+                                className="object-cover scale-125"
                                 aria-hidden="true"
                               />
                             </div>
@@ -497,7 +499,9 @@ export default function JoinDetail() {
                                     src="/Img/fanlogo.png"
                                     alt="Logo"
                                     fill
-                                    className="object-contain"
+                                    className={`object-contain ${
+                                      tier.slug === "ivory" ? "" : "brightness-200"
+                                    }`}
                                     priority={idx < 3}
                                   />
                                 </div>
