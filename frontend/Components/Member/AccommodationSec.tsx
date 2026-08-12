@@ -6,15 +6,6 @@ import { BedDouble } from "lucide-react";
 
 const ACCOMMODATIONS = [
   {
-    id: 1,
-    title: "1 BR Standard Room",
-    occupancy: "4 Adults · 2 Children",
-    description:
-      "A premium, spacious layout comfortably hosting up to four adults and two children under the age of six.",
-    image:
-      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1000&q=80",
-  },
-  {
     id: 2,
     title: "Studio Standard Room",
     occupancy: "2 Adults · 2 Children",
@@ -22,6 +13,17 @@ const ACCOMMODATIONS = [
       "Our expansive studio suite — equivalent to two standard rooms — accommodates up to two adults and two children under six.",
     image:
       "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1000&q=80",
+    video: "/Video/11051002-hd_1280_720_60fps.mp4",
+  },
+  {
+    id: 1,
+    title: "1 BR Standard Room",
+    occupancy: "4 Adults · 2 Children",
+    description:
+      "A premium, spacious layout comfortably hosting up to four adults and two children under the age of six.",
+    image:
+      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1000&q=80",
+    video: "/Video/12684282_1280_720_60fps.mp4",
   },
   /*
   {
@@ -69,18 +71,29 @@ export default function AccommodationSec() {
               key={item.id}
               className="group bg-white rounded-3xl p-4 sm:p-5 border border-neutral-100 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col"
             >
-              {/* Image Container */}
+              {/* Image / Video Container */}
               <div className="relative w-full h-64 sm:h-72 lg:h-80 rounded-2xl overflow-hidden mb-6">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+                {item.video ? (
+                  <video
+                    src={item.video}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+                ) : (
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                )}
 
                 {/* Occupancy Pill Overlay */}
-                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full text-white text-xs sm:text-sm font-medium flex items-center gap-2 border border-white/10 shadow-lg">
+                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full text-white text-xs sm:text-sm font-medium flex items-center gap-2 border border-white/10 shadow-lg z-10">
                   <BedDouble className="w-4 h-4 text-amber-300" />
                   <span>{item.occupancy}</span>
                 </div>

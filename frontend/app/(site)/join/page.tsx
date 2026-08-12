@@ -1,9 +1,16 @@
 import JoinDetail from "@/Components/Join/JoinDetail";
 
-function Join() {
+interface JoinPageProps {
+  searchParams: Promise<{
+    tier?: string;
+  }>;
+}
+
+async function Join({ searchParams }: JoinPageProps) {
+  const resolvedParams = await searchParams;
   return (
     <>
-      <JoinDetail />
+      <JoinDetail selectedTier={resolvedParams.tier} />
     </>
   );
 }

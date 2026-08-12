@@ -4,19 +4,21 @@ import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
 import { Minus } from "lucide-react";
 
-function LogoAbout() {
+function LogoAbout({ hideBackground = false }: { hideBackground?: boolean }) {
   return (
-    <section className="relative w-full py-20 px-6 sm:px-10 lg:px-14 select-none overflow-hidden bg-white">
+    <section className={`relative w-full py-20 px-6 sm:px-10 lg:px-14 select-none ${hideBackground ? '' : 'overflow-hidden bg-white'}`}>
       {/* Background Texture Design */}
-      <div className="absolute inset-0 z-0 opacity-70 pointer-events-none">
-        <Image
-          src="/Img/white-texture.png"
-          alt="Wavy line texture background"
-          fill
-          className="object-cover object-center"
-          priority
-        />
-      </div>
+      {!hideBackground && (
+        <div className="absolute inset-0 z-0 opacity-70 pointer-events-none">
+          <Image
+            src="/Img/white-texture.png"
+            alt="Wavy line texture background"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+        </div>
+      )}
 
       <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 lg:gap-20">
         {/* Left Side - Video */}

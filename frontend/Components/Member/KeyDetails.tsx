@@ -86,9 +86,28 @@ const KEY_TENETS: TenetItem[] = [
 ];
 export default function KeyDetails() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [radius, setRadius] = useState(340);
+  const [cardWidth, setCardWidth] = useState(320);
   const total = KEY_TENETS.length;
   const angleStep = 360 / total;
-  const radius = 340;
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 480) {
+        setRadius(170);
+        setCardWidth(250);
+      } else if (window.innerWidth < 768) {
+        setRadius(230);
+        setCardWidth(280);
+      } else {
+        setRadius(340);
+        setCardWidth(320);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Auto-rotate every 5 seconds
   useEffect(() => {
@@ -102,10 +121,10 @@ export default function KeyDetails() {
   const handleNext = () => setActiveIndex((prev) => (prev + 1) % total);
 
   return (
-    <section className="w-full bg-blue-50 px-6 py-20 sm:px-10 lg:px-14 font-display overflow-hidden">
+    <section className="w-full bg-blue-50 px-4 py-16 sm:px-10 lg:px-14 font-display overflow-hidden">
       <div className="mx-auto max-w-7xl">
         {/* Header Layout */}
-        <div className="mb-12 w-full text-center">
+        <div className="mb-8 w-full text-center">
           <Badge
             text="Key Tenets"
             variant="black"
@@ -120,13 +139,13 @@ export default function KeyDetails() {
 
         {/* 3D Carousel Container*/}
         <div
-          className="relative w-full max-w-5xl mx-auto h-112.5 flex items-center justify-center mt-40"
+          className="relative w-full max-w-5xl mx-auto h-[480px] sm:h-112.5 flex items-center justify-center mt-24 sm:mt-40"
           style={{ perspective: "1500px" }}
         >
           {/* 3D Rotor */}
           <motion.div
-            className="relative w-[320px] h-95"
-            style={{ transformStyle: "preserve-3d" }}
+            className="relative h-95"
+            style={{ width: `${cardWidth}px`, transformStyle: "preserve-3d" }}
             animate={{
               rotateY: -activeIndex * angleStep,
               rotateX: 8,
@@ -145,8 +164,8 @@ export default function KeyDetails() {
                     transform: `rotateY(${i * angleStep}deg) translateZ(${radius}px)`,
                   }}
                   animate={{
-                    opacity: isActive ? 1 : 1,
-                    filter: isActive ? "blur(0px)" : "blur(0px)",
+                    opacity: isActive ? 1 : 0.35,
+                    filter: isActive ? "blur(0px)" : "blur(1px)",
                   }}
                   transition={{ duration: 0.6 }}
                 >
@@ -157,7 +176,7 @@ export default function KeyDetails() {
                     style={{ backfaceVisibility: "hidden" }}
                   >
                     {/* Image */}
-                    <div className="relative h-32 w-full overflow-hidden shrink-0">
+                    <div className="relative h-28 sm:h-32 w-full overflow-hidden shrink-0">
                       <Image
                         src={item.image}
                         alt={item.title}
@@ -169,12 +188,12 @@ export default function KeyDetails() {
                     </div>
 
                     {/* Body */}
-                    <div className="p-4 flex flex-col gap-2 bg-white">
-                      <h3 className="text-base font-bold text-gray-950 leading-tight tracking-wide line-clamp-2">
+                    <div className="p-4 flex flex-col gap-2 bg-white h-[calc(100%-112px)] sm:h-[calc(100%-128px)] overflow-y-auto scrollbar-hide">
+                      <h3 className="text-sm sm:text-base font-bold text-gray-950 leading-tight tracking-wide line-clamp-2">
                         {item.title}
                       </h3>
 
-                      <ul className="flex flex-col gap-1.5 text-gray-600 text-xs leading-snug mt-2">
+                      <ul className="flex flex-col gap-1.5 text-gray-600 text-[11px] sm:text-xs leading-snug mt-1 sm:mt-2">
                         {item.benefits.map((benefit, idx) => (
                           <li key={idx} className="flex items-start gap-2">
                             <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-blue-600 shrink-0 opacity-90" />
@@ -192,18 +211,18 @@ export default function KeyDetails() {
           {/* Navigation Arrows */}
           <button
             onClick={handlePrev}
-            className="absolute left-4 sm:left-10 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all"
+            className="absolute left-0 sm:left-4 md:left-10 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg hover:bg-white hover:scale-110 active:scale-95 transition-all cursor-pointer"
             aria-label="Previous"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-800" />
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-gray-800" />
           </button>
 
           <button
             onClick={handleNext}
-            className="absolute right-4 sm:right-10 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all"
+            className="absolute right-0 sm:right-4 md:right-10 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-lg hover:bg-white hover:scale-110 active:scale-95 transition-all cursor-pointer"
             aria-label="Next"
           >
-            <ChevronRight className="w-6 h-6 text-gray-800" />
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-gray-800" />
           </button>
 
           {/* Pagination Dots */}
@@ -212,7 +231,7 @@ export default function KeyDetails() {
               <button
                 key={i}
                 onClick={() => setActiveIndex(i)}
-                className={`h-2 rounded-full transition-all duration-300 ${
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                   i === activeIndex
                     ? "w-8 bg-blue-600"
                     : "w-2 bg-gray-300 hover:bg-gray-400"

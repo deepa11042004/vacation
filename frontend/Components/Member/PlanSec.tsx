@@ -11,7 +11,7 @@ import CtaButton from "@/UI/CtaButton";
 const CAROUSEL_PRIVILEGES = [
   {
     id: 1,
-    title: "7N/8D a year, your way",
+    title: "6N/7D a year, your way",
     image:
       "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
     size: "short",
@@ -50,7 +50,7 @@ const CAROUSEL_PRIVILEGES = [
     id: 6,
     title: "Best Experience",
     image:
-      "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80",
     size: "tall",
     isPaused: true,
   },
@@ -60,34 +60,34 @@ const MEMBERSHIPS = [
   {
     title: "EBONY",
     subtitle: "Your year-round access to unforgettable family gateways",
-    bgClass: "bg-gradient-to-br from-[#2a2a2a] via-[#141414] to-[#050505] text-white border-neutral-700",
+    bgClass: "bg-black text-white border-neutral-800",
     benefits: [
       "6N/7D holidays every year across 52 weeks",
       "Complimentary breakfast for 2 per room per night",
       "Priority access to signature experiences",
-      "Access to 140+ international resorts",
+      "Access to 140+ country international resorts",
     ],
   },
   {
     title: "IVORY",
     subtitle: "Experience destinations during the peak of their popularity",
-    bgClass: "bg-gradient-to-br from-[#ECE0CD] via-[#D8C7B0] to-[#BEAD95] text-neutral-900 border-[#BEAD95]/50",
+    bgClass: "bg-[#EDE9E0] text-neutral-900 border-[#BEAD95]/20",
     benefits: [
       "6N/7D holidays every year across 46 weeks",
       "Complimentary breakfast for 2 per room per night",
       "Priority access to signature experiences",
-      "Access to 140+ international resorts",
+      "Access to 140+ country international resorts",
     ],
   },
   {
     title: "JADE",
     subtitle: "Enjoy your favourite destinations during quieter seasons",
-    bgClass: "bg-gradient-to-br from-[#14574E] via-[#0B3D37] to-[#042420] text-white border-emerald-500/40",
+    bgClass: "bg-[#1B5B56] text-white border-emerald-900/20",
     benefits: [
       "6N/7D holidays every year across 24 weeks",
       "Complimentary breakfast for 2 per room per night",
       "Priority access to signature experiences",
-      "Access to 140+ international resorts",
+      "Access to 140+ country international resorts",
     ],
   },
 ];
@@ -277,8 +277,8 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
         className={`relative w-full h-full rounded-3xl p-6 md:p-8 flex flex-col justify-between text-left shadow-2xl overflow-hidden border transition-all duration-300 group-hover:shadow-white/10 ${card.bgClass}`}
       >
         {/* Background Pattern */}
-        <div className={`absolute inset-0 pointer-events-none mix-blend-overlay ${
-          isLight ? "opacity-45 invert" : "opacity-35"
+        <div className={`absolute inset-0 pointer-events-none ${
+          isLight ? "opacity-15 invert" : "opacity-20"
         }`}>
           <Image
             src="/Img/pattern.png"
@@ -351,7 +351,7 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
           <div className="mt-auto space-y-4">
             <CtaButton
               text="Join Now"
-              href="/join"
+              href={`/join?tier=${card.title.toLowerCase()}`}
               variant="white"
               size="sm"
               className="w-fit"
