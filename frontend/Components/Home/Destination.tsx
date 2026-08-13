@@ -23,21 +23,67 @@ const Destination = () => {
 
   useEffect(() => {
     fetch("/api/locations?limit=6&status=ACTIVE")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Fetch failed");
+        return r.json();
+      })
       .then((res) => {
         const locs = res?.data?.locations ?? [];
-        setSlides(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          locs.map((l: any) => ({
-            id: l.location_id,
-            country: l.country,
-            title: l.location_name,
-            imageUrl: locationImageUrl(l.location_image, l.location_id),
-            type: l.type === "DOMESTIC" ? "National" : "International",
-          }))
-        );
+        if (locs.length > 0) {
+          setSlides(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            locs.map((l: any) => ({
+              id: l.location_id,
+              country: l.country,
+              title: l.location_name,
+              imageUrl: locationImageUrl(l.location_image, l.location_id),
+              type: l.type === "DOMESTIC" ? "National" : "International",
+            }))
+          );
+        } else {
+          throw new Error("No data");
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        setSlides([
+          {
+            id: 1,
+            country: "INDIA",
+            title: "Jaipur",
+            imageUrl: "https://images.unsplash.com/photo-1722577359807-96d328b8b303?auto=format&fit=crop&w=1000&q=80",
+            type: "National",
+          },
+          {
+            id: 2,
+            country: "INDIA",
+            title: "Meghalaya",
+            imageUrl: "https://images.unsplash.com/photo-1685271567656-84a60da957d9?auto=format&fit=crop&w=1000&q=80",
+            type: "National",
+          },
+          {
+            id: 3,
+            country: "INDIA",
+            title: "Banaras",
+            imageUrl: "https://images.unsplash.com/photo-1712761491919-80b46608dc8a?auto=format&fit=crop&w=1000&q=80",
+            type: "National",
+          },
+          {
+            id: 4,
+            country: "MALDIVES",
+            title: "Male",
+            imageUrl: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=1000&q=80",
+            type: "International",
+          },
+          {
+            id: 5,
+            country: "MALDIVES",
+            title: "Bora Bora",
+            imageUrl: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=1000&q=80",
+            type: "International",
+          },
+        ]);
+        setCurrentIndex(2); // Set center to Banaras
+      });
   }, []);
 
   const nextSlide = useCallback(() => {
@@ -66,7 +112,7 @@ const Destination = () => {
   if (slides.length === 0) return null;
 
   return (
-    <section className="bg-blue-50 px-6 py-20 sm:px-10 lg:px-14 font-display w-full select-none">
+    <section className="bg-white px-6 py-20 sm:px-10 lg:px-14 font-display w-full select-none">
       <div className="max-w-7xl mx-auto flex flex-col">
         <div className="mb-12 w-full">
           <Badge text="Explore" variant="black" size="lg" icon={Minus} className="mb-4" />
@@ -90,14 +136,14 @@ const Destination = () => {
               let scale = 0.7, xOffset = 0, zIndex = 10, opacity = 0.5;
 
               if (isActive) { scale = 1; xOffset = 0; zIndex = 50; opacity = 1; }
-              else if (Math.abs(distance) === 1) { scale = 0.88; xOffset = distance > 0 ? 170 : -170; zIndex = 40; opacity = 1; }
-              else if (Math.abs(distance) === 2) { scale = 0.78; xOffset = distance > 0 ? 300 : -300; zIndex = 30; opacity = 0.8; }
-              else { scale = 0.6; xOffset = distance > 0 ? 450 : -450; zIndex = 10; opacity = 0; }
+              else if (Math.abs(distance) === 1) { scale = 0.85; xOffset = distance > 0 ? 160 : -160; zIndex = 40; opacity = 1; }
+              else if (Math.abs(distance) === 2) { scale = 0.75; xOffset = distance > 0 ? 300 : -300; zIndex = 30; opacity = 0.8; }
+              else { scale = 0.6; xOffset = distance > 0 ? 400 : -400; zIndex = 10; opacity = 0; }
 
               return (
                 <motion.div
                   key={slide.id}
-                  className="absolute top-1/2 left-1/2 w-[240px] sm:w-[260px] lg:w-[280px] h-105 -ml-30 sm:-ml-32.5 lg:-ml-35 -mt-52.5 rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300 bg-neutral-100 transform-gpu"
+                  className="absolute top-1/2 left-1/2 w-[260px] sm:w-[280px] lg:w-[340px] h-105 -ml-32.5 sm:-ml-35 lg:-ml-42.5 -mt-52.5 rounded-[20px] overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl transition-shadow duration-300 bg-neutral-100 transform-gpu"
                   style={{ zIndex }}
                   animate={{ x: xOffset, scale, opacity }}
                   transition={{ type: "spring", stiffness: 260, damping: 28 }}

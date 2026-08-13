@@ -11,21 +11,35 @@ const CARDS = [
     location: "Naldehra",
     activity: "Village Tour",
     image:
-      "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1682340334970-8e7b64463f99?auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 2,
     location: "Assonora",
     activity: "Eco-trail Escapade",
     image:
-      "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1658249520120-3ea19d246e6f?auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 3,
     location: "Madikeri",
     activity: "Elephant Bathing",
     image:
-      "https://images.unsplash.com/photo-1558222218-b7b54eede3f3?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1619058537045-0de35346e2ef?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 4,
+    location: "Munnar",
+    activity: "Tea Trails",
+    image:
+      "https://images.unsplash.com/photo-1663245178284-d228b5aa93a7?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 5,
+    location: "Goa",
+    activity: "Beach Walk",
+    image:
+      "https://images.unsplash.com/photo-1727499031382-407906c7e208?auto=format&fit=crop&w=1000&q=80",
   },
 ];
 
@@ -74,31 +88,28 @@ const UniverseExperiences = () => {
         <div className="relative w-full h-[550px] lg:h-[650px] flex items-center justify-center mt-12 mb-6">
           {CARDS.map((card, index) => {
             let distance = index - currentIndex;
-            if (distance < -1) distance += CARDS.length;
-            if (distance > 1) distance -= CARDS.length;
+            // Handle wrapping for any number of cards
+            if (distance > Math.floor(CARDS.length / 2)) {
+              distance -= CARDS.length;
+            } else if (distance < -Math.floor(CARDS.length / 2)) {
+              distance += CARDS.length;
+            }
 
             const isActive = distance === 0;
-            let scale = 1,
-              xOffset = "0%",
-              zIndex = 10,
-              opacity = 1,
-              rotate = 0;
+            let scale = 0.8, xOffset = "0%", zIndex = 10, opacity = 0, rotate = 0; // hide extra cards
 
             if (isActive) {
               scale = 1;
               xOffset = "0%";
               zIndex = 50;
               rotate = 0;
-            } else if (distance === 1) {
+              opacity = 1;
+            } else if (distance === 1 || distance === -1) {
               scale = 0.9;
-              xOffset = "58%";
+              xOffset = distance === 1 ? "110%" : "-110%";
               zIndex = 40;
-              rotate = 6;
-            } else if (distance === -1) {
-              scale = 0.9;
-              xOffset = "-58%";
-              zIndex = 40;
-              rotate = -6;
+              rotate = distance === 1 ? 6 : -6;
+              opacity = 1;
             }
 
             return (
@@ -120,6 +131,11 @@ const UniverseExperiences = () => {
                   fill
                   className="object-cover absolute inset-0 z-0"
                 />
+
+                {/* White Fade Overlay for Inactive Cards */}
+                {!isActive && (
+                  <div className="absolute inset-0 z-[5] bg-white/60 backdrop-brightness-110 pointer-events-none" />
+                )}
 
                 {/* Top Left Badge */}
                 <div className="absolute top-6 left-6 z-10">
