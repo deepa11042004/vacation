@@ -32,13 +32,27 @@ const Destination = () => {
         if (locs.length > 0) {
           setSlides(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            locs.map((l: any) => ({
-              id: l.location_id,
-              country: l.country,
-              title: l.location_name,
-              imageUrl: locationImageUrl(l.location_image, l.location_id),
-              type: l.type === "DOMESTIC" ? "National" : "International",
-            }))
+            locs.map((l: any) => {
+              let title = l.location_name;
+              let imageUrl = locationImageUrl(l.location_image, l.location_id);
+
+              if (title.toLowerCase() === "bikaner" || title.toLowerCase() === "jaipur") {
+                title = "Jaipur";
+                imageUrl = "https://images.unsplash.com/photo-1722577359807-96d328b8b303?auto=format&fit=crop&w=1000&q=80";
+              } else if (title.toLowerCase() === "banaras" || title.toLowerCase() === "varanasi") {
+                imageUrl = "https://images.unsplash.com/photo-1712761491919-80b46608dc8a?auto=format&fit=crop&w=1000&q=80";
+              } else if (title.toLowerCase() === "meghalaya") {
+                imageUrl = "https://images.unsplash.com/photo-1685271567656-84a60da957d9?auto=format&fit=crop&w=1000&q=80";
+              }
+
+              return {
+                id: l.location_id,
+                country: l.country,
+                title: title,
+                imageUrl: imageUrl,
+                type: l.type === "DOMESTIC" ? "National" : "International",
+              };
+            })
           );
         } else {
           throw new Error("No data");
