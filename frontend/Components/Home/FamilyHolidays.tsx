@@ -29,6 +29,20 @@ const CARDS = [
     image:
       "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1000&q=80",
   },
+  {
+    id: 4,
+    title: "Curated cultural experiences",
+    tab: "DESTINATIONS",
+    image:
+      "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 5,
+    title: "Unmatched luxury and comfort",
+    tab: "INTERNATIONAL",
+    image:
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80",
+  },
 ];
 
 const FamilyHolidays = ({ hideBackground = false }: { hideBackground?: boolean }) => {
@@ -108,30 +122,32 @@ const FamilyHolidays = ({ hideBackground = false }: { hideBackground?: boolean }
         <div className="relative w-full h-[400px] lg:h-[480px] flex items-center justify-center mt-6">
           {CARDS.map((card, index) => {
             let distance = index - currentIndex;
-            if (distance < -1) distance += CARDS.length;
-            if (distance > 1) distance -= CARDS.length;
+            // Handle wrapping for any number of cards
+            if (distance > Math.floor(CARDS.length / 2)) {
+              distance -= CARDS.length;
+            } else if (distance < -Math.floor(CARDS.length / 2)) {
+              distance += CARDS.length;
+            }
 
             const isActive = distance === 0;
-            let scale = 1, xOffset = "0%", zIndex = 10, opacity = 1;
+            let scale = 0.8, xOffset = "0%", zIndex = 10, opacity = 0; // hide extra cards
 
             if (isActive) {
               scale = 1;
               xOffset = "0%";
               zIndex = 50;
-            } else if (distance === 1) {
+              opacity = 1;
+            } else if (distance === 1 || distance === -1) {
               scale = 0.85;
-              xOffset = "105%";
+              xOffset = distance === 1 ? "105%" : "-105%";
               zIndex = 40;
-            } else if (distance === -1) {
-              scale = 0.85;
-              xOffset = "-105%";
-              zIndex = 40;
+              opacity = 1;
             }
 
             return (
               <motion.div
                 key={card.id}
-                className="absolute w-[280px] sm:w-[350px] lg:w-[450px] h-[340px] sm:h-[380px] lg:h-[450px] rounded-3xl overflow-hidden shadow-2xl cursor-pointer bg-neutral-100"
+                className="absolute w-[260px] sm:w-[320px] lg:w-[400px] h-[280px] sm:h-[340px] lg:h-[420px] rounded-3xl overflow-hidden shadow-2xl cursor-pointer bg-neutral-100"
                 style={{ zIndex }}
                 animate={{ x: xOffset, scale, opacity }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -148,6 +164,9 @@ const FamilyHolidays = ({ hideBackground = false }: { hideBackground?: boolean }
                 />
                 {isActive && (
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                )}
+                {!isActive && (
+                  <div className="absolute inset-0 bg-white/60 backdrop-brightness-110 pointer-events-none" />
                 )}
                 <div
                   className={`absolute bg-white/95 backdrop-blur-md rounded-xl text-center shadow-md transition-all duration-300 ${

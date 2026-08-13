@@ -91,12 +91,12 @@ const UniverseExperiences = () => {
               rotate = 0;
             } else if (distance === 1) {
               scale = 0.9;
-              xOffset = "105%";
+              xOffset = "58%";
               zIndex = 40;
               rotate = 6;
             } else if (distance === -1) {
               scale = 0.9;
-              xOffset = "-105%";
+              xOffset = "-58%";
               zIndex = 40;
               rotate = -6;
             }
@@ -104,7 +104,7 @@ const UniverseExperiences = () => {
             return (
               <motion.div
                 key={card.id}
-                className="absolute w-[300px] sm:w-[340px] lg:w-[380px] h-[480px] lg:h-[550px] rounded-[36px] overflow-hidden shadow-2xl cursor-pointer bg-neutral-100 flex flex-col justify-end"
+                className="absolute w-[220px] sm:w-[260px] lg:w-[310px] h-[420px] lg:h-[490px] rounded-[36px] overflow-hidden shadow-2xl cursor-pointer bg-neutral-100 flex flex-col justify-end"
                 style={{ zIndex }}
                 animate={{ x: xOffset, scale, opacity, rotate }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}

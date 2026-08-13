@@ -90,14 +90,14 @@ const Destination = () => {
               let scale = 0.7, xOffset = 0, zIndex = 10, opacity = 0.5;
 
               if (isActive) { scale = 1; xOffset = 0; zIndex = 50; opacity = 1; }
-              else if (Math.abs(distance) === 1) { scale = 0.88; xOffset = distance > 0 ? 320 : -320; zIndex = 40; opacity = 1; }
-              else if (Math.abs(distance) === 2) { scale = 0.78; xOffset = distance > 0 ? 560 : -560; zIndex = 30; opacity = 0.8; }
-              else { scale = 0.6; xOffset = distance > 0 ? 800 : -800; zIndex = 10; opacity = 0; }
+              else if (Math.abs(distance) === 1) { scale = 0.88; xOffset = distance > 0 ? 170 : -170; zIndex = 40; opacity = 1; }
+              else if (Math.abs(distance) === 2) { scale = 0.78; xOffset = distance > 0 ? 300 : -300; zIndex = 30; opacity = 0.8; }
+              else { scale = 0.6; xOffset = distance > 0 ? 450 : -450; zIndex = 10; opacity = 0; }
 
               return (
                 <motion.div
                   key={slide.id}
-                  className="absolute top-1/2 left-1/2 w-[320px] h-105 -ml-40 -mt-52.5 rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300 bg-neutral-100 transform-gpu"
+                  className="absolute top-1/2 left-1/2 w-[240px] sm:w-[260px] lg:w-[280px] h-105 -ml-30 sm:-ml-32.5 lg:-ml-35 -mt-52.5 rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300 bg-neutral-100 transform-gpu"
                   style={{ zIndex }}
                   animate={{ x: xOffset, scale, opacity }}
                   transition={{ type: "spring", stiffness: 260, damping: 28 }}
