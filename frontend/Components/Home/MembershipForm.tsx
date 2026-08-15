@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Search, CheckSquare } from "lucide-react";
+import { Search } from "lucide-react";
 
 export default function MembershipForm() {
   const [formData, setFormData] = useState({
@@ -13,6 +13,9 @@ export default function MembershipForm() {
     email: "",
     consent: false,
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -25,10 +28,34 @@ export default function MembershipForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted", formData);
-    // Add logic here if needed
+    setSubmitting(true);
+    setError("");
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          mobile: formData.mobile,
+          city: formData.city,
+          age: formData.age,
+          email: formData.email,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSubmitted(true);
+        setFormData({ name: "", mobile: "", city: "", age: "", email: "", consent: false });
+      } else {
+        setError(data.error ?? "Something went wrong. Please try again.");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -184,12 +211,23 @@ export default function MembershipForm() {
             </label>
           </div>
 
+          {/* Error / Success feedback */}
+          {error && (
+            <p className="text-sm text-red-600 text-center -mb-2">{error}</p>
+          )}
+          {submitted && (
+            <p className="text-sm text-green-600 text-center font-medium -mb-2">
+              ✓ Thank you! We&apos;ll get in touch soon.
+            </p>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-black text-white font-semibold rounded-full py-4 mt-2 hover:bg-neutral-800 transition-colors active:scale-[0.98]"
+            disabled={submitting}
+            className="w-full bg-black text-white font-semibold rounded-full py-4 mt-2 hover:bg-neutral-800 transition-colors active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Submit
+            {submitting ? "Submitting…" : "Submit"}
           </button>
         </form>
       </div>

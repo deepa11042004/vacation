@@ -18,6 +18,7 @@ export const SECTIONS: SectionDef[] = [
   { key: 'panel_users',      label: 'Panel Users',         href: '/admin/settings/panel-users', adminOnly: true },
   { key: 'staff',            label: 'Staff',               href: '/admin/staff' },
   { key: 'travel_queries',  label: 'Travel Queries',      href: '/admin/travel-queries' },
+  { key: 'enquiries',       label: 'Enquiries',            href: '/admin/enquiries' },
 ];
 
 // More-specific prefixes must come before less-specific ones
@@ -35,6 +36,7 @@ const ROUTE_MAP: { prefix: string; section: string }[] = [
   { prefix: '/admin/dashboard',               section: 'dashboard' },
   { prefix: '/admin/staff',                   section: 'staff' },
   { prefix: '/admin/travel-queries',         section: 'travel_queries' },
+  { prefix: '/admin/enquiries',              section: 'enquiries' },
 ];
 
 export function getRouteSection(pathname: string): string | null {

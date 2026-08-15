@@ -19,6 +19,7 @@ import {
   Settings,
   Menu,
   UserCog,
+  MessageSquare,
 } from "lucide-react";
 import { clearAuth, getStoredUser } from "@/lib/api";
 import { hasAccess } from "@/lib/permissions";
@@ -37,6 +38,7 @@ const sections = [
       { href: "/admin/clients",                   label: "All Clients", icon: Users,          subtitle: null,                    section: "clients" },
       { href: "/admin/staff",                     label: "Staff",              icon: UserCog,         subtitle: null,                    section: "staff" },
       { href: "/admin/travel-queries",             label: "Travel Queries",     icon: Plane,           subtitle: null,                    section: "travel_queries" },
+      { href: "/admin/enquiries",                  label: "Enquiries",          icon: MessageSquare,   subtitle: null,                    section: "enquiries" },
       { href: "/admin/create-invoice",            label: "Create New Invoice", icon: FilePlus,        subtitle: "For existing clients",   section: "create_invoice" },
       { href: "/admin/invoices",                  label: "All Invoices",       icon: ReceiptText,     subtitle: null,                    section: "invoices" },
     ],
