@@ -33,9 +33,10 @@ function writeEnquiries(data: Enquiry[]) {
 // PATCH /api/enquiries/[id]  — update status and/or notes
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = parseInt(params.id, 10);
+  const { id: idStr } = await params;
+  const id = parseInt(idStr, 10);
   if (isNaN(id)) {
     return NextResponse.json({ success: false, error: "Invalid ID" }, { status: 400 });
   }
