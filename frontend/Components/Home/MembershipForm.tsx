@@ -173,27 +173,6 @@ export default function MembershipForm() {
             />
           </div>
 
-          {/* reCAPTCHA UI Mockup */}
-          <div className="flex justify-center my-2">
-            <div className="flex items-center justify-between w-full max-w-[300px] border border-gray-300 bg-gray-50 rounded px-3 py-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-7 h-7 border-2 border-gray-300 rounded bg-white flex items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
-                  {/* Fake checkbox for recaptcha */}
-                </div>
-                <span className="text-sm text-gray-700">I'm not a robot</span>
-              </div>
-              <div className="flex flex-col items-center justify-center">
-                <Image
-                  src="/Img/newlogo.jpeg"
-                  alt="reCAPTCHA"
-                  width={24}
-                  height={24}
-                  className="opacity-50 grayscale mix-blend-multiply"
-                />
-                <span className="text-[10px] text-gray-400 mt-1">reCAPTCHA</span>
-              </div>
-            </div>
-          </div>
 
           {/* Consent Checkbox */}
           <div className="flex items-start gap-3 mt-2">
