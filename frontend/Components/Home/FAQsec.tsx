@@ -89,7 +89,7 @@ export default function FAQsec() {
   const currentFAQs = FAQ_DATA[activeTab];
 
   return (
-    <section className="bg-[#D4AF37] rounded-t-[6vw] text-gray-950 py-20 px-6 sm:px-10 lg:px-14 w-full min-h-150 flex flex-col items-center font-display">
+    <section className="bg-[#D4AF37] text-gray-950 py-20 px-6 sm:px-10 lg:px-14 w-full min-h-150 flex flex-col items-center font-display">
       <div className="max-w-4xl mx-auto w-full">
         {/* ─── Header Block matching your global layout standard ─── */}
         <div className="flex flex-col items-center text-center mb-12">

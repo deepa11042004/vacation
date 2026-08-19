@@ -43,8 +43,8 @@ function page() {
       <ActivitiesGrid />
       <Testimonials />
       <Partners />
-      <FAQsec />
       <MembershipForm />
+      <FAQsec />
     </main>
   );
 }

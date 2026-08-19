@@ -26,7 +26,7 @@ const navItems: NavItem[] = [
     url: "/destination",
     dropdown: [
       { label: "National", url: "/destination/national" },
-      { label: "International", url: "/destination/international" },
+      { label: "International Exchange", url: "/destination/international" },
     ],
   },
   {
