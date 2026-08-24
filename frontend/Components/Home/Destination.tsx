@@ -40,7 +40,7 @@ const Destination = () => {
                 title = "Jaipur";
                 imageUrl = "https://images.unsplash.com/photo-1722577359807-96d328b8b303?auto=format&fit=crop&w=1000&q=80";
               } else if (title.toLowerCase() === "banaras" || title.toLowerCase() === "varanasi") {
-                imageUrl = "https://images.unsplash.com/photo-1712761491919-80b46608dc8a?auto=format&fit=crop&w=1000&q=80";
+                imageUrl = "https://images.unsplash.com/photo-1571536802807-30451e3955d8?auto=format&fit=crop&w=1000&q=80";
               } else if (title.toLowerCase() === "meghalaya") {
                 imageUrl = "https://images.unsplash.com/photo-1685271567656-84a60da957d9?auto=format&fit=crop&w=1000&q=80";
               }
@@ -78,7 +78,7 @@ const Destination = () => {
             id: 3,
             country: "INDIA",
             title: "Banaras",
-            imageUrl: "https://images.unsplash.com/photo-1712761491919-80b46608dc8a?auto=format&fit=crop&w=1000&q=80",
+            imageUrl: "https://images.unsplash.com/photo-1571536802807-30451e3955d8?auto=format&fit=crop&w=1000&q=80",
             type: "National",
           },
           {

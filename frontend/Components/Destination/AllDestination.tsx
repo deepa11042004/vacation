@@ -27,6 +27,81 @@ type Category = "ALL" | "NATIONAL" | "INTERNATIONAL";
 
 const PAGE_LIMIT = 6;
 
+const FALLBACK_LOCATIONS: Location[] = [
+  {
+    location_id: 1,
+    location_name: "Jaipur",
+    country: "India",
+    type: "DOMESTIC",
+    location_image: "https://images.unsplash.com/photo-1722577359807-96d328b8b303?auto=format&fit=crop&w=1000&q=80",
+    description: "Jaipur, the Pink City of Rajasthan, is known for its majestic forts, royal palaces, and vibrant cultural heritage.",
+  },
+  {
+    location_id: 2,
+    location_name: "Meghalaya",
+    country: "India",
+    type: "DOMESTIC",
+    location_image: "https://images.unsplash.com/photo-1685271567656-84a60da957d9?auto=format&fit=crop&w=1000&q=80",
+    description: "Meghalaya, the abode of clouds, offers breathtaking living root bridges, cascading waterfalls, and lush rolling green hills.",
+  },
+  {
+    location_id: 3,
+    location_name: "Banaras",
+    country: "India",
+    type: "DOMESTIC",
+    location_image: "https://images.unsplash.com/photo-1571536802807-30451e3955d8?auto=format&fit=crop&w=1000&q=80",
+    description: "Varanasi, also known as Banaras or Kashi, is a sacred city on the banks of the Ganges river in Uttar Pradesh, India. Famous for its ancient ghats, Kashi Vishwanath Temple, and evening Ganga Aarti rituals, it is regarded as the spiritual capital of India.",
+  },
+  {
+    location_id: 4,
+    location_name: "Ayodhya",
+    country: "India",
+    type: "DOMESTIC",
+    location_image: "https://images.unsplash.com/photo-1707613009581-9dfc1c911d35?auto=format&fit=crop&w=1000&q=80",
+    description: "Ayodhya, a city on the banks of the Sarayu river in Uttar Pradesh, is the birthplace of Rama and setting of the great epic Ramayana.",
+  },
+  {
+    location_id: 5,
+    location_name: "Aurangabad",
+    country: "India",
+    type: "DOMESTIC",
+    location_image: "https://images.unsplash.com/photo-1600100397608-f010e423b971?auto=format&fit=crop&w=1000&q=80",
+    description: "Aurangabad is a city in Maharashtra state, in India. It is known for the 17th-century marble Bibi ka Maqbara shrine, styled on the Taj Mahal.",
+  },
+  {
+    location_id: 6,
+    location_name: "Goa",
+    country: "India",
+    type: "DOMESTIC",
+    location_image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1000&q=80",
+    description: "Goa is India's premier beach paradise, famous for golden sand beaches, vibrant night markets, and Portuguese heritage architecture.",
+  },
+  {
+    location_id: 7,
+    location_name: "Male",
+    country: "Maldives",
+    type: "INTERNATIONAL",
+    location_image: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=1000&q=80",
+    description: "Male is the densely populated capital of the Maldives, known for its colorful buildings, historic mosques, and serene ocean views.",
+  },
+  {
+    location_id: 8,
+    location_name: "Bora Bora",
+    country: "Maldives",
+    type: "INTERNATIONAL",
+    location_image: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=1000&q=80",
+    description: "Bora Bora is a tropical island surrounded by sand-fringed islets and a turquoise lagoon protected by a coral reef.",
+  },
+  {
+    location_id: 9,
+    location_name: "Dubai",
+    country: "United Arab Emirates",
+    type: "INTERNATIONAL",
+    location_image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1000&q=80",
+    description: "Dubai is a global city in the UAE known for luxury shopping, ultramodern architecture, desert safaris, and iconic skyscrapers.",
+  },
+];
+
 interface LocationTab {
   location_id: number;
   location_name: string;
@@ -60,9 +135,18 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
     fetch(`/api/locations?${params}`)
       .then((r) => r.json())
       .then((res) => {
-        if (res?.success) setPlaceTabs(res.data?.locations ?? []);
+        if (res?.success && res.data?.locations?.length > 0) {
+          setPlaceTabs(res.data.locations);
+        } else {
+          throw new Error("No place tabs");
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        let tabs = FALLBACK_LOCATIONS;
+        if (activeCategory === "NATIONAL") tabs = tabs.filter((l) => l.type === "DOMESTIC");
+        if (activeCategory === "INTERNATIONAL") tabs = tabs.filter((l) => l.type === "INTERNATIONAL");
+        setPlaceTabs(tabs.map((l) => ({ location_id: l.location_id, location_name: l.location_name })));
+      });
   }, [activeCategory]);
 
   const handlePlaceClick = (place: string) => {
@@ -108,7 +192,8 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
       .then((res) => {
         if (!res?.success) throw new Error(res?.message ?? "API error");
         const incoming: Location[] = res?.data?.locations ?? [];
-        setTotal(res?.data?.total ?? 0);
+        if (incoming.length === 0) throw new Error("No data");
+        setTotal(res?.data?.total ?? incoming.length);
         setAllLocations((prev) => {
           if (page === 1) return incoming;
           const seen = new Set(prev.map((l) => l.location_id));
@@ -116,9 +201,19 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
         });
       })
       .catch((e) => {
-        console.error("Locations API:", e);
-        setError(e.message);
-        if (page === 1) setAllLocations([]);
+        console.error("Locations API fallback engaged:", e);
+        setError("");
+        let filtered = FALLBACK_LOCATIONS;
+        if (activeCategory === "NATIONAL") filtered = filtered.filter((l) => l.type === "DOMESTIC");
+        if (activeCategory === "INTERNATIONAL") filtered = filtered.filter((l) => l.type === "INTERNATIONAL");
+        if (debouncedSearch.trim()) {
+          const q = debouncedSearch.trim().toLowerCase();
+          filtered = filtered.filter(
+            (l) => l.location_name.toLowerCase().includes(q) || l.country.toLowerCase().includes(q)
+          );
+        }
+        setAllLocations(filtered);
+        setTotal(filtered.length);
       })
       .finally(() => {
         setLoading(false);
@@ -304,7 +399,7 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
 
                   const nameLower = loc.location_name.toLowerCase();
                   if (nameLower === "banaras" || nameLower === "varanasi") {
-                    img = "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=1000&q=80";
+                    img = "https://images.unsplash.com/photo-1571536802807-30451e3955d8?auto=format&fit=crop&w=1000&q=80";
                     if (!desc) {
                       desc = "Varanasi, also known as Banaras or Kashi, is a sacred city on the banks of the Ganges river in Uttar Pradesh, India. Famous for its ancient ghats, Kashi Vishwanath Temple, and evening Ganga Aarti rituals, it is regarded as the spiritual capital of India.";
                     }
