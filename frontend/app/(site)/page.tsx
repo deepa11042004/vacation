@@ -41,10 +41,10 @@ function page() {
       <Properties />
       <Itinerary />
       <ActivitiesGrid />
-      <Testimonials />
       <Partners />
       <MembershipForm />
       <FAQsec />
+      <Testimonials />
     </main>
   );
 }

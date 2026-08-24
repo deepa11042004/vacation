@@ -4,6 +4,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, MapPin, Leaf } from "lucide-react";
 import { motion } from "framer-motion";
+import FallbackImage from "@/Components/Shared/FallbackImage";
+
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1000&q=80";
 
 const CARDS = [
   {
@@ -11,35 +15,63 @@ const CARDS = [
     location: "Naldehra",
     activity: "Village Tour",
     image:
-      "https://images.unsplash.com/photo-1682340334970-8e7b64463f99?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 2,
     location: "Assonora",
     activity: "Eco-trail Escapade",
     image:
-      "https://images.unsplash.com/photo-1658249520120-3ea19d246e6f?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 3,
     location: "Madikeri",
     activity: "Elephant Bathing",
     image:
-      "https://images.unsplash.com/photo-1619058537045-0de35346e2ef?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 4,
     location: "Munnar",
     activity: "Tea Trails",
     image:
-      "https://images.unsplash.com/photo-1663245178284-d228b5aa93a7?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 5,
     location: "Goa",
     activity: "Beach Walk",
     image:
-      "https://images.unsplash.com/photo-1727499031382-407906c7e208?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 6,
+    location: "Rishikesh",
+    activity: "River Rafting",
+    image:
+      "https://images.unsplash.com/photo-1530866495561-507c9faab2ed?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 7,
+    location: "Darjeeling",
+    activity: "Toy Train Ride",
+    image:
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 8,
+    location: "Andaman",
+    activity: "Scuba Diving",
+    image:
+      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 9,
+    location: "Manali",
+    activity: "Snow Trekking",
+    image:
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80",
   },
 ];
 
@@ -85,7 +117,7 @@ const UniverseExperiences = () => {
         </p>
 
         {/* Cards Showcase via Framer Motion */}
-        <div className="relative w-full h-[550px] lg:h-[650px] flex items-center justify-center mt-12 mb-6">
+        <div className="relative w-full h-[580px] sm:h-[640px] lg:h-[700px] flex items-center justify-center mt-12 mb-6">
           {CARDS.map((card, index) => {
             let distance = index - currentIndex;
             // Handle wrapping for any number of cards
@@ -106,7 +138,7 @@ const UniverseExperiences = () => {
               opacity = 1;
             } else if (distance === 1 || distance === -1) {
               scale = 0.9;
-              xOffset = distance === 1 ? "110%" : "-110%";
+              xOffset = distance === 1 ? "105%" : "-105%";
               zIndex = 40;
               rotate = distance === 1 ? 6 : -6;
               opacity = 1;
@@ -115,7 +147,7 @@ const UniverseExperiences = () => {
             return (
               <motion.div
                 key={card.id}
-                className="absolute w-[220px] sm:w-[260px] lg:w-[310px] h-[420px] lg:h-[490px] rounded-[36px] overflow-hidden shadow-2xl cursor-pointer bg-neutral-100 flex flex-col justify-end"
+                className="absolute w-[260px] sm:w-[300px] lg:w-[360px] h-[470px] sm:h-[520px] lg:h-[570px] rounded-[36px] overflow-hidden shadow-2xl cursor-pointer bg-neutral-100 flex flex-col justify-end"
                 style={{ zIndex }}
                 animate={{ x: xOffset, scale, opacity, rotate }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -125,8 +157,9 @@ const UniverseExperiences = () => {
                 }}
               >
                 {/* Background Image */}
-                <Image
+                <FallbackImage
                   src={card.image}
+                  fallbackSrc={FALLBACK_IMAGE}
                   alt={card.activity}
                   fill
                   className="object-cover absolute inset-0 z-0"

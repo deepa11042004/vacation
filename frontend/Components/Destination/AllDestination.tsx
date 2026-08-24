@@ -298,46 +298,59 @@ export default function AllDestination({ type = "all" }: AllDestinationProps) {
                   </motion.div>
                 )}
 
-                {allLocations.map((loc) => (
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0, scale: 0.96, y: 15 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                    transition={{ type: "spring", stiffness: 180, damping: 22 }}
-                    key={loc.location_id}
-                    onClick={() => router.push(`/destination/${loc.location_id}`)}
-                    className="flex flex-col justify-between items-start group cursor-pointer w-full bg-white rounded-3xl"
-                  >
-                    <div className="w-full relative aspect-4/3 rounded-3xl overflow-hidden shadow-xs mb-6 bg-neutral-100">
-                      <FallbackImage
-                        src={locationImageUrl(loc.location_image, loc.location_id)}
-                        fallbackSrc={locationImageFallback(loc.location_id)}
-                        alt={`${loc.location_name} - ${loc.country}`}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out brightness-[0.96]"
-                        unoptimized
-                      />
-                    </div>
+                {allLocations.map((loc) => {
+                  let img = locationImageUrl(loc.location_image, loc.location_id);
+                  let desc = loc.description && loc.description.trim() ? stripHtml(loc.description) : "";
 
-                    <div className="grow mb-6">
-                      <span className="text-[11px] font-bold text-neutral-400 tracking-wider uppercase mb-1 block">
-                        {loc.country}
-                      </span>
-                      <h3 className="text-xl md:text-2xl font-bold tracking-tight text-neutral-900 mb-3 group-hover:text-neutral-600 transition-colors leading-snug">
-                        {loc.location_name}
-                      </h3>
-                      <p className="text-neutral-500 font-light text-sm leading-relaxed tracking-wide line-clamp-3">
-                        {stripHtml(loc.description)}
-                      </p>
-                    </div>
+                  const nameLower = loc.location_name.toLowerCase();
+                  if (nameLower === "banaras" || nameLower === "varanasi") {
+                    img = "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=1000&q=80";
+                    if (!desc) {
+                      desc = "Varanasi, also known as Banaras or Kashi, is a sacred city on the banks of the Ganges river in Uttar Pradesh, India. Famous for its ancient ghats, Kashi Vishwanath Temple, and evening Ganga Aarti rituals, it is regarded as the spiritual capital of India.";
+                    }
+                  }
 
-                    <div className="w-full pt-2 border-t border-transparent mt-2">
-                      <CtaButton text="Explore Now" variant="white" size="sm" />
-                    </div>
-                  </motion.div>
-                ))}
+                  return (
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0, scale: 0.96, y: 15 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                      transition={{ type: "spring", stiffness: 180, damping: 22 }}
+                      key={loc.location_id}
+                      onClick={() => router.push(`/destination/${loc.location_id}`)}
+                      className="flex flex-col justify-between items-start group cursor-pointer w-full bg-white rounded-3xl"
+                    >
+                      <div className="w-full relative aspect-4/3 rounded-3xl overflow-hidden shadow-xs mb-6 bg-neutral-100">
+                        <FallbackImage
+                          src={img}
+                          fallbackSrc={locationImageFallback(loc.location_id)}
+                          alt={`${loc.location_name} - ${loc.country}`}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out brightness-[0.96]"
+                          unoptimized
+                        />
+                      </div>
+
+                      <div className="grow mb-6">
+                        <span className="text-[11px] font-bold text-neutral-400 tracking-wider uppercase mb-1 block">
+                          {loc.country}
+                        </span>
+                        <h3 className="text-xl md:text-2xl font-bold tracking-tight text-neutral-900 mb-3 group-hover:text-neutral-600 transition-colors leading-snug">
+                          {loc.location_name}
+                        </h3>
+                        <p className="text-neutral-500 font-light text-sm leading-relaxed tracking-wide line-clamp-3">
+                          {desc || `${loc.location_name} is a premier destination in ${loc.country}, featuring historic landmarks, spiritual heritage, and breathtaking views.`}
+                        </p>
+                      </div>
+
+                      <div className="w-full pt-2 border-t border-transparent mt-2">
+                        <CtaButton text="Explore Now" variant="white" size="sm" />
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
             </motion.div>
 

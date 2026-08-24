@@ -85,7 +85,7 @@ export default function Testimonials() {
   const next = () => setOffset((o) => Math.min(maxOffset, o + 1));
 
   return (
-    <section className="w-full rounded-[6vw] bg-[#D4AF37] px-6 py-20 sm:px-10 lg:px-14 font-display">
+    <section className="w-full bg-[#D4AF37] px-6 py-20 sm:px-10 lg:px-14 font-display">
       <div className="mx-auto max-w-7xl flex flex-col">
         {/* ─── Top Header Layout (Badge + Title + Controller Nav Set) ─── */}
         <div className="mb-12 w-full flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">

@@ -119,7 +119,7 @@ const FamilyHolidays = ({ hideBackground = false }: { hideBackground?: boolean }
         </div>
 
         {/* Cards Showcase via Framer Motion */}
-        <div className="relative w-full h-[400px] lg:h-[480px] flex items-center justify-center mt-6">
+        <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[600px] flex items-center justify-center mt-6">
           {CARDS.map((card, index) => {
             let distance = index - currentIndex;
             // Handle wrapping for any number of cards
@@ -147,7 +147,7 @@ const FamilyHolidays = ({ hideBackground = false }: { hideBackground?: boolean }
             return (
               <motion.div
                 key={card.id}
-                className="absolute w-[260px] sm:w-[320px] lg:w-[400px] h-[280px] sm:h-[340px] lg:h-[420px] rounded-3xl overflow-hidden shadow-2xl cursor-pointer bg-neutral-100"
+                className="absolute w-[290px] sm:w-[370px] lg:w-[470px] h-[350px] sm:h-[420px] lg:h-[510px] rounded-3xl overflow-hidden shadow-2xl cursor-pointer bg-neutral-100"
                 style={{ zIndex }}
                 animate={{ x: xOffset, scale, opacity }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
