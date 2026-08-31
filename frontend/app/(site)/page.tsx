@@ -1,6 +1,5 @@
 import Hero from "@/Components/Home/Hero";
 import FamilyHolidays from "@/Components/Home/FamilyHolidays";
-import Properties from "@/Components/Home/Properties";
 import Destination from "@/Components/Home/Destination";
 import ActivitiesGrid from "@/Components/Activities/ActivitiesGrid";
 import UniverseExperiences from "@/Components/Home/UniverseExperiences";
@@ -38,7 +37,6 @@ function page() {
       {/* <Book /> hidden as requested */}
       {/* <BookDetail /> hidden as requested */}
       <Destination />
-      <Properties />
       <Itinerary />
       <ActivitiesGrid />
       <Partners />
