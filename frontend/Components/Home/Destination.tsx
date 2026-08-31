@@ -43,6 +43,8 @@ const Destination = () => {
                 imageUrl = "https://images.unsplash.com/photo-1571536802807-30451e3955d8?auto=format&fit=crop&w=1000&q=80";
               } else if (title.toLowerCase() === "meghalaya") {
                 imageUrl = "https://images.unsplash.com/photo-1685271567656-84a60da957d9?auto=format&fit=crop&w=1000&q=80";
+              } else if (title.toLowerCase().includes("krabi") || title.toLowerCase().includes("thailand")) {
+                imageUrl = "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=1000&q=80";
               }
 
               return {
@@ -83,13 +85,20 @@ const Destination = () => {
           },
           {
             id: 4,
+            country: "THAILAND",
+            title: "Krabi",
+            imageUrl: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=1000&q=80",
+            type: "International",
+          },
+          {
+            id: 5,
             country: "MALDIVES",
             title: "Male",
             imageUrl: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=1000&q=80",
             type: "International",
           },
           {
-            id: 5,
+            id: 6,
             country: "MALDIVES",
             title: "Bora Bora",
             imageUrl: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=1000&q=80",
