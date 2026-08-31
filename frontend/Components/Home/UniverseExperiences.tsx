@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, MapPin, Leaf } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Leaf } from "lucide-react";
 import { motion } from "framer-motion";
 import FallbackImage from "@/Components/Shared/FallbackImage";
 
@@ -35,8 +35,7 @@ const CARDS = [
     id: 4,
     location: "Munnar",
     activity: "Tea Trails",
-    image:
-      "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=1000&q=80",
+    image: "/Img/munnar.jpg",
   },
   {
     id: 5,
@@ -56,8 +55,7 @@ const CARDS = [
     id: 7,
     location: "Darjeeling",
     activity: "Toy Train Ride",
-    image:
-      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1000&q=80",
+    image: "/Img/darjeeling.jpg",
   },
   {
     id: 8,
@@ -70,8 +68,73 @@ const CARDS = [
     id: 9,
     location: "Manali",
     activity: "Snow Trekking",
+    image: "/Img/manali.jpg",
+  },
+  {
+    id: 10,
+    location: "Udaipur",
+    activity: "Royal Lake Cruise",
     image:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1615836245337-f5b9b2303f1c?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 11,
+    location: "Jaipur",
+    activity: "Palace Exploration",
+    image:
+      "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 12,
+    location: "Ooty",
+    activity: "Botanical Stroll",
+    image:
+      "https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 13,
+    location: "Alleppey",
+    activity: "Houseboat Cruise",
+    image:
+      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 14,
+    location: "Ladakh",
+    activity: "Pangong Lake View",
+    image: "/Img/ladakh.jpg",
+  },
+  {
+    id: 15,
+    location: "Coorg",
+    activity: "Coffee Estate Walk",
+    image: "/Img/coorg.jpg",
+  },
+  {
+    id: 16,
+    location: "Corbett",
+    activity: "Jungle Wildlife Safari",
+    image:
+      "https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 17,
+    location: "Wayanad",
+    activity: "Mist Forest Trek",
+    image:
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 18,
+    location: "Shimla",
+    activity: "Pine Ridge Walk",
+    image: "/Img/shimla.jpg",
+  },
+  {
+    id: 19,
+    location: "Varanasi",
+    activity: "Ganges Boat Ride",
+    image: "/Img/varanasi.jpg",
   },
 ];
 
@@ -207,20 +270,41 @@ const UniverseExperiences = () => {
           })}
         </div>
 
-        {/* Carousel Controls */}
-        <div className="flex items-center justify-center gap-4 mt-8">
-          <button
-            onClick={prevSlide}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-neutral-50 hover:text-gray-900 transition active:scale-95 z-50"
-          >
-            <ArrowLeft size={20} />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-neutral-50 hover:text-gray-900 transition active:scale-95 z-50"
-          >
-            <ArrowRight size={20} />
-          </button>
+        {/* Carousel Controls with Gold Chevrons & Circular Dots */}
+        <div className="flex flex-col items-center gap-6 mt-6 z-50">
+          {/* Gold Chevron Navigation Arrows */}
+          <div className="flex items-center justify-center gap-8">
+            <button
+              onClick={prevSlide}
+              aria-label="Previous slide"
+              className="text-[#b38b40] hover:text-[#8f6d2d] transition active:scale-90 p-1"
+            >
+              <ChevronLeft size={28} strokeWidth={2.5} />
+            </button>
+            <button
+              onClick={nextSlide}
+              aria-label="Next slide"
+              className="text-[#b38b40] hover:text-[#8f6d2d] transition active:scale-90 p-1"
+            >
+              <ChevronRight size={28} strokeWidth={2.5} />
+            </button>
+          </div>
+
+          {/* Pagination Circular Dots */}
+          <div className="flex items-center gap-3.5 max-w-full overflow-x-auto py-1 px-2">
+            {CARDS.map((card, idx) => (
+              <button
+                key={card.id}
+                onClick={() => setCurrentIndex(idx)}
+                aria-label={`Go to card ${idx + 1}`}
+                className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+                  idx === currentIndex
+                    ? "bg-black"
+                    : "bg-[#d5dae0] hover:bg-gray-400"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
