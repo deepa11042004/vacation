@@ -41,7 +41,7 @@ export default function Story({ hideBackground = false }: { hideBackground?: boo
             {/* Paragraph Blocks */}
             <div className="flex flex-col gap-4 text-sm sm:text-base font-medium text-gray-500 max-w-xl leading-relaxed mb-8">
               <p>
-                Our story started 2010 with simple conviction adventure should
+                Our story started 2016 with simple conviction adventure should
                 feel effortless. It all began with a belief that travel awaken
                 the spirit.
               </p>
