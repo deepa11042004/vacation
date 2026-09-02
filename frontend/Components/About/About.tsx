@@ -38,9 +38,9 @@ function Counter({ value }: CounterProps) {
 }
 
 // Main Component
-export default function About() {
+export default function About({ hideBackground = false }: { hideBackground?: boolean }) {
   return (
-    <section className="w-full bg-white px-6 py-20 sm:px-10 lg:px-14 font-display">
+    <section className={`w-full px-6 py-20 sm:px-10 lg:px-14 font-display ${hideBackground ? '' : 'bg-white'}`}>
       <div className="mx-auto max-w-7xl">
         {/* Layout Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12 items-stretch">

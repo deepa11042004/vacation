@@ -333,11 +333,11 @@ export default function PlanDetailsView({ plan, onBack }: PlanDetailsViewProps) 
 
               <ul className="space-y-4 mb-10">
                 {[
-                  `7N/8D holidays every year across ${plan.weeksAccess}`,
-                  "Complimentary breakfast for 2 per room per night, up to 10 years",
+                  `6N/7D holidays every year across ${plan.weeksAccess}`,
+                  "Complimentary breakfast for 2 per room per night, up to 6 years",
                   "24/7 concierge services",
                   "Priority access to signature experiences",
-                  "Access to international resorts",
+                  "Access to 140+ international resorts",
                   "Flexible cancellation policies",
                 ].map((benefit, idx) => (
                   <li key={idx} className="flex items-start gap-3 text-sm font-semibold text-neutral-800 leading-relaxed">
