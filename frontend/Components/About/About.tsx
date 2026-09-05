@@ -48,11 +48,11 @@ export default function About({ hideBackground = false }: { hideBackground?: boo
           <div className="flex flex-col justify-between rounded-3xl bg-[#edf3ff] p-6 md:col-span-3 min-h-95">
             <div className="flex flex-col gap-1">
               <div className="text-4xl font-bold tracking-tight text-black sm:text-5xl flex items-center">
-                <Counter value={6500} />
+                <Counter value={500} />
                 <span className="text-blue-600 ml-0.5">+</span>
               </div>
               <p className="text-sm font-medium text-gray-500">
-                Our Happy Travelers
+                Happy Travelers
               </p>
             </div>
 
@@ -77,6 +77,17 @@ export default function About({ hideBackground = false }: { hideBackground?: boo
               className="object-cover"
               priority
             />
+
+            {/* Experience Badge */}
+            <div className="absolute left-5 top-5 flex flex-col rounded-2xl bg-white/95 px-5 py-3 shadow-lg backdrop-blur-sm">
+              <span className="text-3xl font-bold tracking-tight text-black sm:text-4xl flex items-center">
+                <Counter value={10} />
+                <span className="text-blue-600 ml-0.5">+</span>
+              </span>
+              <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Years of Experience
+              </span>
+            </div>
           </div>
 
           {/* Right Block Card */}
