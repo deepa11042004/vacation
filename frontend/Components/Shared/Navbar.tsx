@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { ChevronDown, Menu, X, Plane } from "lucide-react";
+import { ChevronDown, Menu, X, Plane, User } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -112,16 +112,24 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Mobile Hamburger Toggle */}
-          <div className="flex items-center lg:hidden">
+          {/* Mobile Login + Hamburger Toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <Link
+              href="/login"
+              className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-blue-600 border border-blue-600 shadow-sm transition-colors hover:bg-blue-50"
+            >
+              <User className="w-3.5 h-3.5" />
+              Login
+            </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-white hover:bg-white transition-colors"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              className="p-2 rounded-lg text-white hover:bg-white hover:text-black transition-colors"
             >
               {mobileMenuOpen ? (
                 <X className="w-6 h-6" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-6 h-6" strokeWidth={2.5} />
               )}
             </button>
           </div>
@@ -187,12 +195,6 @@ export default function Navbar() {
 
             {/* Mobile CTA buttons */}
             <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-100/50 px-4">
-              <Link
-                href="/login"
-                className="w-full py-3 px-4 bg-white border border-blue-600 text-blue-600 rounded-full text-center text-sm font-bold shadow-sm transition-all hover:bg-blue-50"
-              >
-                Login
-              </Link>
               <Link
                 href="/join"
                 className="w-full py-3 px-4 bg-blue-600 text-white rounded-full text-center text-sm font-bold shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700"
