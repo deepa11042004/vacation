@@ -31,13 +31,24 @@ export default async function HotelDetailsPage({
   let hotel: ApiHotel | null = null;
 
   try {
-    const res = await fetch(`${apiBase}/api/hotels/${id}`, { cache: "no-store" });
+    let res = await fetch(`${apiBase}/api/hotels/${id}`, { cache: "no-store" });
+    if (!res.ok) {
+      res = await fetch(`https://mwvpl.com/api/hotels/${id}`, { cache: "no-store" });
+    }
     if (res.ok) {
       const json = await res.json();
       hotel = json?.data ?? null;
     }
   } catch {
-    hotel = null;
+    try {
+      const res = await fetch(`https://mwvpl.com/api/hotels/${id}`, { cache: "no-store" });
+      if (res.ok) {
+        const json = await res.json();
+        hotel = json?.data ?? null;
+      }
+    } catch {
+      hotel = null;
+    }
   }
 
   if (!hotel) return notFound();

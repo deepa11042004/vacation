@@ -57,14 +57,35 @@ export default function StayCategoryPage() {
     const params = new URLSearchParams({ status: "ACTIVE", limit: "12" });
     if (hotelType) params.set("hotel_type", hotelType);
 
-    fetch(`/api/hotels?${params}`)
-      .then((r) => r.json())
-      .then((res) => {
-        setHotels(res?.data?.hotels ?? []);
-        setTotal(res?.data?.total ?? 0);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    const fetchHotels = async () => {
+      try {
+        const res = await fetch(`/api/hotels?${params}`);
+        const json = await res.json();
+        let fetchedHotels = json?.data?.hotels ?? [];
+        let totalCount = json?.data?.total ?? fetchedHotels.length;
+
+        // If specific category returns 0 items, fallback to all active properties
+        if (fetchedHotels.length === 0) {
+          const fallbackRes = await fetch(`/api/hotels?status=ACTIVE&limit=12`);
+          const fallbackJson = await fallbackRes.json();
+          const fallbackHotels = fallbackJson?.data?.hotels ?? [];
+          if (fallbackHotels.length > 0) {
+            fetchedHotels = fallbackHotels;
+            totalCount = fallbackJson?.data?.total ?? fallbackHotels.length;
+          }
+        }
+
+        setHotels(fetchedHotels);
+        setTotal(totalCount);
+      } catch {
+        setHotels([]);
+        setTotal(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHotels();
   }, [slug, hotelType]);
 
   function coverImage(h: Hotel): string {

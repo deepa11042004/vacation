@@ -46,7 +46,7 @@ export class LocationController {
     try {
       await connectDB();
 
-      const { searchParams } = new URL(req.url);
+      const searchParams = req.nextUrl?.searchParams ?? new URL(req.url, 'http://localhost').searchParams;
       const search = searchParams.get('search') || undefined;
       const type = searchParams.get('type') as LocationType | undefined;
       const status = searchParams.get('status') as LocationStatus | undefined;

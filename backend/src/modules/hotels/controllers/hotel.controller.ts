@@ -48,7 +48,7 @@ export class HotelController {
     try {
       await connectDB();
 
-      const { searchParams } = new URL(req.url);
+      const searchParams = req.nextUrl?.searchParams ?? new URL(req.url, 'http://localhost').searchParams;
       const search = searchParams.get('search') || undefined;
       const locationIdStr = searchParams.get('location_id');
       const location_id = locationIdStr ? parseInt(locationIdStr, 10) : undefined;

@@ -68,6 +68,22 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
     setIsOpen(true);
   };
 
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        setCurrentIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+      } else if (e.key === "ArrowRight") {
+        setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
+      } else if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, galleryImages.length]);
+
   // Fetch other active hotels in the same destination
   useEffect(() => {
     if (!property.locationId) return;
@@ -87,12 +103,12 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
   }, [property.locationId, property.id]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 bg-neutral-50/30 min-h-screen text-neutral-900">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16 bg-neutral-50/30 min-h-screen text-neutral-900">
       {/* --- Image Gallery Section --- */}
-      <div className="space-y-3 mb-10">
+      <div className="space-y-4 mb-10">
         {/* Main Large Panel */}
         <div
-          className="relative w-full h-[45vh] md:h-120 rounded-xl overflow-hidden cursor-pointer group shadow-xs"
+          className="relative w-full h-[52vh] sm:h-[62vh] md:h-[540px] lg:h-[580px] rounded-2xl overflow-hidden cursor-pointer group shadow-md"
           onClick={() => openGallery(0)}
         >
           <FallbackImage
@@ -100,14 +116,14 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             fallbackSrc={hotelImageFallback(property.id)}
             alt={property.title}
             fill
-            className="object-cover group-hover:scale-[1.01] transition-transform duration-500"
+            className="object-cover group-hover:scale-[1.015] transition-transform duration-500"
             priority
             unoptimized
           />
         </div>
 
         {/* Gallery View - 6 Thumbnail Images */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 h-[12vh] md:h-27.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 h-[14vh] md:h-[135px]">
           {galleryImages.slice(1, 7).map((img, index) => {
             const actualIndex = index + 1;
             const isLast = index === 5;
@@ -116,7 +132,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             return (
               <div
                 key={actualIndex}
-                className="relative w-full h-full rounded-xl overflow-hidden cursor-pointer group shadow-xs"
+                className="relative w-full h-full rounded-2xl overflow-hidden cursor-pointer group shadow-xs"
                 onClick={() => openGallery(actualIndex)}
               >
                 <FallbackImage
@@ -124,11 +140,11 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
                   fallbackSrc={hotelImageFallback(property.id)}
                   alt={`Gallery tile ${actualIndex}`}
                   fill
-                  className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                  className="object-cover group-hover:scale-[1.04] transition-transform duration-500"
                   unoptimized
                 />
                 {isLast && remaining > 0 && (
-                  <div className="absolute inset-0 bg-neutral-900/40 group-hover:bg-neutral-900/50 transition-colors flex items-center justify-center">
+                  <div className="absolute inset-0 bg-neutral-900/50 group-hover:bg-neutral-900/60 transition-colors flex items-center justify-center backdrop-blur-[2px]">
                     <span className="text-white font-bold text-sm md:text-base border-b-2 border-white pb-0.5 tracking-wider">
                       +{remaining} photos
                     </span>
@@ -142,69 +158,79 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
 
       {/* --- Lightbox Modal Overlay View --- */}
       {isOpen && (
-        <div className="fixed inset-0 z-9999 flex flex-col items-center justify-between bg-black/95 backdrop-blur-md py-6">
-          <div className="w-full flex items-center justify-between px-6 md:px-12">
-            <span className="text-neutral-200 text-sm font-semibold tracking-wider bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-xs">
+        <div className="fixed inset-0 z-[9999] flex flex-col justify-between bg-black/95 backdrop-blur-xl py-4 sm:py-6 px-4 select-none">
+          {/* Top Bar */}
+          <div className="w-full flex items-center justify-between max-w-7xl mx-auto px-2 sm:px-6">
+            <span className="text-neutral-200 text-xs sm:text-sm font-semibold tracking-wider bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-md">
               {currentIndex + 1} / {galleryImages.length}
             </span>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-2.5 text-neutral-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full"
+              className="p-2.5 text-neutral-300 hover:text-white transition-colors bg-white/10 hover:bg-white/20 rounded-full cursor-pointer"
+              aria-label="Close gallery"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
-          <div className="relative w-full max-w-5xl h-[60vh] px-4 flex items-center justify-between gap-4">
+          {/* Main Large Image Container */}
+          <div className="relative w-full max-w-7xl mx-auto flex-1 flex items-center justify-center my-2 sm:my-4 px-2 sm:px-4 min-h-0">
+            {/* Left Prev Arrow */}
             <button
               onClick={() =>
                 setCurrentIndex(
                   (prev) =>
-                    (prev - 1 + galleryImages.length) % galleryImages.length,
+                    (prev - 1 + galleryImages.length) % galleryImages.length
                 )
               }
-              className="p-3 text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all shrink-0"
+              className="absolute left-2 sm:left-4 z-10 p-3 sm:p-4 text-white bg-black/50 hover:bg-black/80 backdrop-blur-md rounded-full transition-all cursor-pointer shadow-lg hover:scale-105 active:scale-95 border border-white/10"
+              aria-label="Previous image"
             >
-              <ChevronLeft className="w-7 h-7" />
+              <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8" />
             </button>
 
-            <div className="relative w-full h-full max-h-[55vh]">
+            {/* Display Image */}
+            <div className="relative w-full h-full max-h-[78vh] sm:max-h-[82vh] flex items-center justify-center">
               <FallbackImage
                 src={galleryImages[currentIndex]}
                 fallbackSrc={hotelImageFallback(property.id)}
-                alt={`Active lightroom frame ${currentIndex}`}
+                alt={`Active lightbox image ${currentIndex + 1}`}
                 fill
                 className="object-contain"
                 unoptimized
+                priority
               />
             </div>
 
+            {/* Right Next Arrow */}
             <button
               onClick={() =>
                 setCurrentIndex((prev) => (prev + 1) % galleryImages.length)
               }
-              className="p-3 text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all shrink-0"
+              className="absolute right-2 sm:right-4 z-10 p-3 sm:p-4 text-white bg-black/50 hover:bg-black/80 backdrop-blur-md rounded-full transition-all cursor-pointer shadow-lg hover:scale-105 active:scale-95 border border-white/10"
+              aria-label="Next image"
             >
-              <ChevronRight className="w-7 h-7" />
+              <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8" />
             </button>
           </div>
 
-          <div className="w-full max-w-5xl px-6">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 justify-start md:justify-center scrollbar-none">
+          {/* Bottom Thumbnails Strip */}
+          <div className="w-full max-w-7xl mx-auto px-2 sm:px-6">
+            <div className="flex items-center gap-2.5 overflow-x-auto py-1 justify-start md:justify-center scrollbar-none">
               {galleryImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
-                  className={`relative shrink-0 w-16 h-12 md:w-20 md:h-14 rounded-lg overflow-hidden transition-all border-2 ${
+                  className={`relative shrink-0 w-16 h-12 sm:w-24 sm:h-16 rounded-xl overflow-hidden transition-all border-2 cursor-pointer ${
                     idx === currentIndex
-                      ? "border-blue-500 scale-105 opacity-100 ring-4 ring-blue-500/20"
-                      : "border-transparent opacity-40 hover:opacity-70"
+                      ? "border-blue-500 scale-105 opacity-100 ring-4 ring-blue-500/30"
+                      : "border-transparent opacity-50 hover:opacity-85"
                   }`}
                 >
                   <FallbackImage
                     src={img}
                     fallbackSrc={hotelImageFallback(property.id)}
-                    alt={`Thumb tracker ${idx}`}
+                    alt={`Thumb tracker ${idx + 1}`}
                     fill
                     className="object-cover"
                     unoptimized
