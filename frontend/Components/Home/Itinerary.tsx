@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, Variants } from "framer-motion";
-import { MapPin, Play, X, Minus } from "lucide-react";
+import { motion, Variants } from "framer-motion";
+import { MapPin, Minus } from "lucide-react";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
 
@@ -14,7 +13,6 @@ interface ItineraryItem {
   title: string;
   description: string;
   image: string;
-  youtubeId: string;
 }
 
 // Data
@@ -27,7 +25,6 @@ const itinerariesData: ItineraryItem[] = [
       "Explore Jumeirah Mosque, Gold Souk, Dubai Mall, Spice Souk, and the historic Bastakiya Square. Drive past Atlantis, The Palm, and end with an unforgettable desert safari experience.",
     image:
       "https://images.unsplash.com/photo-1739900292622-a7f860175aad?w=800&auto=format&fit=crop&q=80",
-    youtubeId: "Hs4arPj29_I",
   },
   {
     id: "2",
@@ -37,7 +34,6 @@ const itinerariesData: ItineraryItem[] = [
       "Goa offers much more than its famous party scene. Rich legacy, history, culture, and sun-soaked beaches make it a perfect destination for every kind of traveller seeking joy.",
     image:
       "https://images.unsplash.com/photo-1614082242765-7c98ca0f3df3?w=800&auto=format&fit=crop&q=80",
-    youtubeId: "BoFGjD9Bv-k",
   },
   {
     id: "3",
@@ -47,7 +43,6 @@ const itinerariesData: ItineraryItem[] = [
       "Bali's enchanting beauty, rich culture, and serene beaches create an unforgettable experience. Whether you seek adventure or relaxation, Bali has it all for you.",
     image:
       "https://plus.unsplash.com/premium_photo-1677829177642-30def98b0963?w=800&auto=format&fit=crop&q=80",
-    youtubeId: "BFS9n4B_2xA",
   },
 ];
 
@@ -69,35 +64,12 @@ const staggerContainer: Variants = {
   },
 };
 
-const overlayVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.25 } },
-  exit: { opacity: 0, transition: { duration: 0.2 } },
-};
-
-const modalVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.92, y: 24 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { type: "spring", damping: 28, stiffness: 320 },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.94,
-    y: 16,
-    transition: { duration: 0.2, ease: "easeIn" },
-  },
-};
-
 // Card Component
 interface CardProps {
   item: ItineraryItem;
-  onPlay: (id: string) => void;
 }
 
-function ItineraryCard({ item, onPlay }: CardProps) {
+function ItineraryCard({ item }: CardProps) {
   return (
     <motion.article
       variants={fadeInUp}
@@ -116,20 +88,6 @@ function ItineraryCard({ item, onPlay }: CardProps) {
 
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-linear-to-b from-black/15 via-transparent to-black/60 pointer-events-none z-10" />
-
-        {/* Play button */}
-        <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <button
-            onClick={() => onPlay(item.youtubeId)}
-            aria-label={`Play video for ${item.title}`}
-            className="w-12 h-12 rounded-full border border-white/40 bg-white/15 backdrop-blur-md
-                       flex items-center justify-center cursor-pointer
-                       group-hover:bg-blue-600 group-hover:border-blue-600
-                       transition-all duration-300 shadow-md"
-          >
-            <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-          </button>
-        </div>
       </div>
 
       {/* ── Body ── */}
@@ -164,69 +122,10 @@ function ItineraryCard({ item, onPlay }: CardProps) {
   );
 }
 
-// Video Modal
-interface VideoModalProps {
-  videoId: string | null;
-  onClose: () => void;
-}
-
-function VideoModal({ videoId, onClose }: VideoModalProps) {
-  return (
-    <AnimatePresence>
-      {videoId && (
-        <motion.div
-          key="overlay"
-          variants={overlayVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          className="fixed inset-0 z-9999 flex items-center justify-center p-4 md:p-10 bg-black/80 backdrop-blur-md"
-          onClick={onClose}
-        >
-          <motion.div
-            key="modal"
-            variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="relative w-full max-w-4xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close */}
-            <button
-              onClick={onClose}
-              aria-label="Close video"
-              className="absolute top-3 right-3 z-50 w-9 h-9 rounded-full bg-black/60 border border-white/20
-                         flex items-center justify-center text-white hover:bg-white/15 transition-colors duration-200 cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            {/* 16:9 iframe */}
-            <div className="relative pt-[56.25%] w-full bg-neutral-900">
-              <iframe
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                className="absolute inset-0 w-full h-full"
-              />
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
 // Main Section
 export default function Itinerary() {
-  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
-
   return (
-    <>
-      <section className="w-full rounded-b-[6vw] bg-[#D4AF37] px-6 py-20 sm:px-10 lg:px-14 font-display">
+    <section className="w-full rounded-b-[6vw] bg-[#D4AF37] px-6 py-20 sm:px-10 lg:px-14 font-display">
         <div className="mx-auto max-w-7xl">
           {/* ── Header Layout ── */}
           <div className="mb-12 w-full">
@@ -261,21 +160,10 @@ export default function Itinerary() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7"
           >
             {itinerariesData.map((item) => (
-              <ItineraryCard
-                key={item.id}
-                item={item}
-                onPlay={setActiveVideoId}
-              />
+              <ItineraryCard key={item.id} item={item} />
             ))}
           </motion.div>
         </div>
-      </section>
-
-      {/* ── Video Modal ── */}
-      <VideoModal
-        videoId={activeVideoId}
-        onClose={() => setActiveVideoId(null)}
-      />
-    </>
+    </section>
   );
 }

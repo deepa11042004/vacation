@@ -144,8 +144,7 @@ export default function Footer() {
 
             <span>
               Mandarin Worldwide Vacation Pvt. Ltd. <br /> D-22, LGF, Pandav
-              Nagar, Near Ram Leela Park, <br /> D-Block, Opposite Mother Dairy
-              Main Plant, <br /> Laxmi Nagar, Pandav Nagar, New Delhi – 110092
+              Nagar, Near Ram Leela Park D Block Laxmi Nagar New Delhi – 110092
             </span>
           </div>
           <div className="flex flex-col gap-2">
