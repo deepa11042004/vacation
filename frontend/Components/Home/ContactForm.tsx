@@ -24,26 +24,26 @@ type FormValues = {
 };
 
 const fields: Field[] = [
-  { id: "name", label: "Name", placeholder: "George" },
-  { id: "surname", label: "Surname", placeholder: "Webbster" },
-  { id: "checkIn", label: "Check-in", placeholder: "September" },
-  { id: "checkOut", label: "Check-out", placeholder: "October" },
-  { id: "room", label: "Room", placeholder: "Amber Suite" },
+  { id: "name", label: "Name", placeholder: "Your first name" },
+  { id: "surname", label: "Surname", placeholder: "Your surname" },
+  { id: "checkIn", label: "Check-in", placeholder: "Arrival date" },
+  { id: "checkOut", label: "Check-out", placeholder: "Departure date" },
+  { id: "room", label: "Room", placeholder: "Preferred room" },
   {
     id: "email",
     label: "Email",
-    placeholder: "webbster.g@example.com",
+    placeholder: "you@example.com",
     type: "email",
   },
 ];
 
 const defaultValues: FormValues = {
-  name: "George",
-  surname: "Webbster",
-  checkIn: "September",
-  checkOut: "October",
-  room: "Amber Suite",
-  email: "webbster.g@example.com",
+  name: "",
+  surname: "",
+  checkIn: "",
+  checkOut: "",
+  room: "",
+  email: "",
 };
 
 const orbitImages = [
