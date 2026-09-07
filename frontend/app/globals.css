@@ -40,7 +40,7 @@ body {
 
 .preloader-bar-fill {
   transform-origin: left center;
-  animation: preloader-bar 10s linear forwards;
+  animation: preloader-bar 5s linear forwards;
 }
 
 .preloader-logo {
@@ -48,6 +48,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .preloader-bar-fill { animation-duration: 10s; }
+  .preloader-bar-fill { animation-duration: 5s; }
   .preloader-logo { animation: none; }
 }

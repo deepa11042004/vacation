@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import Image from "next/image";
 
-const DURATION_MS = 10_000; // visible loading time
+const DURATION_MS = 5_000; // visible loading time
 const FADE_MS = 600; // fade-out transition
 const SEEN_KEY = "mwv_preloader_seen";
 
