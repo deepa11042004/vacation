@@ -11,9 +11,35 @@ import {
 } from "framer-motion";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
-import { Minus } from "lucide-react";
+import { Minus, MapPin, Loader2 } from "lucide-react";
 import Testimonials from "@/Components/Home/Testimonials";
 import { useRouter } from "next/navigation";
+import FallbackImage from "@/Components/Shared/FallbackImage";
+import { hotelImageUrl, hotelImageFallback } from "@/lib/imageUrl";
+import { stripHtml } from "@/lib/text";
+
+interface HotelImage {
+  image_id: number;
+  image_path: string;
+  sort_order: number;
+}
+
+interface Hotel {
+  hotel_id: number;
+  hotel_name: string;
+  hotel_type: string;
+  description?: string | null;
+  location?: { location_id: number; location_name: string; country: string };
+  images?: HotelImage[];
+}
+
+const SLUG_TO_TYPE: Record<string, string> = {
+  hotels: "HOTEL",
+  resorts: "RESORT",
+  villas: "VILLA",
+  apartments: "APARTMENT",
+  "vacation-homes": "HOMESTAY",
+};
 
 const NEW_CAROUSEL_DATA = [
   {
@@ -373,12 +399,48 @@ export default function Stay() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeFanIndex, setActiveFanIndex] = useState(0);
 
+  const [filterProperties, setFilterProperties] = useState<Hotel[]>([]);
+  const [loadingProperties, setLoadingProperties] = useState(false);
+
   React.useEffect(() => {
     const timer = setInterval(() => {
       setActiveFanIndex((prev) => (prev + 1) % NEW_CAROUSEL_DATA.length);
     }, 2000);
     return () => clearInterval(timer);
   }, []);
+
+  React.useEffect(() => {
+    if (activeFilter === "all") return;
+    setLoadingProperties(true);
+
+    const hotelType = SLUG_TO_TYPE[activeFilter] ?? null;
+    const params = new URLSearchParams({ status: "ACTIVE", limit: "12" });
+    if (hotelType) params.set("hotel_type", hotelType);
+
+    fetch(`/api/hotels?${params}`)
+      .then((r) => r.json())
+      .then((res) => {
+        const fetchedHotels = res?.data?.hotels ?? [];
+        if (fetchedHotels.length > 0) {
+          setFilterProperties(fetchedHotels);
+        } else {
+          // Fallback to active properties if specific type returns 0 items
+          fetch(`/api/hotels?status=ACTIVE&limit=12`)
+            .then((r) => r.json())
+            .then((fallbackRes) => {
+              setFilterProperties(fallbackRes?.data?.hotels ?? []);
+            })
+            .catch(() => setFilterProperties([]));
+        }
+      })
+      .catch(() => setFilterProperties([]))
+      .finally(() => setLoadingProperties(false));
+  }, [activeFilter]);
+
+  function getCoverImage(h: Hotel): string {
+    const sorted = [...(h.images ?? [])].sort((a, b) => a.sort_order - b.sort_order);
+    return hotelImageUrl(sorted[0]?.image_path, h.hotel_id);
+  }
 
   const filteredStays = stayTypes.filter((s) => {
     if (activeFilter === "all") return true;
@@ -583,44 +645,107 @@ export default function Stay() {
           {/* Grid */}
           <div className="overflow-hidden min-h-[40vh]">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={activeFilter}
-                variants={gridVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                {displayStays.map((type) => (
-                  <motion.div
-                    key={type.id}
-                    variants={cardVariants}
-                    onClick={() => router.push(`/stays/${type.slug}`)}
-                    className="relative overflow-hidden rounded-2xl bg-neutral-100 group cursor-pointer shadow-xs hover:shadow-lg transition-shadow duration-300 transform-gpu"
-                    style={{ aspectRatio: "3 / 3" }}
-                  >
-                    <Image
-                      fill
-                      src={type.image}
-                      alt={type.title}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-b from-black/15 via-transparent to-black/90 z-10 pointer-events-none" />
-                    <span className="absolute left-5 top-5 z-20 rounded-full bg-white/20 px-4 py-1.5 text-xs font-medium text-white backdrop-blur-md border border-white/10 select-none">
-                      {type.category}
-                    </span>
-                    <div className="absolute bottom-0 left-0 right-0 z-20 p-6 flex flex-col gap-1 transform-gpu">
-                      <h3 className="text-2xl font-bold text-white tracking-wide">
-                        {type.title}
-                      </h3>
-                      <p className="text-xs font-bold text-gray-300 tracking-wider uppercase opacity-80">
-                        {type.subtitle}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
+              {activeFilter === "all" ? (
+                <motion.div
+                  key="all-stays-grid"
+                  variants={gridVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
+                  {displayStays.map((type) => (
+                    <motion.div
+                      key={type.id}
+                      variants={cardVariants}
+                      onClick={() => router.push(`/stays/${type.slug}`)}
+                      className="relative overflow-hidden rounded-2xl bg-neutral-100 group cursor-pointer shadow-xs hover:shadow-lg transition-shadow duration-300 transform-gpu"
+                      style={{ aspectRatio: "3 / 3" }}
+                    >
+                      <Image
+                        fill
+                        src={type.image}
+                        alt={type.title}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-linear-to-b from-black/15 via-transparent to-black/90 z-10 pointer-events-none" />
+                      <span className="absolute left-5 top-5 z-20 rounded-full bg-white/20 px-4 py-1.5 text-xs font-medium text-white backdrop-blur-md border border-white/10 select-none">
+                        {type.category}
+                      </span>
+                      <div className="absolute bottom-0 left-0 right-0 z-20 p-6 flex flex-col gap-1 transform-gpu">
+                        <h3 className="text-2xl font-bold text-white tracking-wide">
+                          {type.title}
+                        </h3>
+                        <p className="text-xs font-bold text-gray-300 tracking-wider uppercase opacity-80">
+                          {type.subtitle}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : loadingProperties ? (
+                <div className="min-h-[40vh] flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-neutral-400" />
+                </div>
+              ) : filterProperties.length === 0 ? (
+                <div className="py-16 text-center text-neutral-500">
+                  <p className="text-xl font-bold text-neutral-900 mb-2">No properties found</p>
+                  <p className="text-sm text-neutral-400">No properties available for this filter yet.</p>
+                </div>
+              ) : (
+                <motion.div
+                  key={activeFilter}
+                  variants={gridVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                >
+                  {filterProperties.map((hotel) => (
+                    <motion.div
+                      key={hotel.hotel_id}
+                      variants={cardVariants}
+                      onClick={() => router.push(`/hotels/${hotel.hotel_id}`)}
+                      className="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-neutral-100 group cursor-pointer flex flex-col text-left"
+                    >
+                      <div className="relative aspect-4/3 w-full overflow-hidden bg-neutral-100">
+                        <FallbackImage
+                          src={getCoverImage(hotel)}
+                          fallbackSrc={hotelImageFallback(hotel.hotel_id)}
+                          alt={hotel.hotel_name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          unoptimized
+                        />
+                      </div>
+
+                      <div className="p-6 flex flex-col grow">
+                        {hotel.location && (
+                          <div className="flex items-center gap-2 text-neutral-500 mb-3">
+                            <MapPin className="w-4 h-4 text-neutral-400 shrink-0" />
+                            <span className="text-xs font-medium uppercase tracking-wider">
+                              {hotel.location.location_name}
+                              {hotel.location.country ? `, ${hotel.location.country}` : ""}
+                            </span>
+                          </div>
+                        )}
+                        <h3 className="text-xl font-bold text-neutral-900 mb-2 line-clamp-1 group-hover:text-neutral-600 transition-colors">
+                          {hotel.hotel_name}
+                        </h3>
+                        <p className="text-sm text-neutral-500 line-clamp-2 leading-relaxed mb-6 font-medium">
+                          {stripHtml(hotel.description)}
+                        </p>
+
+                        <div className="mt-auto pt-2">
+                          <CtaButton text="View Property" size="sm" variant="blue" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>
