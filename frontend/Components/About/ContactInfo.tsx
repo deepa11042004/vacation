@@ -61,9 +61,8 @@ export default function ContactInfo({ hideBackground = false }: { hideBackground
                 <div>
                   <h4 className="text-lg font-bold text-gray-900 mb-1">Location</h4>
                   <p className="text-gray-600 leading-relaxed">
-                    Mandarin Worldwide Vacation Pvt. Ltd.<br />
-                    D-22, LGF, Pandav Nagar, Near Ram Leela Park D Block<br />
-                    Laxmi Nagar New Delhi – 110092
+                    D-22, LGF, Pandav Nagar, Near Ram Leela Park<br />
+                    D Block, Laxmi Nagar, New Delhi – 110092
                   </p>
                 </div>
               </div>

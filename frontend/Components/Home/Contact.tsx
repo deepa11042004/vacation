@@ -25,8 +25,8 @@ export default function LuxuryContactBooking() {
           <div className="space-y-3 pt-4">
             <h3 className="text-4xl font-bold text-black">Location</h3>
             <p className="text-base font-medium leading-relaxed text-black">
-              Mandarin Worldwide Vacation Pvt. Ltd. <br /> D-22, LGF, Pandav
-              Nagar, Near Ram Leela Park D Block Laxmi Nagar New Delhi – 110092
+              D-22, LGF, Pandav Nagar, Near Ram Leela Park <br /> D Block, Laxmi
+              Nagar, New Delhi – 110092
             </p>
             <div>
               <CtaButton
@@ -95,8 +95,8 @@ export default function LuxuryContactBooking() {
                 </span>
                 <input
                   type="text"
-                  defaultValue="joe"
-                  className="bg-transparent border-none p-0 outline-none text-sm font-bold w-full focus:ring-0 text-black"
+                  placeholder="Your name"
+                  className="bg-transparent border-none p-0 outline-none text-sm font-bold w-full focus:ring-0 text-black placeholder:font-medium placeholder:opacity-40"
                 />
               </div>
               <div className="flex items-center border-b border-black/50 py-3">
@@ -105,8 +105,8 @@ export default function LuxuryContactBooking() {
                 </span>
                 <input
                   type="email"
-                  defaultValue="webbster@example.com"
-                  className="bg-transparent border-none p-0 outline-none text-sm font-bold w-full focus:ring-0 text-black"
+                  placeholder="you@example.com"
+                  className="bg-transparent border-none p-0 outline-none text-sm font-bold w-full focus:ring-0 text-black placeholder:font-medium placeholder:opacity-40"
                 />
               </div>
 
