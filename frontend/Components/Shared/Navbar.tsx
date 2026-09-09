@@ -54,7 +54,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 top-0 z-1000 bg-[#040B31]/80 backdrop-blur-md border-b border-white/10 py-4 px-4 md:px-8 lg:px-10 rounded-b-4xl shadow-lg transition-all duration-300">
+      <nav className="fixed inset-x-0 top-0 z-1000 bg-[#141414]/90 backdrop-blur-md border-b border-white/10 py-4 px-4 md:px-8 lg:px-10 rounded-b-4xl shadow-lg transition-all duration-300">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
@@ -103,7 +103,7 @@ export default function Navbar() {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
-            <CtaButton text="Login" variant="blue" href="/login" size="sm" />
+            <CtaButton text="Login" variant="gold" href="/login" size="sm" />
             <CtaButton
               text="Join Now"
               variant="outline"
@@ -116,7 +116,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2 lg:hidden">
             <Link
               href="/login"
-              className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-blue-600 border border-blue-600 shadow-sm transition-colors hover:bg-blue-50"
+              className="flex items-center gap-1.5 rounded-full bg-[#E8C15B] px-3.5 py-1.5 text-xs font-bold text-[#141414] border border-[#E8C15B] shadow-sm transition-colors hover:bg-[#d8ad46]"
             >
               <User className="w-3.5 h-3.5" />
               Login
@@ -153,7 +153,7 @@ export default function Navbar() {
                         openDropdown === item.label ? null : item.label,
                       )
                     }
-                    className="px-4 py-3 text-sm font-medium text-white hover:bg-gray-50 rounded-xl transition-colors flex justify-between items-center w-full text-left cursor-pointer"
+                    className="px-4 py-3 text-sm font-medium text-white hover:bg-white/10 hover:text-[#E8C15B] rounded-xl transition-colors flex justify-between items-center w-full text-left cursor-pointer"
                   >
                     {item.label}
                     <ChevronDown
@@ -163,7 +163,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={item.url}
-                    className="px-4 py-3 text-sm font-medium text-white hover:bg-gray-50 rounded-xl transition-colors flex justify-between items-center"
+                    className="px-4 py-3 text-sm font-medium text-white hover:bg-white/10 hover:text-[#E8C15B] rounded-xl transition-colors flex justify-between items-center"
                   >
                     {item.label}
                   </Link>
@@ -197,7 +197,7 @@ export default function Navbar() {
             <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-100/50 px-4">
               <Link
                 href="/join"
-                className="w-full py-3 px-4 bg-blue-600 text-white rounded-full text-center text-sm font-bold shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700"
+                className="w-full py-3 px-4 bg-[#E8C15B] text-[#141414] rounded-full text-center text-sm font-bold shadow-md shadow-[#E8C15B]/20 transition-all hover:bg-[#d8ad46]"
               >
                 Join Now
               </Link>

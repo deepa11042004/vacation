@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowUpRight } from "lucide-react";
 
 // ─── Types
-export type CtaButtonVariant = "blue" | "white" | "outline";
+export type CtaButtonVariant = "blue" | "white" | "outline" | "gold";
 export type CtaButtonSize = "sm" | "md" | "lg";
 
 export interface CtaButtonProps {
@@ -85,6 +85,14 @@ const variantConfig: Record<
     hoverCircle: "bg-blue-600",
     restIcon: "text-blue-600",
     hoverIcon: "text-white",
+  },
+  gold: {
+    outer:
+      "bg-[#E8C15B] text-[#141414] border border-[#E8C15B] hover:bg-transparent hover:text-[#E8C15B]",
+    viewport: "bg-[#141414]",
+    hoverCircle: "bg-[#E8C15B]",
+    restIcon: "text-[#E8C15B]",
+    hoverIcon: "text-[#141414]",
   },
 };
 

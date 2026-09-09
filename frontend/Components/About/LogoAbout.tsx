@@ -23,18 +23,30 @@ function LogoAbout({ hideBackground = false }: { hideBackground?: boolean }) {
       <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 lg:gap-20">
         {/* Left Side - Video */}
         <div className="w-full md:w-1/2 lg:w-7/12 flex justify-center md:justify-start">
-          <div className="relative w-full max-w-xl lg:max-w-2xl aspect-video rounded-3xl md:rounded-4xl overflow-hidden shadow-2xl bg-[#0a192f]">
-            <video
-              src="/Video/logovideo.mp4"
-              poster="/Img/newlogo.jpeg"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            />
-            {/* Optional overlay for subtle blending */}
-            <div className="absolute inset-0 bg-black/5 pointer-events-none" />
+          <div className="relative w-full max-w-xl lg:max-w-2xl">
+            <div className="relative w-full aspect-video rounded-3xl md:rounded-4xl overflow-hidden shadow-2xl bg-[#0a192f]">
+              <video
+                src="/Video/logovideo.mp4"
+                poster="/Img/newlogo.jpeg"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+              {/* Optional overlay for subtle blending */}
+              <div className="absolute inset-0 bg-black/5 pointer-events-none" />
+            </div>
+
+            {/* Years of Experience Badge */}
+            <div className="absolute bottom-4 left-4 sm:bottom-6 sm:-left-8 rounded-2xl bg-gradient-to-br from-[#E8C15B] to-[#b38b40] px-6 py-4 sm:px-7 sm:py-5 shadow-xl shadow-[#b38b40]/30 ring-1 ring-white/40">
+              <p className="text-3xl sm:text-4xl font-bold leading-none text-[#141414]">
+                10+
+              </p>
+              <p className="mt-1.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#141414]/80">
+                Years of Experience
+              </p>
+            </div>
           </div>
         </div>
 

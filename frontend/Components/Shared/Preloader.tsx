@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import Image from "next/image";
 
-const DURATION_MS = 5_000; // visible loading time
+const DURATION_MS = 3_000; // visible loading time
 const FADE_MS = 600; // fade-out transition
 const SEEN_KEY = "mwv_preloader_seen";
 
@@ -57,10 +57,10 @@ export default function Preloader() {
         <Image
           src="/Img/fanlogo.png"
           alt="Mandarin Worldwide Vacations"
-          width={260}
-          height={107}
+          width={330}
+          height={136}
           priority
-          className="w-[190px] sm:w-[240px] md:w-[260px] h-auto object-contain"
+          className="w-[240px] sm:w-[300px] md:w-[330px] h-auto object-contain"
         />
 
         {/* progress track */}
