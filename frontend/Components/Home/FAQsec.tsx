@@ -73,11 +73,16 @@ const FAQ_DATA = {
   ],
 };
 
+// FAQ section hidden per request — not deleted. Set to true to show it again.
+const SHOW_FAQ = false;
+
 export default function FAQsec() {
   const [activeTab, setActiveTab] = useState<
     "Club Elevate" | "upgrade" | "newMembership" | "bookingRules"
   >("Club Elevate");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  if (!SHOW_FAQ) return null;
 
   const tabs = [
     { id: "Club Elevate", label: "Club Elevate" },

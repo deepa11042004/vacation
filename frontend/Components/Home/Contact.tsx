@@ -25,15 +25,14 @@ export default function LuxuryContactBooking() {
           <div className="space-y-3 pt-4">
             <h3 className="text-4xl font-bold text-black">Location</h3>
             <p className="text-base font-medium leading-relaxed text-black">
-              D-22, LGF, Pandav Nagar, Near Ram Leela Park <br /> D Block, Laxmi
-              Nagar, New Delhi – 110092
+              D-22 LGF, Pandav Nagar, Near Laxmi Nagar <br /> Delhi – 110092
             </p>
             <div>
               <CtaButton
                 text="Map"
                 variant="white"
                 size="sm"
-                href="https://www.google.com/maps/search/?api=1&query=Mandarin+Worldwide+Vacation+Pvt.+Ltd.+D-22+LGF+Pandav+Nagar+Laxmi+Nagar+New+Delhi+110092"
+                href="https://www.google.com/maps/search/?api=1&query=Mandarin+Worldwide+Vacation+Pvt.+Ltd.+D-22+LGF+Pandav+Nagar+Near+Laxmi+Nagar+Delhi+110092"
               />
             </div>
           </div>

@@ -61,8 +61,8 @@ export default function ContactInfo({ hideBackground = false }: { hideBackground
                 <div>
                   <h4 className="text-lg font-bold text-gray-900 mb-1">Location</h4>
                   <p className="text-gray-600 leading-relaxed">
-                    D-22, LGF, Pandav Nagar, Near Ram Leela Park<br />
-                    D Block, Laxmi Nagar, New Delhi – 110092
+                    D-22 LGF, Pandav Nagar, Near Laxmi Nagar<br />
+                    Delhi – 110092
                   </p>
                 </div>
               </div>
