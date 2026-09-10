@@ -22,6 +22,14 @@ const slides = [
     src: "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?auto=format&fit=crop&w=2400&q=80",
     alt: "Infinity pool overlooking the sea at sunset",
   },
+  {
+    src: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=2400&q=80",
+    alt: "Private villa plunge pool overlooking tropical jungle",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=2400&q=80",
+    alt: "Palm-lined beach with loungers at a luxury resort",
+  },
 ];
 
 const SLIDE_DURATION = 5000;
@@ -113,13 +121,21 @@ export default function Hero() {
           map With Us
         </motion.h1>
 
-        <motion.div variants={foregroundItem}>
+        <motion.div
+          variants={foregroundItem}
+          className="my-5 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4"
+        >
           <CtaButton
-            className="my-5"
-            text="Book Now"
+            text="Explore Properties"
+            variant="blue"
+            size="sm"
+            href="/hotels"
+          />
+          <CtaButton
+            text="View Destinations"
             variant="white"
             size="sm"
-            href="/travel-desk"
+            href="/destination"
           />
         </motion.div>
       </motion.div>

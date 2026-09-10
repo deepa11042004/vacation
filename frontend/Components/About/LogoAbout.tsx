@@ -2,7 +2,14 @@ import React from "react";
 import Image from "next/image";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
-import { Minus } from "lucide-react";
+import { Minus, Check } from "lucide-react";
+
+const highlights = [
+  "Handpicked Properties",
+  "24/7 Support",
+  "Global Network",
+  "Verified Reviews",
+];
 
 function LogoAbout({ hideBackground = false }: { hideBackground?: boolean }) {
   return (
@@ -26,11 +33,12 @@ function LogoAbout({ hideBackground = false }: { hideBackground?: boolean }) {
           <div className="relative w-full max-w-xl lg:max-w-2xl">
             <div className="relative w-full aspect-video rounded-3xl md:rounded-4xl overflow-hidden shadow-2xl bg-[#0a192f]">
               <Image
-                src="/Img/fanlogo.png"
-                alt="Mandarin Worldwide Vacations Logo"
+                src="/Img/munnar.jpg"
+                alt="A traveller taking in a scenic mountain valley view"
                 fill
                 priority
-                className="object-contain p-10 sm:p-14"
+                sizes="(max-width: 768px) 100vw, 600px"
+                className="object-cover"
               />
             </div>
 
@@ -62,17 +70,36 @@ function LogoAbout({ hideBackground = false }: { hideBackground?: boolean }) {
           </h2>
 
           <p className="text-lg mt-5 font-medium text-gray-500">
-            From intimate escapes to grand adventures, we craft journeys that
-            redefine the art of travel. With meticulous attention to detail and
-            a passion for authentic experiences, we invite you to explore the
-            world in comfort, style, and wonder.
+            Mandarin Worldwide Vacations was founded with a singular vision: to
+            connect travelers with extraordinary accommodations worldwide. We
+            believe that every journey deserves exceptional service and
+            unforgettable experiences.
           </p>
+
+          <p className="text-lg mt-4 font-medium text-gray-500">
+            Our curated collection spans continents, from serene mountain
+            retreats to vibrant city escapes, each property handpicked to meet
+            our exacting standards of excellence.
+          </p>
+
+          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+            {highlights.map((item) => (
+              <div key={item} className="flex items-center gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 ring-1 ring-blue-200 shadow-sm">
+                  <Check className="h-4 w-4 text-blue-600" strokeWidth={3} />
+                </span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <CtaButton
             href="/about"
             text="Read More"
             variant="blue"
-            className="mt-5"
+            className="mt-6"
           />
         </div>
       </div>

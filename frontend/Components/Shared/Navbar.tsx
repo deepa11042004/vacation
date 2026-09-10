@@ -103,7 +103,7 @@ export default function Navbar() {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
-            <CtaButton text="Login" variant="gold" href="/login" size="sm" />
+            <CtaButton text="Login" variant="blue" href="/login" size="sm" />
             <CtaButton
               text="Join Now"
               variant="outline"
@@ -116,7 +116,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2 lg:hidden">
             <Link
               href="/login"
-              className="flex items-center gap-1.5 rounded-full bg-[#E8C15B] px-3.5 py-1.5 text-xs font-bold text-[#141414] border border-[#E8C15B] shadow-sm transition-colors hover:bg-[#d8ad46]"
+              className="flex items-center gap-1.5 rounded-full bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white border border-blue-600 shadow-sm transition-colors hover:bg-blue-700"
             >
               <User className="w-3.5 h-3.5" />
               Login
