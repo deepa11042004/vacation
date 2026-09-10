@@ -25,21 +25,17 @@ function LogoAbout({ hideBackground = false }: { hideBackground?: boolean }) {
         <div className="w-full md:w-1/2 lg:w-7/12 flex justify-center md:justify-start">
           <div className="relative w-full max-w-xl lg:max-w-2xl">
             <div className="relative w-full aspect-video rounded-3xl md:rounded-4xl overflow-hidden shadow-2xl bg-[#0a192f]">
-              <video
-                src="/Video/logovideo.mp4"
-                poster="/Img/newlogo.jpeg"
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
+              <Image
+                src="/Img/fanlogo.png"
+                alt="Mandarin Worldwide Vacations Logo"
+                fill
+                priority
+                className="object-contain p-10 sm:p-14"
               />
-              {/* Optional overlay for subtle blending */}
-              <div className="absolute inset-0 bg-black/5 pointer-events-none" />
             </div>
 
             {/* Years of Experience Badge */}
-            <div className="absolute bottom-4 left-4 sm:bottom-6 sm:-left-8 rounded-2xl bg-gradient-to-br from-[#E8C15B] to-[#b38b40] px-6 py-4 sm:px-7 sm:py-5 shadow-xl shadow-[#b38b40]/30 ring-1 ring-white/40">
+            <div className="absolute -top-6 left-4 sm:-top-8 sm:-left-8 z-20 rounded-2xl bg-gradient-to-br from-[#E8C15B] to-[#b38b40] px-6 py-4 sm:px-7 sm:py-5 shadow-xl shadow-[#b38b40]/30 ring-1 ring-white/40">
               <p className="text-3xl sm:text-4xl font-bold leading-none text-[#141414]">
                 10+
               </p>
