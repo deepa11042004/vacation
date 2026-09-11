@@ -17,8 +17,9 @@ const marcellus = Marcellus({
 });
 
 export const metadata: Metadata = {
-  title: "Mandarin Vacation",
-  description: "Holiday Membership & Timeshare CRM",
+  metadataBase: new URL("https://mandarinworldwidevacations.com"),
+  title: "Mandarin Worldwide Vacations",
+  description: "Mandarin Worldwide Vacations — holiday membership and timeshare programs.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

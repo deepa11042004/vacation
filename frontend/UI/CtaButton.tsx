@@ -15,6 +15,8 @@ export interface CtaButtonProps {
   disabled?: boolean;
   "aria-label"?: string;
   type?: "button" | "submit" | "reset";
+  target?: React.HTMLAttributeAnchorTarget;
+  rel?: string;
 }
 
 // ── Size Config

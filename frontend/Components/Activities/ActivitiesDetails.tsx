@@ -4,6 +4,13 @@ import { Minus, Clock } from "lucide-react";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
 
+const WHATSAPP_NUMBER = "919990942211";
+
+function whatsappHref(activityTitle: string) {
+  const message = `Hi, I'm interested in booking the ${activityTitle} activity. Could you share more details?`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
 interface ActivityItem {
   id: string;
   title: string;
@@ -116,10 +123,12 @@ function ActivityCard({ item }: { item: ActivityItem }) {
           </div>
 
           <CtaButton
-            text="Read Details"
+            text="Book Now"
             variant="white"
             size="sm"
-            href={`/activities/${item.id}`}
+            href={whatsappHref(item.title)}
+            target="_blank"
+            rel="noopener noreferrer"
           />
         </div>
       </div>
