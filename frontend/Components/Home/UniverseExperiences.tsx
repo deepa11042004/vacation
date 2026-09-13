@@ -59,13 +59,19 @@ const CARDS: ExperienceCard[] = [
   {
     id: 4,
     location: "Munnar",
-    image: "/Img/munnar.jpg",
+    image:
+      "https://images.unsplash.com/photo-1730351111586-1c98c8049f6f?auto=format&fit=crop&w=1000&q=80",
     images: [
-      "/Img/munnar.jpg",
-      "https://plus.unsplash.com/premium_photo-1697730314165-2cd71dc3a6a4?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1629813538702-64c925934e19?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1637066742971-726bee8d9f56?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1742106854508-3b9172e52545?auto=format&fit=crop&w=1000&q=80",
+      // Tea trails
+      "https://images.unsplash.com/photo-1730351111586-1c98c8049f6f?auto=format&fit=crop&w=1000&q=80",
+      // Jeep safari
+      "https://images.unsplash.com/photo-1652885363231-b0cb27a13197?auto=format&fit=crop&w=1000&q=80",
+      // Authentic regional dining
+      "https://plus.unsplash.com/premium_photo-1723672850413-05d48ebf0c4f?auto=format&fit=crop&w=1000&q=80",
+      // Waterfall trek
+      "https://images.unsplash.com/photo-1684574409329-d8e82157ee85?auto=format&fit=crop&w=1000&q=80",
+      // Misty tea hills viewpoint
+      "https://images.unsplash.com/photo-1491497895121-1334fc14d8c9?auto=format&fit=crop&w=1000&q=80",
     ],
   },
   {
