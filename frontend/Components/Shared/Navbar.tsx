@@ -54,7 +54,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 top-0 z-1000 bg-[#141414]/90 backdrop-blur-md border-b border-white/10 py-4 px-4 md:px-8 lg:px-10 rounded-b-4xl shadow-lg transition-all duration-300">
+      <nav className="fixed inset-x-0 top-0 z-1000 bg-[#141414]/90 backdrop-blur-md border-b border-white/10 py-2 px-4 md:px-8 lg:px-10 rounded-b-4xl shadow-lg transition-all duration-300">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
@@ -63,7 +63,7 @@ export default function Navbar() {
               alt="Mandarin Worldwide Vacations Logo"
               width={330}
               height={212}
-              className="h-16 sm:h-20 md:h-24 w-auto max-w-none object-contain"
+              className="h-14 sm:h-16 md:h-18 w-auto max-w-none object-contain"
               priority
             />
           </Link>
