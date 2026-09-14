@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://mwvpl.com";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
     return [
       {
         source: "/api/:path*",

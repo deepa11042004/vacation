@@ -37,6 +37,7 @@ const navItems: NavItem[] = [
       { label: "Internal", url: "/hotels/internal" },
     ],
   },
+  { label: "Itinerary", url: "/itinerary" },
   { label: "Contact", url: "/contact" },
 ];
 
@@ -45,7 +46,23 @@ const navItems: NavItem[] = [
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+
+  // Scroll listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -54,7 +71,13 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 top-0 z-1000 bg-[#141414]/90 backdrop-blur-md border-b border-white/10 py-2 px-4 md:px-8 lg:px-10 rounded-b-4xl shadow-lg transition-all duration-300">
+      <nav
+        className={`fixed inset-x-0 top-0 z-1000 py-2 px-4 md:px-8 lg:px-10 transition-all duration-500 ease-in-out ${
+          isScrolled || mobileMenuOpen
+            ? "bg-[#141414]/90 backdrop-blur-md border-b border-white/10 rounded-b-4xl shadow-lg"
+            : "bg-transparent border-b border-transparent shadow-none"
+        }`}
+      >
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">

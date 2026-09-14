@@ -207,12 +207,17 @@ export default function AllItineraries() {
                         alt={item.name}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out brightness-[0.96]"
+                        className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out brightness-[0.97]"
                         unoptimized
                       />
                       {item.badge && (
-                        <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-[11px] font-bold px-3 py-1.5 rounded-full text-neutral-900 shadow-sm">
+                        <span className="absolute top-4 left-4 bg-black/75 backdrop-blur-md text-[11px] font-bold px-3 py-1.5 rounded-full text-white shadow-sm">
                           {item.badge}
+                        </span>
+                      )}
+                      {item.category && (
+                        <span className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md text-[11px] font-bold px-3 py-1.5 rounded-full text-neutral-900 shadow-sm">
+                          {item.category}
                         </span>
                       )}
                     </div>

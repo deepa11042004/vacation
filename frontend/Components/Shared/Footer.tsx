@@ -44,6 +44,12 @@ export default function Footer() {
                 Destination
               </Link>
               <Link
+                href="/itinerary"
+                className="hover:text-white transition-colors"
+              >
+                Itinerary
+              </Link>
+              <Link
                 href="/login"
                 className="hover:text-white transition-colors"
               >
