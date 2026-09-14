@@ -296,13 +296,11 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
         <div className="relative z-10 flex flex-col h-full">
           <div className="flex justify-between items-center mb-6 gap-2">
             <Image
-              src="/Img/fanlogo.png"
+              src="/Img/fanlogo-compact.png"
               alt="Mandarin Worldwide Vacations"
-              width={160}
+              width={95}
               height={48}
-              className={`h-10 md:h-12 w-auto max-w-[130px] sm:max-w-[170px] object-contain shrink-0 ${
-                isLight ? "" : "brightness-200"
-              }`}
+              className="h-10 md:h-12 w-auto max-w-[130px] sm:max-w-[170px] object-contain shrink-0"
             />
             <div className="flex gap-2 shrink-0">
               <span className={`px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold tracking-wider uppercase backdrop-blur-md ${
