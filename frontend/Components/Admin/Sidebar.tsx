@@ -45,6 +45,13 @@ const sections = [
     ],
   },
   {
+    label: "Gift Voucher",
+    items: [
+      { href: "/admin/vouchers/create",           label: "Create Voucher",     icon: FilePlus,        subtitle: "Generate gift voucher",  section: "vouchers" },
+      { href: "/admin/vouchers",                  label: "All Vouchers",       icon: ReceiptText,     subtitle: "Manage & resend email",  section: "vouchers" },
+    ],
+  },
+  {
     label: "Catalog",
     items: [
 

@@ -9,6 +9,7 @@ export const SECTIONS: SectionDef[] = [
   { key: 'dashboard',        label: 'Dashboard',           href: '/admin/dashboard' },
 
   { key: 'clients',          label: 'All Clients', href: '/admin/clients' },
+  { key: 'vouchers',         label: 'Gift Vouchers',       href: '/admin/vouchers' },
   { key: 'create_invoice',   label: 'Create New Invoice',  href: '/admin/create-invoice' },
   { key: 'invoices',         label: 'All Invoices',        href: '/admin/invoices' },
 
@@ -29,6 +30,8 @@ const ROUTE_MAP: { prefix: string; section: string }[] = [
   { prefix: '/admin/settings/email-template', section: 'email_template' },
   { prefix: '/admin/clients/new',             section: 'clients' },
   { prefix: '/admin/clients',                 section: 'clients' },
+  { prefix: '/admin/vouchers/create',         section: 'vouchers' },
+  { prefix: '/admin/vouchers',                section: 'vouchers' },
   { prefix: '/admin/create-invoice',          section: 'create_invoice' },
   { prefix: '/admin/invoices',                section: 'invoices' },
 
