@@ -10,6 +10,9 @@ const LOCATION_FALLBACKS = [
   "https://images.unsplash.com/photo-1533692328991-08159ff19fca?auto=format&fit=crop&w=800&q=80",
 ];
 
+// Reuses the same fallback pools as hotels/locations (no new external URLs).
+const ITINERARY_FALLBACKS = [...HOTEL_FALLBACKS, ...LOCATION_FALLBACKS];
+
 // Deterministic pick so the same card always renders the same fallback on
 // both server and client render passes (avoids hydration mismatches) while
 // still varying across different hotels/locations.
@@ -65,4 +68,18 @@ export function locationImageUrl(
   if (imagePath.startsWith("http")) return toProxiedPath(imagePath);
   if (imagePath.startsWith("/")) return imagePath;
   return `/uploads/locations/${encodeURIComponent(imagePath)}`;
+}
+
+export function itineraryImageFallback(seed?: number | string): string {
+  return pickFallback(ITINERARY_FALLBACKS, seed);
+}
+
+export function itineraryImageUrl(
+  imagePath: string | null | undefined,
+  seed?: number | string
+): string {
+  if (!imagePath) return pickFallback(ITINERARY_FALLBACKS, seed);
+  if (imagePath.startsWith("http")) return toProxiedPath(imagePath);
+  if (imagePath.startsWith("/")) return imagePath;
+  return `/uploads/itineraries/${encodeURIComponent(imagePath)}`;
 }

@@ -5,6 +5,8 @@ import { User } from '../../modules/users/models/User.model';
 import { Location } from '../../modules/locations/models/Location.model';
 import { Hotel } from '../../modules/hotels/models/Hotel.model';
 import { HotelImage } from '../../modules/hotels/models/HotelImage.model';
+import { Itinerary } from '../../modules/itineraries/models/Itinerary.model';
+import { ItineraryImage } from '../../modules/itineraries/models/ItineraryImage.model';
 import { Membership } from '../../modules/memberships/models/Membership.model';
 import { Payment } from '../../modules/payments/models/Payment.model';
 import { Invoice } from '../../modules/invoices/models/Invoice.model';
@@ -42,6 +44,8 @@ export const sequelize = new Sequelize({
     Location,
     Hotel,
     HotelImage,
+    Itinerary,
+    ItineraryImage,
     Membership,
     Payment,
     Invoice,

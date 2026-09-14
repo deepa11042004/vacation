@@ -11,6 +11,7 @@ import {
   MapPin,
   LogOut,
   Hotel,
+  Route,
   Plane,
   Mail,
   ReceiptText,
@@ -49,6 +50,7 @@ const sections = [
 
       { href: "/admin/hotels",                    label: "Hotels",             icon: Hotel,           subtitle: null, section: "hotels" },
       { href: "/admin/locations",                 label: "Locations",          icon: MapPin,          subtitle: null, section: "locations" },
+      { href: "/admin/itineraries",               label: "Itineraries",        icon: Route,           subtitle: null, section: "itineraries" },
     ],
   },
   {

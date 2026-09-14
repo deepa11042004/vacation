@@ -14,6 +14,7 @@ export const SECTIONS: SectionDef[] = [
 
   { key: 'hotels',           label: 'Hotels',              href: '/admin/hotels' },
   { key: 'locations',        label: 'Locations',           href: '/admin/locations' },
+  { key: 'itineraries',      label: 'Itineraries',         href: '/admin/itineraries' },
   { key: 'email_template',   label: 'Email Template',      href: '/admin/settings/email-template' },
   { key: 'panel_users',      label: 'Panel Users',         href: '/admin/settings/panel-users', adminOnly: true },
   { key: 'staff',            label: 'Staff',               href: '/admin/staff' },
@@ -33,6 +34,7 @@ const ROUTE_MAP: { prefix: string; section: string }[] = [
 
   { prefix: '/admin/hotels',                  section: 'hotels' },
   { prefix: '/admin/locations',               section: 'locations' },
+  { prefix: '/admin/itineraries',             section: 'itineraries' },
   { prefix: '/admin/dashboard',               section: 'dashboard' },
   { prefix: '/admin/staff',                   section: 'staff' },
   { prefix: '/admin/travel-queries',         section: 'travel_queries' },

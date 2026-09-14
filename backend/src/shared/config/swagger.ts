@@ -19,6 +19,7 @@ export const getApiDocs = () => {
         { name: 'Invoices', description: 'Invoice generation and email delivery' },
         { name: 'Hotels', description: 'Hotel / property listings with images' },
         { name: 'Locations', description: 'Destination locations (domestic & international)' },
+        { name: 'Itineraries', description: 'Curated multi-day travel itineraries with schedule, highlights and gallery' },
         { name: 'Settings', description: 'Application settings — email templates, company info' },
       ],
       components: {
