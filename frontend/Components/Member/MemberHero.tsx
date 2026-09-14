@@ -50,7 +50,7 @@ export default function MemberHero() {
             
             <div className="flex flex-col items-center justify-center h-full z-10 gap-2">
               <div className="w-44 h-32 relative opacity-95">
-                <Image src="/Img/fanlogo.png" alt="" fill className="object-contain brightness-200" />
+                <Image src="/Img/fanlogo.png" alt="" fill className="object-contain" />
               </div>
               <h3 className="text-[11px] font-bold tracking-[0.35em] font-serif uppercase text-white">EBONY</h3>
             </div>
@@ -94,7 +94,7 @@ export default function MemberHero() {
             
             <div className="flex flex-col items-center justify-center h-full z-10 gap-2">
               <div className="w-44 h-32 relative opacity-95">
-                <Image src="/Img/fanlogo.png" alt="" fill className="object-contain brightness-200" />
+                <Image src="/Img/fanlogo.png" alt="" fill className="object-contain" />
               </div>
               <h3 className="text-[11px] font-bold tracking-[0.35em] font-serif uppercase text-emerald-100">JADE</h3>
             </div>

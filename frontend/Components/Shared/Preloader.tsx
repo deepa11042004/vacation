@@ -50,7 +50,7 @@ export default function Preloader() {
     <div
       aria-hidden={done}
       role="status"
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#040B31] transition-opacity duration-[600ms] ease-out"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#FAF4EC] transition-opacity duration-[600ms] ease-out"
       style={{ opacity: done ? 0 : 1 }}
     >
       <div className="preloader-logo flex flex-col items-center">
@@ -58,13 +58,13 @@ export default function Preloader() {
           src="/Img/fanlogo.png"
           alt="Mandarin Worldwide Vacations"
           width={330}
-          height={136}
+          height={212}
           priority
           className="w-[240px] sm:w-[300px] md:w-[330px] h-auto object-contain"
         />
 
         {/* progress track */}
-        <div className="mt-8 h-[2px] w-[180px] sm:w-[220px] overflow-hidden rounded-full bg-white/15">
+        <div className="mt-8 h-[2px] w-[180px] sm:w-[220px] overflow-hidden rounded-full bg-[#141414]/10">
           <div className="preloader-bar-fill h-full w-full rounded-full bg-gradient-to-r from-[#E8C15B] to-[#F5D98B]" />
         </div>
       </div>

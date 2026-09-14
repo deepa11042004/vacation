@@ -244,12 +244,10 @@ function CardSlider({ group, tier, onSelectPlan }: CardSliderProps) {
                 <div className="flex items-center gap-3">
                   <div className="relative h-10 w-24 sm:h-12 sm:w-28 shrink-0">
                     <Image
-                      src="/Img/fanlogo.png"
+                      src="/Img/fanlogo-compact.png"
                       alt="Logo"
                       fill
-                      className={`object-contain ${
-                        tier.slug === "ivory" ? "" : "brightness-200"
-                      }`}
+                      className="object-contain"
                       priority={idx < 3}
                     />
                   </div>
@@ -468,7 +466,7 @@ export default function JoinDetail({
                     src="/Img/fanlogo.png"
                     alt=""
                     fill
-                    className="object-contain brightness-200"
+                    className="object-contain"
                   />
                 </div>
                 <h3 className="text-[11px] font-bold tracking-[0.35em] font-serif uppercase text-white">
@@ -522,7 +520,7 @@ export default function JoinDetail({
                     src="/Img/fanlogo.png"
                     alt=""
                     fill
-                    className="object-contain brightness-200"
+                    className="object-contain"
                   />
                 </div>
                 <h3 className="text-[11px] font-bold tracking-[0.35em] font-serif uppercase text-emerald-100">
