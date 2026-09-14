@@ -58,10 +58,13 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [relatedHotels, setRelatedHotels] = useState<RelatedHotel[]>([]);
 
-  const galleryImages =
-    property.images && property.images.length > 0
-      ? property.images
-      : [FALLBACK_IMAGE];
+  const galleryImages = Array.from(
+    new Set(
+      property.images && property.images.length > 0
+        ? property.images.filter(Boolean)
+        : [hotelImageFallback(property.id)]
+    )
+  );
 
   const openGallery = (index: number) => {
     setCurrentIndex(index);
@@ -108,7 +111,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
       <div className="space-y-4 mb-10">
         {/* Main Large Panel */}
         <div
-          className="relative w-full h-[65vh] sm:h-[75vh] md:h-[680px] lg:h-[740px] rounded-2xl overflow-hidden cursor-pointer group shadow-xl"
+          className="relative w-full h-[65vh] sm:h-[75vh] md:h-[680px] lg:h-[740px] rounded-2xl overflow-hidden cursor-pointer group shadow-xl bg-neutral-100"
           onClick={() => openGallery(0)}
         >
           <FallbackImage
@@ -122,38 +125,54 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
           />
         </div>
 
-        {/* Gallery View - 6 Thumbnail Images */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 h-[18vh] md:h-[160px]">
-          {galleryImages.slice(1, 7).map((img, index) => {
-            const actualIndex = index + 1;
-            const isLast = index === 5;
-            const remaining = galleryImages.length - 7;
+        {/* Gallery View - Thumbnail Images (only if more than 1 image available) */}
+        {galleryImages.length > 1 && (
+          <div
+            className={`grid gap-3 sm:gap-4 h-[18vh] md:h-[160px] ${
+              galleryImages.length === 2
+                ? "grid-cols-2 max-w-md"
+                : galleryImages.length === 3
+                ? "grid-cols-2 max-w-xl"
+                : galleryImages.length === 4
+                ? "grid-cols-3 max-w-3xl"
+                : galleryImages.length === 5
+                ? "grid-cols-4 max-w-5xl"
+                : galleryImages.length === 6
+                ? "grid-cols-5"
+                : "grid-cols-2 sm:grid-cols-3 md:grid-cols-6"
+            }`}
+          >
+            {galleryImages.slice(1, 7).map((img, index) => {
+              const actualIndex = index + 1;
+              const isLast = index === Math.min(5, galleryImages.length - 2);
+              const remaining = galleryImages.length - 7;
 
-            return (
-              <div
-                key={actualIndex}
-                className="relative w-full h-full rounded-2xl overflow-hidden cursor-pointer group shadow-xs"
-                onClick={() => openGallery(actualIndex)}
-              >
-                <FallbackImage
-                  src={img}
-                  fallbackSrc={hotelImageFallback(property.id)}
-                  alt={`Gallery tile ${actualIndex}`}
-                  fill
-                  className="object-cover group-hover:scale-[1.04] transition-transform duration-500"
-                  unoptimized
-                />
-                {isLast && remaining > 0 && (
-                  <div className="absolute inset-0 bg-neutral-900/50 group-hover:bg-neutral-900/60 transition-colors flex items-center justify-center backdrop-blur-[2px]">
-                    <span className="text-white font-bold text-sm md:text-base border-b-2 border-white pb-0.5 tracking-wider">
-                      +{remaining} photos
-                    </span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+              return (
+                <div
+                  key={actualIndex}
+                  className="relative w-full h-full rounded-2xl overflow-hidden cursor-pointer group shadow-xs bg-neutral-100"
+                  onClick={() => openGallery(actualIndex)}
+                >
+                  <FallbackImage
+                    src={img}
+                    fallbackSrc={hotelImageFallback(property.id)}
+                    alt={`Gallery tile ${actualIndex}`}
+                    fill
+                    className="object-cover group-hover:scale-[1.04] transition-transform duration-500"
+                    unoptimized
+                  />
+                  {isLast && remaining > 0 && (
+                    <div className="absolute inset-0 bg-neutral-900/50 group-hover:bg-neutral-900/60 transition-colors flex items-center justify-center backdrop-blur-[2px]">
+                      <span className="text-white font-bold text-sm md:text-base border-b-2 border-white pb-0.5 tracking-wider">
+                        +{remaining} photos
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* --- Ultra-Fullscreen Lightbox Modal Overlay View --- */}
@@ -161,9 +180,13 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
         <div className="fixed inset-0 z-[9999] w-screen h-screen flex items-center justify-center bg-black/98 backdrop-blur-2xl select-none overflow-hidden">
           {/* Top Control Bar */}
           <div className="absolute top-3 left-0 right-0 z-40 flex items-center justify-between px-4 sm:px-8 md:px-12 pointer-events-none">
-            <span className="pointer-events-auto text-neutral-200 text-xs sm:text-sm font-bold tracking-wider bg-black/70 border border-white/20 px-4 py-1.5 rounded-full backdrop-blur-md shadow-2xl">
-              {currentIndex + 1} / {galleryImages.length}
-            </span>
+            {galleryImages.length > 1 ? (
+              <span className="pointer-events-auto text-neutral-200 text-xs sm:text-sm font-bold tracking-wider bg-black/70 border border-white/20 px-4 py-1.5 rounded-full backdrop-blur-md shadow-2xl">
+                {currentIndex + 1} / {galleryImages.length}
+              </span>
+            ) : (
+              <span />
+            )}
             <button
               onClick={() => setIsOpen(false)}
               className="pointer-events-auto p-3 text-neutral-200 hover:text-white bg-black/70 hover:bg-black/90 border border-white/20 rounded-full transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
@@ -173,19 +196,21 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             </button>
           </div>
 
-          {/* Left Arrow Button */}
-          <button
-            onClick={() =>
-              setCurrentIndex(
-                (prev) =>
-                  (prev - 1 + galleryImages.length) % galleryImages.length
-              )
-            }
-            className="absolute left-2 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 z-40 p-3 sm:p-4 text-white bg-black/50 hover:bg-black/90 backdrop-blur-md rounded-full transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95 border border-white/20"
-            aria-label="Previous image"
-          >
-            <ChevronLeft className="w-7 h-7 sm:w-9 sm:h-9" />
-          </button>
+          {/* Left Arrow Button (if multiple images) */}
+          {galleryImages.length > 1 && (
+            <button
+              onClick={() =>
+                setCurrentIndex(
+                  (prev) =>
+                    (prev - 1 + galleryImages.length) % galleryImages.length
+                )
+              }
+              className="absolute left-2 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 z-40 p-3 sm:p-4 text-white bg-black/50 hover:bg-black/90 backdrop-blur-md rounded-full transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95 border border-white/20"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="w-7 h-7 sm:w-9 sm:h-9" />
+            </button>
+          )}
 
           {/* Main Fullscreen Display Image Container */}
           <div className="relative w-[98vw] h-[92vh] max-w-[99vw] max-h-[96vh] flex items-center justify-center p-2 sm:p-4">
@@ -200,42 +225,46 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
             />
           </div>
 
-          {/* Right Arrow Button */}
-          <button
-            onClick={() =>
-              setCurrentIndex((prev) => (prev + 1) % galleryImages.length)
-            }
-            className="absolute right-2 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 z-40 p-3 sm:p-4 text-white bg-black/50 hover:bg-black/90 backdrop-blur-md rounded-full transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95 border border-white/20"
-            aria-label="Next image"
-          >
-            <ChevronRight className="w-7 h-7 sm:w-9 sm:h-9" />
-          </button>
+          {/* Right Arrow Button (if multiple images) */}
+          {galleryImages.length > 1 && (
+            <button
+              onClick={() =>
+                setCurrentIndex((prev) => (prev + 1) % galleryImages.length)
+              }
+              className="absolute right-2 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 z-40 p-3 sm:p-4 text-white bg-black/50 hover:bg-black/90 backdrop-blur-md rounded-full transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95 border border-white/20"
+              aria-label="Next image"
+            >
+              <ChevronRight className="w-7 h-7 sm:w-9 sm:h-9" />
+            </button>
+          )}
 
-          {/* Bottom Floating Compact Thumbnails Bar */}
-          <div className="absolute bottom-3 left-0 right-0 z-40 px-4 flex justify-center pointer-events-none">
-            <div className="pointer-events-auto flex items-center gap-2 overflow-x-auto max-w-[92vw] py-1.5 px-3 bg-black/70 border border-white/15 rounded-2xl backdrop-blur-md scrollbar-none shadow-2xl">
-              {galleryImages.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentIndex(idx)}
-                  className={`relative shrink-0 w-14 h-10 sm:w-18 sm:h-12 rounded-xl overflow-hidden transition-all border-2 cursor-pointer ${
-                    idx === currentIndex
-                      ? "border-blue-500 scale-105 opacity-100 ring-4 ring-blue-500/50"
-                      : "border-transparent opacity-40 hover:opacity-85"
-                  }`}
-                >
-                  <FallbackImage
-                    src={img}
-                    fallbackSrc={hotelImageFallback(property.id)}
-                    alt={`Thumb tracker ${idx + 1}`}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                </button>
-              ))}
+          {/* Bottom Floating Compact Thumbnails Bar (if multiple images) */}
+          {galleryImages.length > 1 && (
+            <div className="absolute bottom-3 left-0 right-0 z-40 px-4 flex justify-center pointer-events-none">
+              <div className="pointer-events-auto flex items-center gap-2 overflow-x-auto max-w-[92vw] py-1.5 px-3 bg-black/70 border border-white/15 rounded-2xl backdrop-blur-md scrollbar-none shadow-2xl">
+                {galleryImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentIndex(idx)}
+                    className={`relative shrink-0 w-14 h-10 sm:w-18 sm:h-12 rounded-xl overflow-hidden transition-all border-2 cursor-pointer ${
+                      idx === currentIndex
+                        ? "border-blue-500 scale-105 opacity-100 ring-4 ring-blue-500/50"
+                        : "border-transparent opacity-40 hover:opacity-85"
+                    }`}
+                  >
+                    <FallbackImage
+                      src={img}
+                      fallbackSrc={hotelImageFallback(property.id)}
+                      alt={`Thumb tracker ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
