@@ -107,7 +107,22 @@ async function request<T = unknown>(
     return undefined as T;
   }
 
-  return res.json() as Promise<T>;
+  const contentType = res.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = data?.message || data?.error || (data?.errors && Array.isArray(data.errors) ? data.errors.map((e: any) => e.message || e).join(", ") : null) || `Request failed with status ${res.status}`;
+      throw new Error(msg);
+    }
+    return data as T;
+  }
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Server responded with status ${res.status}`);
+  }
+
+  return res.text() as Promise<T>;
 }
 
 // ── Public API ─────────────────────────────────────────────────────────────

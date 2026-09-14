@@ -11,6 +11,7 @@ import BookDetail from "@/Components/Home/BookDetail";
 import Partners from "@/Components/Home/Partners";
 import LogoAbout from "@/Components/About/LogoAbout";
 import MembershipForm from "@/Components/Home/MembershipForm";
+import RedeemVoucherSection from "@/Components/Home/RedeemVoucherSection";
 
 function page() {
   return (
@@ -40,6 +41,7 @@ function page() {
       <Itinerary />
       <ActivitiesGrid />
       <Partners />
+      <RedeemVoucherSection />
       <MembershipForm />
       <Testimonials />
       <FAQsec />

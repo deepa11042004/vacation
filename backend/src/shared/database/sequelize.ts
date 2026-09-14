@@ -15,6 +15,7 @@ import { CallRecording } from '../../modules/call-recordings/models/CallRecordin
 import { KycDocument } from '../../modules/kyc-documents/models/KycDocument.model';
 import { Staff } from '../../modules/staff/models/Staff.model';
 import { TravelQuery } from '../../modules/travel-queries/models/TravelQuery.model';
+import { Voucher } from '../../modules/vouchers/models/Voucher.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -52,6 +53,7 @@ export const sequelize = new Sequelize({
     KycDocument,
     Staff,
     TravelQuery,
+    Voucher,
   ],
 });
 
