@@ -59,11 +59,11 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <Image
-              src="/Img/fanlogo-compact.png"
+              src="/Img/fanlogo.png"
               alt="Mandarin Worldwide Vacations Logo"
-              width={79}
-              height={40}
-              className="h-9 sm:h-12 md:h-16 w-auto max-w-[140px] sm:max-w-[200px] md:max-w-none object-contain"
+              width={330}
+              height={212}
+              className="h-16 sm:h-20 md:h-24 w-auto max-w-none object-contain"
               priority
             />
           </Link>
