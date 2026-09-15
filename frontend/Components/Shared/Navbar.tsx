@@ -37,6 +37,7 @@ const navItems: NavItem[] = [
       { label: "Internal", url: "/hotels/internal" },
     ],
   },
+  { label: "Itinerary", url: "/itinerary" },
   { label: "Contact", url: "/contact" },
 ];
 
@@ -45,7 +46,23 @@ const navItems: NavItem[] = [
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+
+  // Scroll listener
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -54,12 +71,18 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 top-0 z-1000 bg-[#141414]/90 backdrop-blur-md border-b border-white/10 py-2 px-4 md:px-8 lg:px-10 rounded-b-4xl shadow-lg transition-all duration-300">
+      <nav
+        className={`fixed inset-x-0 top-0 z-1000 py-2 px-4 md:px-8 lg:px-10 transition-all duration-500 ease-in-out ${
+          isScrolled || mobileMenuOpen
+            ? "bg-[#FDF7EF] backdrop-blur-md border-b border-black/10 rounded-b-4xl shadow-lg"
+            : "bg-transparent border-b border-transparent shadow-none"
+        }`}
+      >
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <Image
-              src="/Img/fanlogo.png"
+              src={(isScrolled || mobileMenuOpen) ? "/C6962E7E-5B0E-4164-B527-746F400C487D.PNG" : "/Img/fanlogo.png"}
               alt="Mandarin Worldwide Vacations Logo"
               width={330}
               height={212}
@@ -74,7 +97,11 @@ export default function Navbar() {
               <div key={item.label} className="group relative">
                 <Link
                   href={item.url}
-                  className="flex items-center gap-1 rounded-full px-3 xl:px-4 py-2 text-[13px] xl:text-sm font-medium text-white hover:bg-white hover:text-black transition-colors duration-300"
+                  className={`flex items-center gap-1 rounded-full px-3 xl:px-4 py-2 text-[13px] xl:text-sm font-medium transition-colors duration-300 ${
+                    isScrolled || mobileMenuOpen
+                      ? "text-black hover:bg-black/10"
+                      : "text-white hover:bg-white hover:text-black"
+                  }`}
                 >
                   {item.label}
                   {item.dropdown && (
@@ -106,7 +133,7 @@ export default function Navbar() {
             <CtaButton text="Login" variant="blue" href="/login" size="sm" />
             <CtaButton
               text="Join Now"
-              variant="outline"
+              variant="blue"
               href="/join"
               size="sm"
             />
@@ -124,7 +151,11 @@ export default function Navbar() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              className="p-2 rounded-lg text-white hover:bg-white hover:text-black transition-colors"
+              className={`p-2 rounded-lg transition-colors ${
+                isScrolled || mobileMenuOpen
+                  ? "text-black hover:bg-black/10"
+                  : "text-white hover:bg-white hover:text-black"
+              }`}
             >
               {mobileMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -153,7 +184,11 @@ export default function Navbar() {
                         openDropdown === item.label ? null : item.label,
                       )
                     }
-                    className="px-4 py-3 text-sm font-medium text-white hover:bg-white/10 hover:text-[#E8C15B] rounded-xl transition-colors flex justify-between items-center w-full text-left cursor-pointer"
+                    className={`px-4 py-3 text-sm font-medium rounded-xl transition-colors flex justify-between items-center w-full text-left cursor-pointer ${
+                      isScrolled || mobileMenuOpen
+                        ? "text-black hover:bg-black/5 hover:text-[#E8C15B]"
+                        : "text-white hover:bg-white/10 hover:text-[#E8C15B]"
+                    }`}
                   >
                     {item.label}
                     <ChevronDown
@@ -163,7 +198,11 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={item.url}
-                    className="px-4 py-3 text-sm font-medium text-white hover:bg-white/10 hover:text-[#E8C15B] rounded-xl transition-colors flex justify-between items-center"
+                    className={`px-4 py-3 text-sm font-medium rounded-xl transition-colors flex justify-between items-center ${
+                      isScrolled || mobileMenuOpen
+                        ? "text-black hover:bg-black/5 hover:text-[#E8C15B]"
+                        : "text-white hover:bg-white/10 hover:text-[#E8C15B]"
+                    }`}
                   >
                     {item.label}
                   </Link>
@@ -182,7 +221,11 @@ export default function Navbar() {
                         <Link
                           key={dropItem.label}
                           href={dropItem.url}
-                          className="px-4 py-2 text-[13px] text-white/80 hover:text-black hover:bg-white transition-colors"
+                          className={`px-4 py-2 text-[13px] transition-colors ${
+                            isScrolled || mobileMenuOpen
+                              ? "text-black/80 hover:text-black hover:bg-black/5"
+                              : "text-white/80 hover:text-black hover:bg-white"
+                          }`}
                         >
                           {dropItem.label}
                         </Link>

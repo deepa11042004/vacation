@@ -62,10 +62,11 @@ export default async function ItineraryDetailPage({
   if (!itinerary) return notFound();
 
   const sortedImages = [...(itinerary.gallery ?? [])].sort((a, b) => a.sort_order - b.sort_order);
-  const images = [
+  const rawImages = [
     ...(itinerary.image ? [itineraryImageUrl(itinerary.image, itinerary.itinerary_id)] : []),
     ...sortedImages.map((img) => itineraryImageUrl(img.image_path, itinerary!.itinerary_id)),
   ];
+  const images = Array.from(new Set(rawImages));
 
   const itineraryData: ItineraryData = {
     id: itinerary.itinerary_id,

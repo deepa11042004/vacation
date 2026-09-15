@@ -53,9 +53,12 @@ export default async function HotelDetailsPage({
 
   if (!hotel) return notFound();
 
-  const sortedImages = [...(hotel.images ?? [])].sort(
-    (a, b) => a.sort_order - b.sort_order
-  );
+  const sortedImages = [...(hotel.images ?? [])]
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .filter((img) => img.image_path && /\.(jpe?g|png|webp|avif|gif)$/i.test(img.image_path.split("?")[0]));
+
+  const rawImages = sortedImages.map((img) => hotelImageUrl(img.image_path, hotel!.hotel_id));
+  const uniqueImages = Array.from(new Set(rawImages));
 
   const propertyData: PropertyData = {
     id: hotel.hotel_id,
@@ -64,7 +67,7 @@ export default async function HotelDetailsPage({
       ? `${hotel.location.location_name}, ${hotel.location.country}`
       : hotel.address ?? "",
     description: stripHtml(hotel.description),
-    images: sortedImages.map((img) => hotelImageUrl(img.image_path, hotel.hotel_id)),
+    images: uniqueImages,
     address: hotel.address ?? null,
     mapLink: hotel.map_link ?? null,
     locationId: hotel.location_id,
