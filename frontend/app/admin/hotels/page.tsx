@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { api } from "@/lib/api";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { api, getToken } from "@/lib/api";
 import Modal from "@/Components/Admin/Modal";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import Image from "next/image";
@@ -16,6 +16,9 @@ import {
   RotateCcw,
   ShieldAlert,
   Building2,
+  ImagePlus,
+  Eye,
+  X,
 } from "lucide-react";
 import { hotelImageUrl } from "@/lib/imageUrl";
 
@@ -126,6 +129,13 @@ export default function HotelsPage() {
   const [saving, setSaving] = useState(false);
   const [formErr, setFormErr] = useState("");
 
+  const [editImages, setEditImages] = useState<HotelImage[]>([]);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageDeletingId, setImageDeletingId] = useState<number | null>(null);
+  const [imageErr, setImageErr] = useState("");
+  const [viewImage, setViewImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [confirm, setConfirm] = useState<{
     type: "soft" | "permanent" | "restore";
     hotel: Hotel;
@@ -173,6 +183,8 @@ export default function HotelsPage() {
     setEditHotel(null);
     setForm({ ...EMPTY });
     setFormErr("");
+    setEditImages([]);
+    setImageErr("");
     setShowModal(true);
   }
 
@@ -190,7 +202,74 @@ export default function HotelsPage() {
       remarks: h.remarks ?? "",
     });
     setFormErr("");
+    setEditImages([...(h.images ?? [])].sort((a, b) => a.sort_order - b.sort_order));
+    setImageErr("");
     setShowModal(true);
+  }
+
+  function patchHotelImages(hotelId: number, images: HotelImage[]) {
+    setHotels((prev) =>
+      prev.map((h) => (h.hotel_id === hotelId ? { ...h, images } : h))
+    );
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (!file || !editHotel) return;
+
+    if (editImages.length >= 6) {
+      setImageErr("Maximum of 6 images per hotel.");
+      return;
+    }
+
+    setImageUploading(true);
+    setImageErr("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("sort_order", String(editImages.length));
+      const res = await fetch(`/api/hotels/${editHotel.hotel_id}/images`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${getToken()}` },
+        body: fd,
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to upload image.");
+      }
+      const newImage: HotelImage = data.data;
+      const next = [...editImages, newImage];
+      setEditImages(next);
+      patchHotelImages(editHotel.hotel_id, next);
+    } catch (err: any) {
+      setImageErr(err?.message ?? "Failed to upload image.");
+    } finally {
+      setImageUploading(false);
+    }
+  }
+
+  async function handleImageDelete(image: HotelImage) {
+    if (!editHotel) return;
+    setImageDeletingId(image.image_id);
+    setImageErr("");
+    try {
+      const res = await fetch(`/api/hotels/${editHotel.hotel_id}/images/${image.image_id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to delete image.");
+      }
+      const next = editImages.filter((img) => img.image_id !== image.image_id);
+      setEditImages(next);
+      patchHotelImages(editHotel.hotel_id, next);
+    } catch (err: any) {
+      setImageErr(err?.message ?? "Failed to delete image.");
+    } finally {
+      setImageDeletingId(null);
+    }
   }
 
   async function handleSave() {
@@ -632,6 +711,85 @@ export default function HotelsPage() {
             </div>
           </div>
 
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Images <span className="text-slate-400 font-normal">({editImages.length}/6)</span>
+            </label>
+            {editHotel ? (
+              <>
+                {imageErr && (
+                  <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2 mb-2">{imageErr}</p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {editImages.map((img) => (
+                    <div
+                      key={img.image_id}
+                      className="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-200 group bg-slate-100"
+                    >
+                      <Image
+                        src={hotelImageUrl(img.image_path)}
+                        alt="Hotel"
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
+                        <button
+                          type="button"
+                          onClick={() => setViewImage(hotelImageUrl(img.image_path))}
+                          title="View"
+                          className="p-1.5 rounded-full bg-white/90 text-slate-700 hover:bg-white"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleImageDelete(img)}
+                          disabled={imageDeletingId === img.image_id}
+                          title="Delete"
+                          className="p-1.5 rounded-full bg-white/90 text-red-600 hover:bg-white disabled:opacity-50"
+                        >
+                          {imageDeletingId === img.image_id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <X className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {editImages.length < 6 && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={imageUploading}
+                      className="w-20 h-20 rounded-lg border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-blue-600 hover:border-blue-400 transition-colors disabled:opacity-50"
+                    >
+                      {imageUploading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <ImagePlus className="w-4 h-4" />
+                          <span className="text-[10px]">Add</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+              </>
+            ) : (
+              <p className="text-xs text-slate-400">Save the hotel first to add images.</p>
+            )}
+          </div>
+
           <div className="flex justify-end gap-2 pt-1">
             <button
               onClick={() => { if (!saving) setShowModal(false); }}
@@ -682,6 +840,27 @@ export default function HotelsPage() {
         onConfirm={handleConfirmAction}
         onClose={() => { if (!busy) setConfirm(null); }}
       />
+
+      {/* Image Viewer */}
+      {viewImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-6"
+          onClick={() => setViewImage(null)}
+        >
+          <button
+            onClick={() => setViewImage(null)}
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <img
+            src={viewImage}
+            alt="Hotel"
+            className="max-w-full max-h-full rounded-lg object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
