@@ -107,7 +107,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
         </button>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-5">
+      <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto sidebar-scrollbar">
         {sections.map((section, si) => {
           const visibleItems = section.items.filter((item) => hasAccess(user, item.section));
           if (visibleItems.length === 0) return null;

@@ -51,3 +51,18 @@ body {
   .preloader-bar-fill { animation-duration: 5s; }
   .preloader-logo { animation: none; }
 }
+
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #38bdf8;
+  border-radius: 10px;
+}
+.sidebar-scrollbar {
+  scrollbar-color: #38bdf8 transparent;
+  scrollbar-width: thin;
+}
