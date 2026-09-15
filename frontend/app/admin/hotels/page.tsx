@@ -51,6 +51,7 @@ interface Hotel {
 }
 
 const HOTEL_TYPES = ["HOTEL", "RESORT", "VILLA", "APARTMENT", "HOMESTAY", "GUEST_HOUSE"];
+const MAX_HOTEL_IMAGES = 4;
 
 const inp =
   "w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500";
@@ -218,8 +219,8 @@ export default function HotelsPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
     if (!file || !editHotel) return;
 
-    if (editImages.length >= 6) {
-      setImageErr("Maximum of 6 images per hotel.");
+    if (editImages.length >= MAX_HOTEL_IMAGES) {
+      setImageErr(`Maximum of ${MAX_HOTEL_IMAGES} images per hotel.`);
       return;
     }
 
@@ -713,7 +714,7 @@ export default function HotelsPage() {
 
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">
-              Images <span className="text-slate-400 font-normal">({editImages.length}/6)</span>
+              Images <span className="text-slate-400 font-normal">({editImages.length}/{MAX_HOTEL_IMAGES})</span>
             </label>
             {editHotel ? (
               <>
@@ -759,7 +760,7 @@ export default function HotelsPage() {
                       </div>
                     </div>
                   ))}
-                  {editImages.length < 6 && (
+                  {editImages.length < MAX_HOTEL_IMAGES && (
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}

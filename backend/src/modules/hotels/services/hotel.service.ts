@@ -129,7 +129,7 @@ export class HotelService {
     }
 
     const currentCount = await this.hotelRepository.countImages(hotel_id);
-    if (currentCount >= 6) {
+    if (currentCount >= HOTEL_CONSTANTS.MAX_IMAGES) {
       throw new AppError(HOTEL_CONSTANTS.ERRORS.MAX_IMAGES_EXCEEDED, 400);
     }
 
