@@ -55,7 +55,7 @@ export default function Preloader() {
     >
       <div className="preloader-logo flex flex-col items-center">
         <Image
-          src="/Img/fanlogo.png"
+          src="/mandarine logo.PNG"
           alt="Mandarin Worldwide Vacations"
           width={330}
           height={212}

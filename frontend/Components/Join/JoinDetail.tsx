@@ -244,7 +244,7 @@ function CardSlider({ group, tier, onSelectPlan }: CardSliderProps) {
                 <div className="flex items-center gap-3">
                   <div className="relative h-10 w-24 sm:h-12 sm:w-28 shrink-0">
                     <Image
-                      src="/Img/fanlogo-compact.png"
+                      src="/mandarine logo.PNG"
                       alt="Logo"
                       fill
                       className="object-contain"
@@ -463,7 +463,7 @@ export default function JoinDetail({
               <div className="flex flex-col items-center justify-center h-full z-10 gap-2">
                 <div className="w-44 h-32 relative opacity-95">
                   <Image
-                    src="/Img/fanlogo.png"
+                    src="/mandarine logo.PNG"
                     alt=""
                     fill
                     className="object-contain"
@@ -490,7 +490,7 @@ export default function JoinDetail({
               <div className="flex flex-col items-center justify-center h-full z-10 gap-2">
                 <div className="w-48 h-36 relative">
                   <Image
-                    src="/Img/fanlogo.png"
+                    src="/mandarine logo.PNG"
                     alt=""
                     fill
                     className="object-contain"
@@ -517,7 +517,7 @@ export default function JoinDetail({
               <div className="flex flex-col items-center justify-center h-full z-10 gap-2">
                 <div className="w-44 h-32 relative opacity-95">
                   <Image
-                    src="/Img/fanlogo.png"
+                    src="/mandarine logo.PNG"
                     alt=""
                     fill
                     className="object-contain"

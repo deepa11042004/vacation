@@ -296,8 +296,8 @@ function TiltCard({ card }: { card: (typeof MEMBERSHIPS)[0] }) {
         <div className="relative z-10 flex flex-col h-full">
           <div className="flex justify-between items-center mb-6 gap-2">
             <Image
-              src="/Img/fanlogo-compact.png"
-              alt="Mandarin Worldwide Vacations"
+              src="/mandarine logo.PNG"
+              alt="Brand Logo"
               width={95}
               height={48}
               className="h-10 md:h-12 w-auto max-w-[130px] sm:max-w-[170px] object-contain shrink-0"

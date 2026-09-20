@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   LayoutDashboard,
   Users,
@@ -92,14 +93,15 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
     <aside className={`print:hidden flex flex-col h-screen overflow-hidden bg-slate-900 shrink-0 transition-all duration-300 fixed inset-y-0 left-0 z-50 md:relative md:translate-x-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} ${isCollapsed ? "md:w-20 w-64" : "w-64 md:w-60"}`}>
       <div className={`flex items-center px-5 py-5 border-b border-slate-800 ${isCollapsed ? "justify-center" : "justify-between"}`}>
         {!isCollapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
-              <Settings className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <p className="text-white font-bold text-sm leading-tight">Peltown</p>
-              <p className="text-slate-500 text-xs">Admin Panel</p>
-            </div>
+          <div className="flex items-center w-full justify-center pl-2">
+            <Image
+              src="/mandarine logo.PNG"
+              alt="Mandarin Worldwide Vacations Logo"
+              width={200}
+              height={80}
+              className="h-16 sm:h-20 w-auto object-contain"
+              priority
+            />
           </div>
         )}
         <button onClick={() => setIsCollapsed(!isCollapsed)} className="text-slate-400 hover:text-white transition-colors p-1">

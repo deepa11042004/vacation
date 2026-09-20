@@ -82,7 +82,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <Image
-              src={(isScrolled || mobileMenuOpen) ? "/C6962E7E-5B0E-4164-B527-746F400C487D.PNG" : "/Img/fanlogo.png"}
+              src="/mandarine logo.PNG"
               alt="Mandarin Worldwide Vacations Logo"
               width={330}
               height={212}

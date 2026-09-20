@@ -105,7 +105,7 @@ export default function ProfileLayout({
       <div className="md:hidden flex items-center rounded-b-2xl justify-between bg-[#040B31] px-4 py-6 sticky top-0 z-50 shadow-sm">
         <Link href="/" className="flex items-center">
           <Image
-            src="/Img/fanlogo-compact.png"
+            src="/mandarine logo.PNG"
             alt="Logo"
             width={47}
             height={24}
@@ -136,7 +136,7 @@ export default function ProfileLayout({
         <div className="hidden md:flex items-center justify-center bg-[#040B31] p-6 h-36 shrink-0">
           <Link href="/" className="flex items-center">
             <Image
-              src="/Img/fanlogo-compact.png"
+              src="/mandarine logo.PNG"
               alt="Logo"
               width={59}
               height={30}

@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { api, saveAuth } from "@/lib/api";
-import { Building2, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,10 +48,14 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center mb-3">
-            <Building2 className="w-6 h-6 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900">Peltown Admin</h1>
+          <Image 
+            src="/mandarine logo.PNG" 
+            alt="Mandarin Worldwide Vacations" 
+            width={240} 
+            height={80} 
+            className="mb-2 object-contain"
+          />
+          <h1 className="text-2xl font-bold text-slate-900 mb-1">Admin</h1>
           <p className="text-slate-500 text-sm mt-1">Sign in to your account</p>
         </div>
 
