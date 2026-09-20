@@ -34,6 +34,10 @@ pnpm-debug.log*
 # vercel
 .vercel
 
+# local staging area for bulk hotel photo imports (see src/scripts/bulk-import-hotel-images.js)
+/import-images
+/trimmed-hotel-images-backup.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
