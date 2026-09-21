@@ -56,14 +56,12 @@ export class VoucherEmailService {
       const subject = `Your Holiday Gift Voucher – Voucher No. ${voucher.voucher_number}`;
 
       // Assets for CID attachments
-      const pathLogo = getAssetPath('mandarin-logo.png') || getAssetPath('C6962E7E-5B0E-4164-B527-746F400C487D.PNG');
-      const path10k = getAssetPath('voucher-10k.png');
-      const pathMovie = getAssetPath('voucher-movie.png');
-      const path2n3d = getAssetPath('voucher-2n3d.png');
+      const pathLogo = getAssetPath('mandarine logo.PNG') || getAssetPath('mandarin-logo.png') || getAssetPath('C6962E7E-5B0E-4164-B527-746F400C487D.PNG');
+      const pathMovie = getAssetPath('movie voucher.png') || getAssetPath('voucher-movie.png');
+      const path2n3d = getAssetPath('holiday voucher.png') || getAssetPath('voucher-2n3d.png');
 
       const attachments: any[] = [];
       let logoSrc = `${frontendUrl}/voucher-assets/mandarin-logo.png`;
-      let img10kSrc = `${frontendUrl}/voucher-assets/voucher-10k.png`;
       let imgMovieSrc = `${frontendUrl}/voucher-assets/voucher-movie.png`;
       let img2n3dSrc = `${frontendUrl}/voucher-assets/voucher-2n3d.png`;
 
@@ -76,14 +74,6 @@ export class VoucherEmailService {
         logoSrc = 'cid:mandarinlogo';
       }
 
-      if (path10k) {
-        attachments.push({
-          filename: 'voucher-10k.png',
-          path: path10k,
-          cid: 'voucher10k',
-        });
-        img10kSrc = 'cid:voucher10k';
-      }
       if (pathMovie) {
         attachments.push({
           filename: 'voucher-movie.png',
@@ -211,12 +201,11 @@ export class VoucherEmailService {
           </p>
         </div>
 
-        <!-- 3 VOUCHER IMAGES -->
+        <!-- VOUCHER IMAGES -->
         <div style="margin:32px 0; text-align:center;">
           <h3 style="font-size:14px; text-transform:uppercase; letter-spacing:1px; color:#475569; margin-bottom:16px;">
             Your Gift Voucher Certificates
           </h3>
-          <img src="${img10kSrc}" alt="₹10,000 Holiday Voucher" style="width:100%; max-width:560px; height:auto; border-radius:8px; margin-bottom:16px; border:1px solid #e2e8f0;" />
           <img src="${imgMovieSrc}" alt="Movie Voucher" style="width:100%; max-width:560px; height:auto; border-radius:8px; margin-bottom:16px; border:1px solid #e2e8f0;" />
           <img src="${img2n3dSrc}" alt="2 Nights / 3 Days Holiday Voucher - India" style="width:100%; max-width:560px; height:auto; border-radius:8px; margin-bottom:16px; border:1px solid #e2e8f0;" />
         </div>

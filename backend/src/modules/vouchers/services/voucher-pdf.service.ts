@@ -60,7 +60,7 @@ export class VoucherPdfService {
         doc.rect(0, 115, PAGE_WIDTH, 4).fill('#D4AF37');
 
         // Draw Logo if available
-        const logoPath = getAssetPath('mandarin-logo.png') || getAssetPath('C6962E7E-5B0E-4164-B527-746F400C487D.PNG');
+        const logoPath = getAssetPath('mandarine logo.PNG') || getAssetPath('mandarin-logo.png') || getAssetPath('C6962E7E-5B0E-4164-B527-746F400C487D.PNG');
         let headerContentY = 12;
 
         if (logoPath) {
@@ -153,18 +153,18 @@ export class VoucherPdfService {
 
         curY += 28;
 
-        // Embed Voucher Images (3 Certificates)
-        const path10k = getAssetPath('voucher-10k.png');
-        const pathMovie = getAssetPath('voucher-movie.png');
-        const path2n3d = getAssetPath('voucher-2n3d.png');
+        // Embed Voucher Certificates
+        const pathMovie = getAssetPath('movie voucher.png') || getAssetPath('voucher-movie.png');
+        const path2n3d = getAssetPath('holiday voucher.png') || getAssetPath('voucher-2n3d.png');
 
         const certHeight = 135;
         const certSpacing = 10;
+        let path2n3dDrawnOnPage1 = false;
 
-        if (path10k) {
+        if (pathMovie) {
           try {
             doc.roundedRect(MARGIN_X, curY, CONTENT_WIDTH, certHeight, 6).lineWidth(1).strokeColor('#E2E8F0').stroke();
-            doc.image(path10k, MARGIN_X + 2, curY + 2, {
+            doc.image(pathMovie, MARGIN_X + 2, curY + 2, {
               fit: [CONTENT_WIDTH - 4, certHeight - 4],
               align: 'center',
               valign: 'center',
@@ -175,15 +175,16 @@ export class VoucherPdfService {
           }
         }
 
-        if (pathMovie && curY + certHeight <= PAGE_HEIGHT - 60) {
+        if (path2n3d && curY + certHeight <= PAGE_HEIGHT - 60) {
           try {
             doc.roundedRect(MARGIN_X, curY, CONTENT_WIDTH, certHeight, 6).lineWidth(1).strokeColor('#E2E8F0').stroke();
-            doc.image(pathMovie, MARGIN_X + 2, curY + 2, {
+            doc.image(path2n3d, MARGIN_X + 2, curY + 2, {
               fit: [CONTENT_WIDTH - 4, certHeight - 4],
               align: 'center',
               valign: 'center',
             });
             curY += certHeight + certSpacing;
+            path2n3dDrawnOnPage1 = true;
           } catch (e) {
             // ignore
           }
@@ -205,8 +206,8 @@ export class VoucherPdfService {
 
         let p2Y = 78;
 
-        // 3rd certificate on Page 2 if not drawn on Page 1 or draw it cleanly at top of page 2
-        if (path2n3d) {
+        // 2nd certificate on Page 2 if not drawn on Page 1
+        if (path2n3d && !path2n3dDrawnOnPage1) {
           try {
             doc.roundedRect(MARGIN_X, p2Y, CONTENT_WIDTH, certHeight, 6).lineWidth(1).strokeColor('#E2E8F0').stroke();
             doc.image(path2n3d, MARGIN_X + 2, p2Y + 2, {
