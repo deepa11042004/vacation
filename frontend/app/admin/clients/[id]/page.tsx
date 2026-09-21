@@ -355,13 +355,17 @@ export default function ClientDetailPage() {
       safe(api.get<{ data: Address | null }>(`/clients/${id}/address`)),
       safe(api.get<{ data: { memberships: Membership[] } }>(`/memberships?client_id=${id}&limit=1`)),
       safe(api.get<{ data: { payments: AmcPayment[] } }>(`/clients/${id}/amc-payments`)),
-    ]).then(([cr, ar, mr, amcr]) => {
+      safe(api.get<{ data: { payments: PaymentRecord[] } }>(`/clients/${id}/payments`)),
+    ]).then(([cr, ar, mr, amcr, pr]) => {
       setClient(cr?.data ?? null);
       setAddress((ar as any)?.data ?? null);
       setMembership((mr as any)?.data?.memberships?.[0] ?? null);
       const amcRows: AmcPayment[] = (amcr as any)?.data?.payments ?? [];
       setAmcPayments(amcRows);
       setAmcPaymentsFetched(true);
+      const pmRows: PaymentRecord[] = (pr as any)?.data?.payments ?? [];
+      setPaymentRecords(pmRows);
+      setPaymentsFetched(true);
       setLoading(false);
     }).catch(() => setLoading(false));
   }
@@ -878,6 +882,17 @@ export default function ClientDetailPage() {
 
         <div className="p-6">
           {tab === "all-details" && (() => {
+            const activePayments = paymentRecords.filter(p => p.status !== "CANCELLED");
+            const totalPaidFromRecords = activePayments.reduce((s, p) => s + Number(p.amount), 0);
+            const paidAmount = paymentsFetched && activePayments.length > 0
+              ? totalPaidFromRecords
+              : (membership?.down_payment ?? 0);
+
+            const netPackagePrice = membership?.net_price ??
+              (membership?.total_price ? (membership.total_price - (membership.discount_amount || 0)) : 0);
+
+            const remainingAmount = Math.max(0, netPackagePrice - paidAmount);
+
             function Field({ label, value, badge }: { label: string; value?: string | number | null; badge?: boolean }) {
               if (value === null || value === undefined || value === "") return null;
               const badgeColor =
@@ -945,6 +960,32 @@ export default function ClientDetailPage() {
                       {amcPayments.length > 0 && amcPayments[0].amount != null && (
                         <Field label="AMC / Year"   value={fmt(amcPayments[0].amount)} />
                       )}
+
+                      <SectionDivider title="Package & Financial Details" />
+                      <div className="col-span-full grid grid-cols-2 sm:grid-cols-4 gap-4 my-1">
+                        <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-3.5">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600 mb-1">Total Package Amount</p>
+                          <p className="text-base font-extrabold text-blue-900">{fmt(membership.total_price) ?? "₹0.00"}</p>
+                        </div>
+                        <div className="bg-amber-50/70 border border-amber-100 rounded-xl p-3.5">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-amber-600 mb-1">Discount Given</p>
+                          <p className="text-base font-extrabold text-amber-900">{fmt(membership.discount_amount ?? 0) ?? "₹0.00"}</p>
+                        </div>
+                        <div className="bg-emerald-50/70 border border-emerald-100 rounded-xl p-3.5">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 mb-1">Paid Amount</p>
+                          <p className="text-base font-extrabold text-emerald-900">{fmt(paidAmount) ?? "₹0.00"}</p>
+                        </div>
+                        <div className="bg-purple-50/70 border border-purple-100 rounded-xl p-3.5">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-purple-600 mb-1">Remaining Amount</p>
+                          <p className="text-base font-extrabold text-purple-900">{fmt(remainingAmount) ?? "₹0.00"}</p>
+                        </div>
+                      </div>
+
+                      <Field label="Total Package Amount" value={fmt(membership.total_price)} />
+                      <Field label="Discount Given"       value={fmt(membership.discount_amount ?? 0)} />
+                      <Field label="Net Package Price"    value={fmt(membership.net_price)} />
+                      <Field label="Paid Amount"          value={fmt(paidAmount)} />
+                      <Field label="Remaining Amount"     value={fmt(remainingAmount)} />
                     </>
                   )}
 
