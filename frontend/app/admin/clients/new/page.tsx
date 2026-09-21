@@ -224,8 +224,8 @@ function NewClientForm() {
 
   async function sendWelcomeMail(clientId: number) {
     const clientName = [personal.first_name, personal.last_name].filter(Boolean).join(" ");
-    const subject  = `Welcome to Peltown Vacations, ${clientName}!`;
-    const bodyText = `Dear ${clientName},\n\nWelcome to the Peltown Vacations family! We are delighted to have you as a valued member.\n\nYour membership has been successfully activated. Our team is here to assist you in making the most of your vacation experiences.\n\nIf you have any questions or need assistance, please do not hesitate to reach out to us.\n\nWarm regards,\nPeltown Vacations Team`;
+    const subject  = `Welcome to Mandarine Worldwide Vacations, ${clientName}!`;
+    const bodyText = `Dear ${clientName},\n\nWelcome to the Mandarine Worldwide Vacations family! We are delighted to have you as a valued member.\n\nYour membership has been successfully activated. Our team is here to assist you in making the most of your vacation experiences.\n\nIf you have any questions or need assistance, please do not hesitate to reach out to us.\n\nWarm regards,\nMandarine Worldwide Vacations Team`;
     await api.post(`/clients/${clientId}/send-welcome-mail`, { subject, bodyText });
   }
 

@@ -16,7 +16,7 @@ import { StaffAuthController } from '@/modules/staff/controllers/staff-auth.cont
  *             type: object
  *             required: [email, password]
  *             properties:
- *               email:    { type: string, format: email, example: "staff@peltown.com" }
+ *               email:    { type: string, format: email, example: "staff@mandarinworldwidevacations.com" }
  *               password: { type: string, example: "password123" }
  *     responses:
  *       200:

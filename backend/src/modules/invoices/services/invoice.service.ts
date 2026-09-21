@@ -31,6 +31,10 @@ export class InvoiceService {
     };
   }
 
+  async markEmailSent(invoice_id: number) {
+    await this.invoiceRepository.update(invoice_id, { is_email_sent: true });
+  }
+
   async deleteInvoice(invoice_id: number) {
     const invoice = await this.invoiceRepository.findById(invoice_id);
     if (!invoice) throw new AppError('Invoice not found', 404);

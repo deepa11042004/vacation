@@ -311,12 +311,12 @@ function mapPaymentType(mode: string): string {
 }
 
 const CO_DEFAULTS: CompanySettings = {
-  name: "Arena International Holidays",
+  name: "Mandarine Worldwide Vacations",
   address: "101, Pratap Nagar, Mayur Vihar, Phase-1 Delhi-110091",
   state: "Delhi",
   gst_number: "",
-  phone: "",
-  email: "",
+  phone: "8447391828",
+  email: "info@mandarinworldwidevacations.com",
 };
 
 function InvoicePageInner() {
@@ -325,9 +325,10 @@ function InvoicePageInner() {
   const id           = params.id as string;
   const isTax        = searchParams.get("type") === "tax";
 
-  const [loading, setLoading] = useState(true);
-  const [step,    setStep]    = useState<"form" | "preview">("form");
-  const [co,      setCo]      = useState<CompanySettings>(CO_DEFAULTS);
+  const [loading,    setLoading]    = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [step,       setStep]       = useState<"form" | "preview">("form");
+  const [co,         setCo]         = useState<CompanySettings>(CO_DEFAULTS);
 
   const [form, setForm] = useState<Record<string, string>>({
     invoice_no: "", issue_date: new Date().toISOString().slice(0, 10),
@@ -420,8 +421,6 @@ function InvoicePageInner() {
       </div>
     );
   }
-
-  const [generating, setGenerating] = useState(false);
 
   async function handleGenerateInvoice() {
     setGenerating(true);

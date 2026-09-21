@@ -830,7 +830,7 @@ export default function ClientDetailPage() {
             <div className="flex items-center gap-1">
               <button 
                 onClick={() => {
-                  setWelcomeMailForm({ subject: "Welcome to Peltown Vacations!", bodyText: `Dear ${fullName},\n\nWelcome to Peltown Vacations!\n\nBest regards,\nPeltown Vacations Team` });
+                  setWelcomeMailForm({ subject: "Welcome to Mandarine Worldwide Vacations!", bodyText: `Dear ${fullName},\n\nWelcome to Mandarine Worldwide Vacations!\n\nBest regards,\nMandarine Worldwide Vacations Team` });
                   setWelcomeMailError("");
                   setShowWelcomeMailModal(true);
                 }}

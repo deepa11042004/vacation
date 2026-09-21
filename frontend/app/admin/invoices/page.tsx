@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Loader2, Search, Eye, Trash2, FileText, RotateCcw, ShieldAlert } from "lucide-react";
+import { Loader2, Search, Eye, Trash2, FileText, RotateCcw, ShieldAlert, Send, RefreshCw } from "lucide-react";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 
 interface Invoice {
@@ -16,6 +16,7 @@ interface Invoice {
   email: string;
   amount: string;
   issue_date: string;
+  is_email_sent?: boolean;
   created_at: string;
   deleted_at: string | null;
 }
@@ -69,8 +70,22 @@ export default function InvoicesPage() {
     setQuery(search);
   }
 
-  const [restoring,    setRestoring]    = useState<number | null>(null);
-  const [permDeleting, setPermDeleting] = useState<number | null>(null);
+  const [restoring,      setRestoring]      = useState<number | null>(null);
+  const [permDeleting,   setPermDeleting]   = useState<number | null>(null);
+  const [sendingEmailId, setSendingEmailId] = useState<number | null>(null);
+
+  async function handleSendInvoiceEmail(inv: Invoice) {
+    setSendingEmailId(inv.invoice_id);
+    try {
+      await api.post(`/invoices/${inv.invoice_id}/resend-email`, {});
+      setInvoices(prev => prev.map(i => i.invoice_id === inv.invoice_id ? { ...i, is_email_sent: true } : i));
+      alert(`Invoice email sent successfully to ${inv.email || inv.client_name}!`);
+    } catch (e: any) {
+      alert(e?.message || "Failed to send invoice email.");
+    } finally {
+      setSendingEmailId(null);
+    }
+  }
 
   async function handleDelete(invoice_id: number) {
     setDeleting(invoice_id);
@@ -175,6 +190,7 @@ export default function InvoicesPage() {
                   <th className="text-left px-4 py-3 font-semibold text-slate-600">Created At</th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-600">Name</th>
                   <th className="text-right px-4 py-3 font-semibold text-slate-600">Amount</th>
+                  <th className="text-center px-4 py-3 font-semibold text-slate-600">Email Action</th>
                   <th className="text-center px-4 py-3 font-semibold text-slate-600">Open</th>
                   <th className="text-center px-4 py-3 font-semibold text-slate-600">Delete</th>
                 </tr>
@@ -216,6 +232,39 @@ export default function InvoicesPage() {
                       <td className="px-4 py-3 text-slate-800">{inv.client_name}</td>
                       <td className="px-4 py-3 text-right font-medium text-slate-800">
                         {fmtAmt(inv.amount)}
+                      </td>
+                      <td className="px-4 py-3 text-center whitespace-nowrap">
+                        {!isDeleted && (
+                          inv.is_email_sent ? (
+                            <button
+                              onClick={() => handleSendInvoiceEmail(inv)}
+                              disabled={sendingEmailId === inv.invoice_id}
+                              className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors disabled:opacity-50"
+                              title="Email was sent. Click to resend email."
+                            >
+                              {sendingEmailId === inv.invoice_id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-500" />
+                              ) : (
+                                <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+                              )}
+                              Resend Email
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleSendInvoiceEmail(inv)}
+                              disabled={sendingEmailId === inv.invoice_id}
+                              className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition-colors shadow-sm disabled:opacity-50"
+                              title="Email has not been sent. Click to send email."
+                            >
+                              {sendingEmailId === inv.invoice_id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                              ) : (
+                                <Send className="w-3.5 h-3.5 text-white" />
+                              )}
+                              Send Email
+                            </button>
+                          )
+                        )}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button

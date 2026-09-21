@@ -39,6 +39,11 @@ export class InvoiceRepository {
     });
   }
 
+  async update(invoice_id: number, data: Partial<IInvoice>): Promise<number> {
+    const [affected] = await Invoice.update(data, { where: { invoice_id }, paranoid: false });
+    return affected;
+  }
+
   async softDelete(invoice_id: number): Promise<number> {
     return await Invoice.destroy({ where: { invoice_id } });
   }

@@ -44,14 +44,17 @@ export function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     // Attempt to draw logo if exists
     let logoDrawn = false;
     const possibleLogoPaths = [
+      path.join(process.cwd(), 'public', 'mandarine logo.PNG'),
       path.join(process.cwd(), 'public', 'logo.png'),
+      path.join(process.cwd(), 'frontend', 'public', 'mandarine logo.PNG'),
       path.join(process.cwd(), 'frontend', 'public', 'logo.png'),
+      path.join(process.cwd(), '..', 'frontend', 'public', 'mandarine logo.PNG'),
       path.join(process.cwd(), '..', 'frontend', 'public', 'logo.png'),
     ];
     for (const p of possibleLogoPaths) {
       if (fs.existsSync(p)) {
         try {
-          doc.image(p, ML, y, { width: 80, height: 50, fit: [80, 50] });
+          doc.image(p, ML, y, { width: 100, height: 50, fit: [100, 50] });
           logoDrawn = true;
           break;
         } catch (e) {
@@ -74,10 +77,10 @@ export function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
       .font('Helvetica').text(co.phone || '8447391828');
     y += 12;
     doc.font('Helvetica-Bold').text('Complaint Mail: ', ML, y, { continued: true })
-      .font('Helvetica').text('customercare@arenainternationalholidays.com');
+      .font('Helvetica').text('customercare@mandarinworldwidevacations.com');
     y += 12;
     doc.font('Helvetica-Bold').text('Official Mail: ', ML, y, { continued: true })
-      .font('Helvetica').text(co.email || 'info@arenainternationalholidays.com');
+      .font('Helvetica').text(co.email || 'info@mandarinworldwidevacations.com');
 
     // Right side header (Invoice No, Date, GSTIN)
     let rightY = MT + (logoDrawn ? 20 : 0);

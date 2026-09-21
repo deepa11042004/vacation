@@ -20,12 +20,12 @@ function getSettingsPath() {
 }
 
 const DEFAULTS: CompanySettings = {
-  name: 'Arena International Holidays',
+  name: 'Mandarine Worldwide Vacations',
   address: '101, Pratap Nagar, Mayur Vihar, Phase-1 Delhi-110091',
   state: 'Delhi',
   gst_number: '',
-  phone: '',
-  email: '',
+  phone: '8447391828',
+  email: 'info@mandarinworldwidevacations.com',
 };
 
 export function getCompanySettings(): CompanySettings {

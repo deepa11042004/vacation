@@ -54,16 +54,16 @@ export function InvoiceTemplate({
         <div className="flex flex-col">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo.png"
-            alt="Logo"
-            className="w-24 h-16 object-contain mb-3"
-            onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+            src="/mandarine logo.PNG"
+            alt="Mandarine Worldwide Vacations"
+            className="w-28 h-16 object-contain mb-3"
+            onError={e => { (e.target as HTMLImageElement).src = "/logo.png"; }}
           />
           <p className="font-bold text-[14px]">{co.name}</p>
           <p>{co.address}</p>
           <p><span className="font-semibold">Phone:</span> {co.phone || "8447391828"}</p>
-          <p><span className="font-semibold">Complaint Mail:</span> customercare@arenainternationalholidays.com</p>
-          <p><span className="font-semibold">Official Mail:</span> {co.email || "info@arenainternationalholidays.com"}</p>
+          <p><span className="font-semibold">Complaint Mail:</span> customercare@mandarinworldwidevacations.com</p>
+          <p><span className="font-semibold">Official Mail:</span> {co.email || "info@mandarinworldwidevacations.com"}</p>
         </div>
         <div className="flex flex-col items-end justify-between py-2">
           <div className="text-right">

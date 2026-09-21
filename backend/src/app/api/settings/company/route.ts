@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
  *       properties:
  *         name:
  *           type: string
- *           example: "Arena International Holidays"
+ *           example: "Mandarine Worldwide Vacations"
  *         address:
  *           type: string
  *           example: "101, Pratap Nagar, Mayur Vihar, Phase-1 Delhi-110091"

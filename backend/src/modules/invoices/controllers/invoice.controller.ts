@@ -87,7 +87,8 @@ export class InvoiceController {
       }
       
       await sendInvoiceEmail(invoice.email, invoice as any);
-      return NextResponse.json(ResponseUtil.success('Invoice email resent', null));
+      await invoiceService.markEmailSent(invoice_id);
+      return NextResponse.json(ResponseUtil.success('Invoice email sent successfully', null));
     } catch (error) {
       return errorHandler(error);
     }

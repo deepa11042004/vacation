@@ -88,7 +88,7 @@ export default function MyMembershipPage() {
             <div className="relative z-10 flex flex-col min-h-50 justify-between">
               <div className="flex justify-between items-start mb-8">
                 <div>
-                  <p className="text-white/60 text-xs font-bold tracking-widest uppercase mb-1">PELTOWN VACATIONS</p>
+                  <p className="text-white/60 text-xs font-bold tracking-widest uppercase mb-1">MANDARINE WORLDWIDE VACATIONS</p>
                   <h3 className="text-xl font-marcellus text-transparent bg-clip-text bg-linear-to-r from-amber-200 to-yellow-500">
                     {m.package_name ?? "Membership"}
                   </h3>

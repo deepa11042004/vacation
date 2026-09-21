@@ -27,7 +27,7 @@ const TemplateSchema = z.object({
  *         subject:
  *           type: string
  *           description: "Email subject. Supports variables: {{invoice_no}}, {{client_name}}, {{issue_date}}, {{amount}}"
- *           example: "Invoice {{invoice_no}} — Peltown Vacations"
+ *           example: "Invoice {{invoice_no}} — Mandarine Worldwide Vacations"
  *         body:
  *           type: string
  *           description: "Plain-text email body. Same variables available."

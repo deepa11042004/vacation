@@ -113,9 +113,11 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     }
     data.invoice_no = finalInvoiceNo;
 
+    let emailSentSuccess = false;
     if (data.send_email !== false) {
       try {
         await sendInvoiceEmail(data.email, data);
+        emailSentSuccess = true;
       } catch (emailErr) {
         console.error('Failed to send invoice email:', emailErr);
       }
@@ -140,6 +142,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
       amount:         data.amount,
       description:    data.description,
       issue_date:     data.issue_date,
+      is_email_sent:  emailSentSuccess,
       created_by:     currentUser.user_id ?? null,
     });
 

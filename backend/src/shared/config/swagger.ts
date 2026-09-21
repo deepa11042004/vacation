@@ -6,7 +6,7 @@ export const getApiDocs = () => {
     definition: {
       openapi: '3.0.0',
       info: {
-        title: 'Peltown Travel CRM API',
+        title: 'Mandarine Worldwide Vacations CRM API',
         version: '1.0.0',
       },
       tags: [

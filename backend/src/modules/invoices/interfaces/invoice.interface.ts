@@ -18,6 +18,7 @@ export interface IInvoice {
   amount: string;
   description: string;
   issue_date: string;
+  is_email_sent?: boolean;
   created_by: number | null;
   created_at: Date;
   updated_at: Date;

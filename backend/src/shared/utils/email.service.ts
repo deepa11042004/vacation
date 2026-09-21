@@ -60,16 +60,16 @@ export function getTemplates(): TemplateFile {
   } catch {
     return {
       invoice: {
-        subject: 'Invoice {{invoice_no}} — Peltown Vacations',
-        body: 'Dear {{client_name}},\n\nPlease find your invoice attached.\n\nInvoice No: {{invoice_no}}\nDate: {{issue_date}}\nAmount: Rs. {{amount}}\n\nWarm regards,\nPeltown Vacations Team',
+        subject: 'Invoice {{invoice_no}} — Mandarine Worldwide Vacations',
+        body: 'Dear {{client_name}},\n\nPlease find your invoice attached.\n\nInvoice No: {{invoice_no}}\nDate: {{issue_date}}\nAmount: Rs. {{amount}}\n\nWarm regards,\nMandarine Worldwide Vacations Team',
       },
       birthday: {
-        subject: 'Happy Birthday {{client_name}}! 🎂 — Peltown Vacations',
-        body: 'Dear {{client_name}},\n\nWishing you a very Happy Birthday! 🎂\n\nWarm wishes,\nPeltown Vacations Team',
+        subject: 'Happy Birthday {{client_name}}! 🎂 — Mandarine Worldwide Vacations',
+        body: 'Dear {{client_name}},\n\nWishing you a very Happy Birthday! 🎂\n\nWarm wishes,\nMandarine Worldwide Vacations Team',
       },
       anniversary: {
-        subject: 'Happy Anniversary {{client_name}} & {{spouse_name}}! 💍 — Peltown Vacations',
-        body: 'Dear {{client_name}} & {{spouse_name}},\n\nWishing you a very Happy Wedding Anniversary! 💍\n\nWarm wishes,\nPeltown Vacations Team',
+        subject: 'Happy Anniversary {{client_name}} & {{spouse_name}}! 💍 — Mandarine Worldwide Vacations',
+        body: 'Dear {{client_name}} & {{spouse_name}},\n\nWishing you a very Happy Wedding Anniversary! 💍\n\nWarm wishes,\nMandarine Worldwide Vacations Team',
       },
     };
   }
@@ -113,7 +113,7 @@ export async function sendInvoiceEmail(to: string, data: InvoiceData): Promise<v
   const pdfBuffer = await generateInvoicePDF(data);
 
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Peltown Vacations" <peltowninfra@gmail.com>',
+    from: process.env.EMAIL_FROM || '"Mandarine Worldwide Vacations" <peltowninfra@gmail.com>',
     to,
     subject,
     text: bodyText,
@@ -131,7 +131,7 @@ export async function sendInvoiceEmail(to: string, data: InvoiceData): Promise<v
 export async function sendCustomEmail(to: string, subject: string, bodyText: string): Promise<void> {
   const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Peltown Vacations" <peltowninfra@gmail.com>',
+    from: process.env.EMAIL_FROM || '"Mandarine Worldwide Vacations" <peltowninfra@gmail.com>',
     to,
     subject,
     text: bodyText,
@@ -147,7 +147,7 @@ export async function sendBirthdayEmail(to: string, clientName: string): Promise
   const bodyText = interpolate(tpl.body, vars);
   const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Peltown Vacations" <peltowninfra@gmail.com>',
+    from: process.env.EMAIL_FROM || '"Mandarine Worldwide Vacations" <peltowninfra@gmail.com>',
     to,
     subject,
     text: bodyText,
@@ -166,7 +166,7 @@ export async function sendAnniversaryEmail(to: string, clientName: string, spous
   const bodyText = interpolate(tpl.body, vars);
   const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Peltown Vacations" <peltowninfra@gmail.com>',
+    from: process.env.EMAIL_FROM || '"Mandarine Worldwide Vacations" <peltowninfra@gmail.com>',
     to,
     subject,
     text: bodyText,
