@@ -9,13 +9,14 @@ import {
 } from "lucide-react";
 import { InvoiceTemplate, CompanySettings, GST_RATE, fmt, calcGst } from "@/Components/InvoiceTemplate";
 
-function genInvoiceNo(clientId: number) {
+function genInvoiceNo(clientId: number, seq: number = 1) {
   const now = new Date();
   const m = now.getMonth() + 1;
   const y = now.getFullYear();
   const fyS = m >= 4 ? y : y - 1;
   const fy = `${String(fyS).slice(2)}${String(fyS + 1).slice(2)}`;
-  return `${fy}/${String(clientId).padStart(3, "0")}`;
+  const seqStr = String(seq).padStart(2, "0");
+  return `${fy}/${String(clientId).padStart(3, "0")}/${seqStr}`;
 }
 
 const inp =
@@ -31,13 +32,14 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function FormStep({
-  form, setForm, isTax, clientId, co, onGenerate,
+  form, setForm, isTax, clientId, co, generating, onGenerate,
 }: {
   form: Record<string, string>;
   setForm: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   isTax: boolean;
   clientId: string;
   co: CompanySettings;
+  generating?: boolean;
   onGenerate: () => void;
 }) {
   function set(k: string, v: string) { setForm(f => ({ ...f, [k]: v })); }
@@ -179,11 +181,11 @@ function FormStep({
       <div className="pt-2">
         <button
           onClick={onGenerate}
-          disabled={!form.amount || Number(form.amount) <= 0}
+          disabled={generating || !form.amount || Number(form.amount) <= 0}
           className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-semibold py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
         >
-          <FileText className="w-4 h-4" />
-          Generate Invoice
+          {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+          {generating ? "Generating Invoice..." : "Generate Invoice"}
         </button>
       </div>
     </div>
@@ -371,18 +373,21 @@ function InvoicePageInner() {
       try {
         const safe = <T,>(p: Promise<T>) => p.catch(() => null);
 
-        const [cr, mr, ar, coRes] = await Promise.all([
+        const [cr, mr, ar, coRes, invRes] = await Promise.all([
           safe(api.get<{ data: Client }>(`/clients/${id}`)),
           safe(api.get<{ data: MembershipList }>(`/memberships?client_id=${id}&limit=1`)),
           safe(api.get<{ data: ClientAddress | null }>(`/clients/${id}/address`)),
           safe(api.get<{ data: CompanySettings }>(`/settings/company`)),
+          safe(api.get<{ data: { total: number } }>(`/invoices?client_id=${id}`)),
         ]);
 
         if (coRes?.data) setCo(coRes.data);
 
-        const c    = (cr as { data?: Client } | null)?.data;
-        const mem  = (mr as { data?: MembershipList } | null)?.data?.memberships?.[0];
-        const addr = (ar as { data?: ClientAddress | null } | null)?.data;
+        const c        = (cr as { data?: Client } | null)?.data;
+        const mem      = (mr as { data?: MembershipList } | null)?.data?.memberships?.[0];
+        const addr     = (ar as { data?: ClientAddress | null } | null)?.data;
+        const invTotal = (invRes as { data?: { total: number } } | null)?.data?.total ?? 0;
+        const seq      = invTotal + 1;
 
         if (c) {
           const name      = [c.first_name, c.middle_name, c.last_name].filter(Boolean).join(" ");
@@ -390,7 +395,7 @@ function InvoicePageInner() {
 
           setForm(f => ({
             ...f,
-            invoice_no:  genInvoiceNo(c.client_id),
+            invoice_no:  genInvoiceNo(c.client_id, seq),
             client_name: name,
             card_number: mem?.membership_number ?? "",
             email:       c.email,
@@ -414,6 +419,24 @@ function InvoicePageInner() {
         <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
       </div>
     );
+  }
+
+  const [generating, setGenerating] = useState(false);
+
+  async function handleGenerateInvoice() {
+    setGenerating(true);
+    try {
+      await api.post<{ data: { invoice_id: number } }>(`/clients/${id}/invoice`, {
+        ...form,
+        send_email: false,
+        invoice_type: isTax ? "tax" : "invoice",
+      });
+    } catch (e: unknown) {
+      console.error("Auto-save invoice error:", e);
+    } finally {
+      setGenerating(false);
+      setStep("preview");
+    }
   }
 
   return (
@@ -454,7 +477,8 @@ function InvoicePageInner() {
           isTax={isTax}
           clientId={id}
           co={co}
-          onGenerate={() => setStep("preview")}
+          generating={generating}
+          onGenerate={handleGenerateInvoice}
         />
       ) : (
         <PreviewStep

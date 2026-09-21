@@ -30,6 +30,7 @@ const InvoiceSchema = z.object({
   state:          z.string().default(''),
   invoice_type:   z.enum(['invoice', 'tax']).default('invoice'),
   client_gst:     z.string().optional(),
+  send_email:     z.boolean().optional().default(true),
 });
 
 /**
@@ -95,7 +96,30 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     const body = await request.json();
     const data = InvoiceSchema.parse(body);
 
-    await sendInvoiceEmail(data.email, data);
+    // Ensure invoice_no is unique in DB
+    const { Invoice: InvoiceModel } = await import('@/modules/invoices/models/Invoice.model');
+    let finalInvoiceNo = data.invoice_no;
+    const existing = await InvoiceModel.findOne({ where: { invoice_no: finalInvoiceNo }, paranoid: false });
+    if (existing) {
+      const count = await InvoiceModel.count({ where: { client_id }, paranoid: false });
+      const seqStr = String(count + 1).padStart(2, '0');
+      if (finalInvoiceNo.includes('/')) {
+        const parts = finalInvoiceNo.split('/');
+        parts[parts.length - 1] = seqStr;
+        finalInvoiceNo = parts.join('/');
+      } else {
+        finalInvoiceNo = `${finalInvoiceNo}/${seqStr}`;
+      }
+    }
+    data.invoice_no = finalInvoiceNo;
+
+    if (data.send_email !== false) {
+      try {
+        await sendInvoiceEmail(data.email, data);
+      } catch (emailErr) {
+        console.error('Failed to send invoice email:', emailErr);
+      }
+    }
 
     const invoice = await invoiceService.createInvoice({
       invoice_no:     data.invoice_no,

@@ -474,13 +474,29 @@ export default function ClientDetailPage() {
     if (!client) return;
     setSendingInvoice(true);
     try {
+      let seq = 1;
+      try {
+        const invRes: any = await api.get(`/invoices?client_id=${id}`);
+        if (invRes?.data?.total != null) {
+          seq = invRes.data.total + 1;
+        }
+      } catch (e) { /* fallback */ }
+
+      const now = new Date();
+      const m = now.getMonth() + 1;
+      const y = now.getFullYear();
+      const fyS = m >= 4 ? y : y - 1;
+      const fy = `${String(fyS).slice(2)}${String(fyS + 1).slice(2)}`;
+      const seqStr = String(seq).padStart(2, "0");
+      const invoiceNo = `${fy}/${String(client.client_id).padStart(3, "0")}/${seqStr}`;
+
       const activePayments = paymentRecords.filter(p => p.status !== "CANCELLED");
       const totalAmc = membership ? amcPayments.filter(p => p.is_received).reduce((s, p) => s + Number((p.amount ?? membership.amc) || 0), 0) : 0;
       const totalPaid = activePayments.reduce((s, p) => s + Number(p.amount), 0) + totalAmc;
       const lastPayment = activePayments.length > 0 ? activePayments[0] : null;
 
       const payload = {
-        invoice_no: `INV-${client.client_id}-${Math.floor(1000 + Math.random() * 9000)}`,
+        invoice_no: invoiceNo,
         issue_date: new Date().toISOString().split('T')[0],
         client_name: [client.first_name, client.last_name].filter(Boolean).join(" "),
         card_number: membership?.membership_number || "",
