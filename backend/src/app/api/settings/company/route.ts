@@ -19,7 +19,7 @@ export const dynamic = 'force-dynamic';
  *           example: "Mandarine Worldwide Vacations"
  *         address:
  *           type: string
- *           example: "101, Pratap Nagar, Mayur Vihar, Phase-1 Delhi-110091"
+ *           example: "D-22 LGF, Pandav Nagar, Near Laxmi Nagar, Delhi - 110092"
  *         state:
  *           type: string
  *           example: "Delhi"

@@ -21,10 +21,10 @@ function getSettingsPath() {
 
 const DEFAULTS: CompanySettings = {
   name: 'Mandarine Worldwide Vacations',
-  address: '101, Pratap Nagar, Mayur Vihar, Phase-1 Delhi-110091',
+  address: 'D-22 LGF, Pandav Nagar, Near Laxmi Nagar, Delhi - 110092',
   state: 'Delhi',
   gst_number: '',
-  phone: '8447391828',
+  phone: '+91 9990942211',
   email: 'info@mandarinworldwidevacations.com',
 };
 
