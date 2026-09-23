@@ -3,7 +3,7 @@ import React from "react";
 export const metadata = {
   title: "Privacy Policy | MANDARIN WORLDWIDE",
   description:
-    "Privacy Policy for MANDARIN WORLDWIDE (Mandarin Worldwide Travel Private Limited).",
+    "Privacy Policy for MANDARIN WORLDWIDE (Mandarin Worldwide Vacations).",
 };
 
 export default function PrivacyPolicy() {
@@ -16,117 +16,190 @@ export default function PrivacyPolicy() {
 
         <div className="space-y-8 text-slate-600 leading-relaxed">
           <section className="space-y-4">
-            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mb-6">
-              Introduction
-            </h2>
             <p>
-              This Privacy Policy describes how Mandarin WORLDWIDE TRAVEL
-              PRIVATE LIMITED and its affiliates (collectively &quot;we, our,
-              us&quot;) collect, use, share, protect or otherwise process your
-              information/personal data through our website
-              (www.Mandarinworldwidevacation.com) (&quot;Platform&quot;).
+              Welcome to Mandarin Worldwide Vacations. Your privacy is important to us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, use our services, make bookings, purchase memberships, or interact with us.
             </p>
             <p>
-              You may be able to browse certain sections of the Platform without
-              registering with us. We do not offer any product/service outside
-              India, and your personal data will primarily be stored and
-              processed in India. By visiting this Platform, providing your
-              information, or availing any product/service offered on the
-              Platform, you agree to be bound by the terms of this Privacy
-              Policy and applicable Indian laws.
+              By using our website and services, you agree to the practices described in this Privacy Policy.
             </p>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
-              Collection
+              1. Information We Collect
             </h2>
-            <p>
-              We collect your personal data when you use our Platform, services,
-              or otherwise interact with us. This includes information such as:
-            </p>
+            <p>We may collect the following types of information:</p>
+            
+            <h3 className="text-lg font-medium text-slate-800 mt-4">A. Personal Information</h3>
+            <p>When you contact us, register, make bookings, subscribe, or purchase memberships, we may collect:</p>
             <ul className="list-disc pl-6 space-y-2 marker:text-slate-400">
-              <li>
-                Personal details: name, date of birth, address, telephone/mobile
-                number, email ID.
-              </li>
-              <li>Proof of identity or address.</li>
-              <li>
-                Sensitive information: bank account details, payment
-                information, biometric data, etc., with your consent.
-              </li>
+              <li>Full Name</li>
+              <li>Mobile Number</li>
+              <li>Email Address</li>
+              <li>Postal Address</li>
+              <li>Date of Birth</li>
+              <li>Government Identification Details (if required for bookings)</li>
+              <li>Payment Information</li>
+              <li>Travel Preferences</li>
             </ul>
-            <p>
-              We may track your behavior and preferences on the Platform, and
-              collect transaction-related data. Third-party platforms linked to
-              our Platform will have their privacy policies, and we recommend
-              reviewing them before sharing any information.
-            </p>
-          </section>
 
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
-              Usage
-            </h2>
-            <p>We use your personal data to:</p>
+            <h3 className="text-lg font-medium text-slate-800 mt-6">B. Non-Personal Information</h3>
+            <p>We may automatically collect:</p>
             <ul className="list-disc pl-6 space-y-2 marker:text-slate-400">
-              <li>Provide services and fulfill your requests.</li>
-              <li>Enhance customer experience and resolve disputes.</li>
-              <li>Prevent fraud and comply with legal obligations.</li>
-              <li>Conduct research and customize your experience.</li>
+              <li>IP Address</li>
+              <li>Browser Type</li>
+              <li>Device Information</li>
+              <li>Operating System</li>
+              <li>Website Usage Data</li>
+              <li>Cookies and Tracking Information</li>
             </ul>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
-              Sharing
+              2. How We Use Your Information
             </h2>
-            <p>We may share your personal data with:</p>
+            <p>We use your information to:</p>
             <ul className="list-disc pl-6 space-y-2 marker:text-slate-400">
-              <li>
-                Internal group entities and affiliates for marketing purposes.
-              </li>
-              <li>
-                Third parties such as business partners, service providers, and
-                law enforcement agencies.
-              </li>
+              <li>Provide travel and hospitality services</li>
+              <li>Process bookings and membership requests</li>
+              <li>Respond to inquiries and customer support requests</li>
+              <li>Send confirmations, updates, and promotional offers</li>
+              <li>Improve website functionality and user experience</li>
+              <li>Conduct analytics and market research</li>
+              <li>Prevent fraud and unauthorized activities</li>
+              <li>Comply with legal obligations</li>
             </ul>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
-              Security Precautions
+              3. Cookies &amp; Tracking Technologies
             </h2>
+            <p>Our website may use cookies, pixels, and similar tracking technologies to:</p>
+            <ul className="list-disc pl-6 space-y-2 marker:text-slate-400">
+              <li>Improve website performance</li>
+              <li>Remember user preferences</li>
+              <li>Analyze website traffic</li>
+              <li>Personalize user experience</li>
+              <li>Deliver promotional content</li>
+            </ul>
             <p>
-              We adopt reasonable security measures to protect your data from
-              unauthorized access. However, transmission over the internet
-              cannot be guaranteed as completely secure, and users must
-              safeguard their login credentials.
+              You may disable cookies through your browser settings; however, some website features may not function properly.
             </p>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
-              Data Deletion and Retention
+              4. Sharing of Information
             </h2>
+            <p>We do not sell your personal information. However, we may share information with:</p>
+            <ul className="list-disc pl-6 space-y-2 marker:text-slate-400">
+              <li>Hotel and travel partners</li>
+              <li>Payment gateway providers</li>
+              <li>Technology and hosting service providers</li>
+              <li>Legal authorities when required by law</li>
+              <li>Business partners involved in delivering services</li>
+            </ul>
             <p>
-              You can delete your account through the Platform&apos;s settings.
-              However, certain information may be retained for legitimate
-              purposes such as fraud prevention and legal compliance. Retained
-              data may be anonymized for research purposes.
+              All third-party partners are expected to maintain confidentiality and data protection standards.
             </p>
           </section>
 
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
-              Your Rights
+              5. Data Security
+            </h2>
+            <p>We implement reasonable technical and organizational security measures to protect your information against:</p>
+            <ul className="list-disc pl-6 space-y-2 marker:text-slate-400">
+              <li>Unauthorized access</li>
+              <li>Data misuse</li>
+              <li>Alteration</li>
+              <li>Disclosure</li>
+              <li>Destruction</li>
+            </ul>
+            <p>
+              However, no online platform can guarantee complete security of data transmission over the internet.
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
+              6. Third-Party Links
             </h2>
             <p>
-              You may access, rectify, and update your personal data through the
-              Platform. You can also withdraw your consent for data processing
-              by contacting the Grievance Officer. Withdrawal of consent may
-              limit the services we can provide to you.
+              Our website may contain links to third-party websites, travel portals, or partner platforms. We are not responsible for the privacy practices or content of external websites.
             </p>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
+              7. Email &amp; Promotional Communication
+            </h2>
+            <p>By submitting your contact information, you may receive:</p>
+            <ul className="list-disc pl-6 space-y-2 marker:text-slate-400">
+              <li>Booking updates</li>
+              <li>Membership information</li>
+              <li>Promotional offers</li>
+              <li>Travel-related communication</li>
+            </ul>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
+              8. Payment Information
+            </h2>
+            <p>
+              Payments made through our website may be processed through secure third-party payment gateways.
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
+              9. Children&apos;s Privacy
+            </h2>
+            <p>
+              Our services are not directed toward individuals under the age of 18.
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
+              10. Your Rights
+            </h2>
+            <p>Depending on applicable laws, you may have the right to:</p>
+            <ul className="list-disc pl-6 space-y-2 marker:text-slate-400">
+              <li>Access your personal information</li>
+              <li>Request correction of inaccurate data</li>
+              <li>Request deletion of data</li>
+              <li>Withdraw consent for marketing communication</li>
+              <li>Request details regarding data usage</li>
+            </ul>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
+              11. Changes to This Privacy Policy
+            </h2>
+            <p>
+              We reserve the right to update or modify this Privacy Policy at any time without prior notice.
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
+              12. Contact Us
+            </h2>
+            <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
+              <p className="font-semibold text-slate-800">
+                Mandarin Worldwide Vacations
+              </p>
+              <div className="mt-4 space-y-2">
+                <p><strong>Website:</strong> <a href="https://mandarinworldwidevacations.com/join" className="text-blue-600 hover:underline">https://mandarinworldwidevacations.com/join</a></p>
+                <p><strong>Email:</strong> <a href="mailto:Support@mwvpl.com" className="text-blue-600 hover:underline">Support@mwvpl.com</a></p>
+                <p><strong>Address:</strong> D-22 LGF, Pandav Nagar Delhi -110092</p>
+              </div>
+            </div>
           </section>
 
           <section className="space-y-4">
@@ -134,40 +207,8 @@ export default function PrivacyPolicy() {
               Consent
             </h2>
             <p>
-              By using our Platform, you consent to the collection, use, and
-              processing of your information as outlined in this Privacy Policy.
-              You may withdraw your consent by contacting us, subject to
-              applicable laws.
+              By using Mandarin Worldwide Vacations, you consent to this Privacy Policy and agree to its terms.
             </p>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
-              Changes to this Privacy Policy
-            </h2>
-            <p>
-              We may update this Privacy Policy periodically. Significant
-              changes will be notified as required under applicable laws. Please
-              review this policy regularly for updates.
-            </p>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold text-slate-800 font-marcellus mt-12 mb-6">
-              Grievance Officer
-            </h2>
-            <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-              <p className="font-semibold text-slate-800">
-                Mandarin WORLDWIDE TRAVEL PRIVATE LIMITED
-              </p>
-              <p className="mt-1">2202, ATS DOLCE ZETA 1, GREATER NOIDA</p>
-
-              <div className="mt-6 space-y-2">
-                <p className="font-semibold text-slate-800">Contact us</p>
-                <p>8851018470</p>
-                <p>Phone Time: Monday - Friday (9:00 - 18:00)</p>
-              </div>
-            </div>
           </section>
         </div>
       </div>
