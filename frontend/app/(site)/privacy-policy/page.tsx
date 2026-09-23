@@ -195,9 +195,9 @@ export default function PrivacyPolicy() {
                 Mandarin Worldwide Vacations
               </p>
               <div className="mt-4 space-y-2">
-                <p><strong>Website:</strong> <a href="https://mandarinworldwidevacations.com/join" className="text-blue-600 hover:underline">https://mandarinworldwidevacations.com/join</a></p>
-                <p><strong>Email:</strong> <a href="mailto:Support@mwvpl.com" className="text-blue-600 hover:underline">Support@mwvpl.com</a></p>
-                <p><strong>Address:</strong> D-22 LGF, Pandav Nagar Delhi -110092</p>
+                <p className="break-all sm:break-words"><strong>Website:</strong> <a href="https://mwvpl.com/join" className="text-blue-600 hover:underline">mwvpl.com/join</a></p>
+                <p className="break-all sm:break-words"><strong>Email:</strong> <a href="mailto:Support@mwvpl.com" className="text-blue-600 hover:underline">Support@mwvpl.com</a></p>
+                <p><strong>Address:</strong> D-22 LGF, Pandav Nagar, Near Laxmi Nagar, Delhi – 110092</p>
               </div>
             </div>
           </section>
