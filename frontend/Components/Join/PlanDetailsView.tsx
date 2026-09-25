@@ -351,21 +351,12 @@ export default function PlanDetailsView({ plan, onBack }: PlanDetailsViewProps) 
             </div>
 
             {/* Action Buttons with Metallic Gold Theme */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-neutral-200">
+            <div className="pt-6 border-t border-neutral-200">
               <button
                 onClick={() => setShowCheckout(true)}
-                className="w-full sm:flex-1 py-4 px-6 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] hover:brightness-110 text-neutral-950 font-extrabold text-sm shadow-lg shadow-[#D4AF37]/30 transition-all duration-300 active:scale-95 cursor-pointer text-center uppercase tracking-wider"
+                className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] hover:brightness-110 text-neutral-950 font-extrabold text-sm shadow-lg shadow-[#D4AF37]/30 transition-all duration-300 active:scale-95 cursor-pointer text-center uppercase tracking-wider"
               >
                 Buy Membership
-              </button>
-              <button
-                onClick={() => {
-                  setFormSubmitted(false);
-                  setModalType("call");
-                }}
-                className="w-full sm:flex-1 py-4 px-6 rounded-full border-2 border-neutral-950 text-neutral-950 font-extrabold text-sm hover:bg-neutral-950 hover:text-white transition-all duration-300 shadow-sm cursor-pointer text-center"
-              >
-                Request a Call
               </button>
             </div>
           </div>

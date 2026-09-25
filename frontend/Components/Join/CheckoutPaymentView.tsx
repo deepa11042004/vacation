@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowLeft, Info, ShieldCheck, X } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Info, ShieldCheck, X } from "lucide-react";
 import { PlanInfo } from "./PlanDetailsView";
 
 interface CheckoutPaymentViewProps {
@@ -77,15 +77,23 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await fetch("/api/enquiries", {
+      await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: `${userDetails.firstName} ${userDetails.lastName}`,
+          firstName: userDetails.firstName,
+          lastName: userDetails.lastName,
           email: userDetails.email,
           mobile: userDetails.mobile,
-          city: "N/A",
-          query: `Membership Purchase Request: ${plan.tierName} (${plan.tenure}). Down payment: ₹${downPaymentAmount}. EMI: ${emiTenureMonths} months.`,
+          planTier: plan.tierName,
+          planTenure: plan.tenure,
+          planRefCode: plan.refCode,
+          roomType: plan.roomType,
+          totalCost: plan.totalCost,
+          downPaymentPercent: dpPercent,
+          downPaymentAmount: downPaymentAmount,
+          emiTenureMonths: emiTenureMonths,
+          monthlyEmi: monthlyEmi,
         }),
       });
       setModalStep("success");
@@ -420,57 +428,28 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
                     disabled={isSubmitting}
                     className="w-full py-4 mt-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] hover:brightness-110 text-neutral-950 font-extrabold text-sm rounded-full shadow-lg shadow-[#D4AF37]/30 transition-all cursor-pointer text-center uppercase tracking-wider disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit Application"}
+                    {isSubmitting ? "Submitting..." : "Submit"}
                   </button>
                 </form>
               </div>
             )}
             {modalStep === "success" && (
-              <div className="text-center py-4">
-                <div className="w-16 h-16 bg-[#D4AF37]/20 text-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#D4AF37]/40">
-                  <ShieldCheck size={36} />
+              <div className="text-center py-6 px-2">
+                <div className="w-16 h-16 bg-[#D4AF37]/20 text-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#D4AF37]/40 shadow-lg shadow-[#D4AF37]/10">
+                  <CheckCircle2 size={36} />
                 </div>
-                <h3 className="text-2xl font-extrabold text-white mb-2">
-                  Verification Successful!
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  Thank You!
                 </h3>
-                <p className="text-xs text-amber-200/80 mb-6">
-                  Thank you,{" "}
-                  <strong className="text-white">
-                    {userDetails.firstName || "Member"} {userDetails.lastName}
-                  </strong>
-                  . Your membership application for{" "}
-                  <strong className="text-white">
-                    {plan.tierName} {plan.tenure}
-                  </strong>{" "}
-                  has been initiated.
+                <p className="text-sm text-amber-200/90 font-medium leading-relaxed mb-8">
+                  Your form is submitted. Our sales person will contact you shortly
                 </p>
-
-                <div className="bg-[#0D0A04] border border-[#D4AF37]/30 rounded-2xl p-4 text-xs text-amber-200 text-left space-y-2 mb-6">
-                  <div className="flex justify-between">
-                    <span>Down Payment Amount:</span>
-                    <span className="font-bold text-[#F5D77F]">
-                      {formatRupees(downPaymentAmount)}
-                    </span>
-                  </div>
-                  {!isFullPayment && (
-                    <div className="flex justify-between">
-                      <span>Monthly EMI ({emiTenureMonths} Months):</span>
-                      <span className="font-bold text-white">
-                        {formatRupees(monthlyEmi)} / mo
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span>Annual Maintenance Fee (AMC):</span>
-                    <span className="font-bold text-amber-400">₹14,999 / year</span>
-                  </div>
-                </div>
 
                 <button
                   onClick={() => setModalStep("closed")}
-                  className="w-full py-3.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] text-neutral-950 font-extrabold rounded-full hover:brightness-110 transition-colors cursor-pointer text-sm shadow-lg shadow-[#D4AF37]/30 uppercase tracking-wider"
+                  className="w-full py-3.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] text-neutral-950 font-extrabold rounded-full hover:brightness-110 transition-all cursor-pointer text-sm shadow-lg shadow-[#D4AF37]/30 uppercase tracking-wider"
                 >
-                  Complete Payment &amp; Download Receipt
+                  Close
                 </button>
               </div>
             )}

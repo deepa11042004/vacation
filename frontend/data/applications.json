@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "firstName": "Rahul",
+    "lastName": "Sharma",
+    "name": "Rahul Sharma",
+    "mobile": "9876543210",
+    "email": "rahul.sharma@example.com",
+    "planTier": "Royal Heritage",
+    "planTenure": "25 Years",
+    "planRefCode": "REF-HERITAGE-25",
+    "roomType": "Studio / 1BR",
+    "totalCost": "₹11,65,000/-",
+    "downPaymentPercent": 25,
+    "downPaymentAmount": 291250,
+    "emiTenureMonths": 24,
+    "monthlyEmi": 36406,
+    "status": "NEW",
+    "created_at": "2026-09-25T16:45:00.000Z",
+    "notes": "Interested in Diwali holiday bookings."
+  }
+]
