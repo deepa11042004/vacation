@@ -33,8 +33,8 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
   // EMI tenure state (months): 3, 6, 12, 18, 24, 36, 48 (Default to 24)
   const [emiTenureMonths, setEmiTenureMonths] = useState<number>(24);
 
-  // Modal Flow States: closed | details | otp | success
-  const [modalStep, setModalStep] = useState<"closed" | "details" | "otp" | "success">("closed");
+  const [modalStep, setModalStep] = useState<"closed" | "details" | "success">("closed");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // User details state for the Enter Details form
   const [userDetails, setUserDetails] = useState({
@@ -43,9 +43,6 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
     mobile: "",
     email: "",
   });
-
-  // OTP state
-  const [otpValue, setOtpValue] = useState("");
 
   // Calculations
   const downPaymentAmount = useMemo(() => {
@@ -74,17 +71,30 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
 
   const handleProceedPayment = () => {
     setModalStep("details");
-    setOtpValue("");
   };
 
-  const handleGetOtpSubmit = (e: React.FormEvent) => {
+  const handleSubmitDetails = async (e: React.FormEvent) => {
     e.preventDefault();
-    setModalStep("otp");
-  };
-
-  const handleVerifyOtpSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setModalStep("success");
+    setIsSubmitting(true);
+    try {
+      await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `${userDetails.firstName} ${userDetails.lastName}`,
+          email: userDetails.email,
+          mobile: userDetails.mobile,
+          city: "N/A",
+          query: `Membership Purchase Request: ${plan.tierName} (${plan.tenure}). Down payment: ₹${downPaymentAmount}. EMI: ${emiTenureMonths} months.`,
+        }),
+      });
+      setModalStep("success");
+    } catch (err) {
+      console.error(err);
+      setModalStep("success"); // Proceed anyway for UX if network fails
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -323,10 +333,10 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
                   Enter Details
                 </h3>
                 <p className="text-xs text-amber-200/80 font-medium mb-6">
-                  You will receive OTPs on both your email &amp; mobile number
+                  Please provide your basic details to proceed with the application.
                 </p>
 
-                <form onSubmit={handleGetOtpSubmit} className="space-y-4">
+                <form onSubmit={handleSubmitDetails} className="space-y-4">
                   {/* First Name & Last Name Row */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -407,72 +417,14 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full py-4 mt-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] hover:brightness-110 text-neutral-950 font-extrabold text-sm rounded-full shadow-lg shadow-[#D4AF37]/30 transition-all cursor-pointer text-center uppercase tracking-wider"
+                    disabled={isSubmitting}
+                    className="w-full py-4 mt-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] hover:brightness-110 text-neutral-950 font-extrabold text-sm rounded-full shadow-lg shadow-[#D4AF37]/30 transition-all cursor-pointer text-center uppercase tracking-wider disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    Get OTP
+                    {isSubmitting ? "Submitting..." : "Submit Application"}
                   </button>
                 </form>
-
-                {/* Footer Note */}
-                <p className="text-[11px] text-amber-200/60 text-left mt-6 font-normal leading-relaxed">
-                  Note : Digilocker verification needed. Please keep PAN &amp; Aadhar card Handy.
-                </p>
               </div>
             )}
-
-            {modalStep === "otp" && (
-              <div>
-                <h3 className="text-2xl font-bold tracking-tight text-white mb-1 font-sans">
-                  Enter OTP
-                </h3>
-                <p className="text-xs text-amber-200/80 font-medium mb-6">
-                  OTP sent to{" "}
-                  <strong className="text-white">
-                    +91 {userDetails.mobile || "9876543210"}
-                  </strong>{" "}
-                  and{" "}
-                  <strong className="text-white">
-                    {userDetails.email || "user@example.com"}
-                  </strong>
-                </p>
-
-                <form onSubmit={handleVerifyOtpSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-amber-200 mb-1.5">
-                      6-Digit OTP Code<span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      maxLength={6}
-                      value={otpValue}
-                      onChange={(e) => setOtpValue(e.target.value)}
-                      placeholder="123456"
-                      className="w-full tracking-[0.5em] text-center text-xl font-mono font-bold px-4 py-3.5 rounded-xl bg-[#0D0A04] border border-[#D4AF37]/40 text-white placeholder-amber-200/30 focus:outline-none focus:border-[#D4AF37]"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-4 mt-2 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] hover:brightness-110 text-neutral-950 font-extrabold text-sm rounded-full shadow-lg shadow-[#D4AF37]/30 transition-all cursor-pointer text-center uppercase tracking-wider"
-                  >
-                    Verify &amp; Proceed to Pay {formatRupees(downPaymentAmount)}
-                  </button>
-                </form>
-
-                <div className="flex justify-between items-center mt-6 text-xs text-amber-200/80 font-medium">
-                  <span>Didn&apos;t receive code?</span>
-                  <button
-                    type="button"
-                    onClick={() => alert("OTP resent successfully!")}
-                    className="text-[#D4AF37] font-bold hover:underline cursor-pointer"
-                  >
-                    Resend OTP
-                  </button>
-                </div>
-              </div>
-            )}
-
             {modalStep === "success" && (
               <div className="text-center py-4">
                 <div className="w-16 h-16 bg-[#D4AF37]/20 text-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#D4AF37]/40">

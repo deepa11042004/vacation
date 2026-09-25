@@ -237,7 +237,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
 
       {/* --- Ultra-Fullscreen Lightbox Modal Overlay View --- */}
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] w-screen h-screen flex items-center justify-center bg-black/98 backdrop-blur-2xl select-none overflow-hidden">
+        <div className="fixed inset-0 z-50 w-screen h-screen flex items-center justify-center bg-black/98 backdrop-blur-2xl select-none overflow-hidden">
           {/* Top Control Bar */}
           <div className="absolute top-3 left-0 right-0 z-40 flex items-center justify-between px-4 sm:px-8 md:px-12 pointer-events-none">
             {galleryImages.length > 1 ? (
@@ -594,7 +594,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
 
       {/* Booking Enquiry Modal */}
       {isBookingOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
           <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col border border-neutral-100">
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 text-white p-5 sm:p-6 relative shrink-0">

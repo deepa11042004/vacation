@@ -72,7 +72,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed inset-x-0 top-0 z-1000 py-2 px-4 md:px-8 lg:px-10 transition-all duration-500 ease-in-out ${
+        className={`fixed inset-x-0 top-0 z-40 py-2 px-4 md:px-8 lg:px-10 transition-all duration-500 ease-in-out ${
           isScrolled || mobileMenuOpen
             ? "bg-[#FDF7EF] backdrop-blur-md border-b border-black/10 rounded-b-4xl shadow-lg"
             : "bg-transparent border-b border-transparent shadow-none"
@@ -252,7 +252,7 @@ export default function Navbar() {
       {/* Floating Travel Desk Button */}
       <Link
         href="/travel-desk"
-        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-800 flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-4 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300"
+        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-4 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300"
         aria-label="Go to Travel Desk"
       >
         <Plane className="w-5 h-5 md:w-6 md:h-6" />
