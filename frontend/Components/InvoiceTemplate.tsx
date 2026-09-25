@@ -61,7 +61,7 @@ export function InvoiceTemplate({
           />
           <p className="font-bold text-[14px]">{co.name}</p>
           <p>{co.address}</p>
-          <p><span className="font-semibold">Phone:</span> {co.phone || "+91 9990942211"}</p>
+          <p><span className="font-semibold">Phone:</span> {co.phone || "011-40129981"}</p>
           <p><span className="font-semibold">Complaint Mail:</span> customercare@mandarinworldwidevacations.com</p>
           <p><span className="font-semibold">Official Mail:</span> {co.email || "info@mandarinworldwidevacations.com"}</p>
         </div>

@@ -208,9 +208,9 @@ export default function ContactForm() {
               D-22 LGF, Pandav Nagar, Near Laxmi Nagar, Delhi – 110092, India
             </p>
             <div className="mt-3 flex flex-col gap-2 text-sm sm:flex-row sm:gap-6">
-              <a href="tel:+919990942211" className="flex items-center gap-2 text-white/80 hover:text-[#E8C15B]">
+              <a href="tel:01140129981" className="flex items-center gap-2 text-white/80 hover:text-[#E8C15B]">
                 <Phone className="h-4 w-4 text-[#E8C15B]" />
-                +91 9990942211
+                011-40129981
               </a>
               <a
                 href="mailto:info@mandarinworldwidevacations.com"

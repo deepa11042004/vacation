@@ -179,8 +179,8 @@ export default function Footer() {
               </svg>
               Phone
             </span>
-            <a href="tel:+919990942211" className="">
-              +91 9990942211
+            <a href="tel:01140129981" className="">
+              011-40129981
             </a>
           </div>
           <div className="flex flex-col gap-2">

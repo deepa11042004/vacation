@@ -4,7 +4,7 @@ import { Minus, Clock } from "lucide-react";
 import Badge from "@/UI/Badge";
 import CtaButton from "@/UI/CtaButton";
 
-const WHATSAPP_NUMBER = "919990942211";
+const WHATSAPP_NUMBER = "911140129981";
 
 function whatsappHref(activityTitle: string) {
   const message = `Hi, I'm interested in booking the ${activityTitle} activity. Could you share more details?`;

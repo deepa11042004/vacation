@@ -47,8 +47,8 @@ export default function ContactInfo({ hideBackground = false }: { hideBackground
                 </div>
                 <div>
                   <h4 className="text-lg font-bold text-gray-900 mb-1">Phone</h4>
-                  <a href="tel:+919990942211" className="block text-gray-600 hover:text-green-600 transition-colors">
-                    +91 9990942211
+                  <a href="tel:01140129981" className="block text-gray-600 hover:text-green-600 transition-colors">
+                    011-40129981
                   </a>
                 </div>
               </div>

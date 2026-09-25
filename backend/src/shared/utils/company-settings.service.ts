@@ -24,7 +24,7 @@ const DEFAULTS: CompanySettings = {
   address: 'D-22 LGF, Pandav Nagar, Near Laxmi Nagar, Delhi - 110092',
   state: 'Delhi',
   gst_number: '',
-  phone: '+91 9990942211',
+  phone: '011-40129981',
   email: 'info@mandarinworldwidevacations.com',
 };
 
