@@ -49,7 +49,7 @@ export default function LoginPage() {
 
       <Link
         href="/"
-        className="absolute top-8 left-6 md:top-12 md:left-12 lg:top-20 lg:left-50 z-20 inline-flex items-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors"
+        className="absolute top-8 left-6 md:top-12 md:left-12 lg:top-12 lg:left-16 z-20 inline-flex items-center gap-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Home
