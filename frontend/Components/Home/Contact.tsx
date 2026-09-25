@@ -8,7 +8,7 @@ const CONTACT_CARDS = [
     title: "Call Us",
     lines: [
       { label: "Reservations & Support", value: "011-40129981", href: "tel:01140129981" },
-      { label: "Mon – Sat, 10 AM to 6 PM (holidays off)", value: null, href: null },
+      { label: "Mon – Sat, 10.30 AM to 6.30 PM (holidays off)", value: null, href: null },
     ],
   },
   {
