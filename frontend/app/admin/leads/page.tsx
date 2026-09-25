@@ -94,8 +94,16 @@ function LeadRow({ lead, onUpdated }: { lead: Lead; onUpdated: () => void }) {
     if (!confirm(`Are you sure you want to delete lead for ${lead.name}?`)) return;
     setDeleting(true);
     try {
-      await fetch(`/api/leads/${lead.id}`, { method: "DELETE" });
-      onUpdated();
+      const res = await fetch(`/api/leads/${lead.id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.success) {
+        onUpdated();
+      } else {
+        alert(data?.error || "Failed to delete lead");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting lead");
     } finally {
       setDeleting(false);
     }

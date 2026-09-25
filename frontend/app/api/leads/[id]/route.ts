@@ -21,14 +21,20 @@ function writeLeads(data: Lead[]) {
 }
 
 // PATCH /api/leads/[id] — update lead status or notes
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> | { id: string } }
+) {
   try {
-    const { id } = await params;
-    const leadId = parseInt(id, 10);
-    const body = await req.json();
+    const resolvedParams = await params;
+    const idStr = resolvedParams?.id;
+    if (!idStr) {
+      return NextResponse.json({ success: false, error: "Missing lead ID" }, { status: 400 });
+    }
 
+    const body = await req.json();
     const leads = readLeads();
-    const index = leads.findIndex((l) => l.id === leadId);
+    const index = leads.findIndex((l) => String(l.id) === String(idStr));
 
     if (index === -1) {
       return NextResponse.json({ success: false, error: "Lead not found" }, { status: 404 });
@@ -40,19 +46,26 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     writeLeads(leads);
 
     return NextResponse.json({ success: true, data: leads[index] });
-  } catch {
+  } catch (err) {
+    console.error("Error updating lead:", err);
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }
 
 // DELETE /api/leads/[id] — delete lead
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> | { id: string } }
+) {
   try {
-    const { id } = await params;
-    const leadId = parseInt(id, 10);
+    const resolvedParams = await params;
+    const idStr = resolvedParams?.id;
+    if (!idStr) {
+      return NextResponse.json({ success: false, error: "Missing lead ID" }, { status: 400 });
+    }
 
     const leads = readLeads();
-    const filtered = leads.filter((l) => l.id !== leadId);
+    const filtered = leads.filter((l) => String(l.id) !== String(idStr));
 
     if (filtered.length === leads.length) {
       return NextResponse.json({ success: false, error: "Lead not found" }, { status: 404 });
@@ -61,7 +74,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     writeLeads(filtered);
 
     return NextResponse.json({ success: true, message: "Lead deleted successfully" });
-  } catch {
+  } catch (err) {
+    console.error("Error deleting lead:", err);
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }
