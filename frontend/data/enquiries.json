@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "vikas",
+    "mobile": "9988667865",
+    "city": "delhi",
+    "age": "",
+    "email": "peltowninfra@gmail.com",
+    "hotel_name": "Singh's Studio at DLF MyPad / Gomtinagar Lucknoww",
+    "check_in": "2026-09-26",
+    "check_out": "2026-09-30",
+    "guests": "2 Adults (1 Room)",
+    "status": "NEW",
+    "created_at": "2026-09-25T09:53:09.089Z",
+    "notes": ""
+  }
+]

@@ -28,9 +28,14 @@ interface Enquiry {
   id: number;
   name: string;
   mobile: string;
-  city: string;
-  age: string;
+  city?: string;
+  age?: string;
   email: string;
+  hotel_name?: string;
+  query?: string;
+  check_in?: string;
+  check_out?: string;
+  guests?: string;
   status: "NEW" | "CONTACTED" | "CONVERTED" | "CLOSED";
   created_at: string;
   notes?: string;
@@ -52,7 +57,9 @@ export async function GET(req: NextRequest) {
         e.name.toLowerCase().includes(search) ||
         e.mobile.includes(search) ||
         e.email.toLowerCase().includes(search) ||
-        e.city.toLowerCase().includes(search)
+        (e.city && e.city.toLowerCase().includes(search)) ||
+        (e.hotel_name && e.hotel_name.toLowerCase().includes(search)) ||
+        (e.query && e.query.toLowerCase().includes(search))
     );
   }
   if (status) {
@@ -72,7 +79,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, mobile, city, age, email } = body;
+    const { name, mobile, city, age, email, hotel_name, query, check_in, check_out, guests } = body;
 
     if (!name || !mobile || !email) {
       return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
@@ -88,6 +95,11 @@ export async function POST(req: NextRequest) {
       city: String(city ?? "").trim(),
       age: String(age ?? "").trim(),
       email: String(email).trim(),
+      hotel_name: hotel_name ? String(hotel_name).trim() : undefined,
+      query: query ? String(query).trim() : undefined,
+      check_in: check_in ? String(check_in).trim() : undefined,
+      check_out: check_out ? String(check_out).trim() : undefined,
+      guests: guests ? String(guests).trim() : undefined,
       status: "NEW",
       created_at: new Date().toISOString(),
       notes: "",

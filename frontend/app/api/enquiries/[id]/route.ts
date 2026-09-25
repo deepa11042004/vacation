@@ -8,9 +8,14 @@ interface Enquiry {
   id: number;
   name: string;
   mobile: string;
-  city: string;
-  age: string;
+  city?: string;
+  age?: string;
   email: string;
+  hotel_name?: string;
+  query?: string;
+  check_in?: string;
+  check_out?: string;
+  guests?: string;
   status: "NEW" | "CONTACTED" | "CONVERTED" | "CLOSED";
   created_at: string;
   notes?: string;

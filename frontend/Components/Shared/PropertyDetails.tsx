@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import FallbackImage from "@/Components/Shared/FallbackImage";
 import { hotelImageUrl, hotelImageFallback } from "@/lib/imageUrl";
+import { stripHtml } from "@/lib/text";
 import {
   MapPin,
   Star,
@@ -27,6 +28,13 @@ import {
   Users,
   Building,
   Navigation,
+  CalendarCheck,
+  CheckCircle2,
+  Loader2,
+  Send,
+  Phone,
+  Mail,
+  User,
 } from "lucide-react";
 
 export interface PropertyData {
@@ -57,6 +65,58 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [relatedHotels, setRelatedHotels] = useState<RelatedHotel[]>([]);
+
+  // Booking Modal State
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [bookingSubmitted, setBookingSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+    city: "",
+    checkIn: "",
+    checkOut: "",
+    guests: "2 Adults (1 Room)",
+    query: "",
+  });
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setBookingError("");
+
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.mobile,
+          city: formData.city,
+          hotel_name: stripHtml(property.title),
+          check_in: formData.checkIn,
+          check_out: formData.checkOut,
+          guests: formData.guests,
+          query: formData.query,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setBookingSubmitted(true);
+      } else {
+        setBookingError(data.error || "Failed to submit booking enquiry. Please try again.");
+      }
+    } catch {
+      setBookingError("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const galleryImages = Array.from(
     new Set(
@@ -274,7 +334,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
         <div className="lg:col-span-2 space-y-10">
           <div>
             <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
-              {property.title}
+              {stripHtml(property.title)}
             </h1>
             <div className="flex items-center gap-4 text-sm font-medium text-neutral-500">
               <div className="flex items-center gap-1.5">
@@ -361,10 +421,56 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
               </div>
             </div>
           </div>
+
+          {/* Book Now Banner CTA at End of Hotel Information */}
+          <div className="border border-blue-100 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-2xl p-6 md:p-8 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5 text-center sm:text-left">
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight">
+                Plan Your Stay at {stripHtml(property.title)}
+              </h3>
+              <p className="text-blue-100 text-sm">
+                Submit basic details & your query to receive custom packages & quick availability check.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setBookingSubmitted(false);
+                setBookingError("");
+                setIsBookingOpen(true);
+              }}
+              className="shrink-0 bg-white text-blue-700 hover:bg-blue-50 font-bold px-8 py-3.5 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2.5 text-base cursor-pointer"
+            >
+              <CalendarCheck className="w-5 h-5 text-blue-600" />
+              Book Now
+            </button>
+          </div>
         </div>
 
         {/* RIGHT COLUMN: Sidebar Highlights & Metadata */}
         <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-6">
+          {/* Quick Booking CTA Card */}
+          <div className="border border-blue-200 bg-gradient-to-br from-blue-50/80 to-indigo-50/50 rounded-2xl p-6 shadow-xs text-center space-y-4">
+            <div>
+              <span className="text-xs font-semibold text-blue-600 tracking-wider uppercase bg-blue-100 px-3 py-1 rounded-full">
+                Best Rates Guaranteed
+              </span>
+              <h4 className="text-lg font-bold text-neutral-900 mt-3">Book Your Room Today</h4>
+              <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+                Submit an instant enquiry to unlock member discounts & tailored travel packages.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setBookingSubmitted(false);
+                setBookingError("");
+                setIsBookingOpen(true);
+              }}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
+            >
+              <CalendarCheck className="w-4 h-4" /> Book Now
+            </button>
+          </div>
+
           {/* Resort Highlights */}
           <div className="border border-neutral-200 rounded-2xl p-6 bg-white shadow-xs">
             <h3 className="text-lg font-bold mb-4 text-neutral-900 border-b border-neutral-100 pb-3">
@@ -485,6 +591,182 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
           )}
         </div>
       </div>
+
+      {/* Booking Enquiry Modal */}
+      {isBookingOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col border border-neutral-100">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 text-white p-5 sm:p-6 relative shrink-0">
+              <button
+                onClick={() => setIsBookingOpen(false)}
+                className="absolute top-4 right-4 p-2 text-neutral-400 hover:text-white rounded-full transition-colors cursor-pointer"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-1">
+                <Building className="w-4 h-4" /> Hotel Booking Enquiry
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold pr-8">{stripHtml(property.title)}</h3>
+              <p className="text-xs sm:text-sm text-neutral-300 mt-1">{property.location}</p>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 sm:p-6 md:p-8 overflow-y-auto grow">
+              {bookingSubmitted ? (
+                <div className="text-center py-6 space-y-4">
+                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="w-10 h-10" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-neutral-900">Enquiry Submitted!</h4>
+                  <p className="text-neutral-600 text-sm max-w-md mx-auto leading-relaxed">
+                    Thank you for choosing Mandarin Vacations. Our travel consultant will contact you shortly with the best package and booking details for <strong>{stripHtml(property.title)}</strong>.
+                  </p>
+                  <button
+                    onClick={() => setIsBookingOpen(false)}
+                    className="mt-4 px-8 py-3 bg-neutral-900 text-white text-sm font-semibold rounded-xl hover:bg-neutral-800 transition-colors cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleBookingSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                        Full Name <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <User className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="Your Name"
+                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                        Mobile Number <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Phone className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="tel"
+                          required
+                          value={formData.mobile}
+                          onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                          placeholder="Mobile Number"
+                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                        Email Address <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="Email Address"
+                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1">City</label>
+                      <input
+                        type="text"
+                        value={formData.city}
+                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        placeholder="Your City"
+                        className="w-full px-3.5 py-2.5 text-sm border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1">Check-in Date</label>
+                      <input
+                        type="date"
+                        value={formData.checkIn}
+                        onChange={(e) => setFormData({ ...formData, checkIn: e.target.value })}
+                        className="w-full px-3 py-2.5 text-sm border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-neutral-700 mb-1">Check-out Date</label>
+                      <input
+                        type="date"
+                        value={formData.checkOut}
+                        onChange={(e) => setFormData({ ...formData, checkOut: e.target.value })}
+                        className="w-full px-3 py-2.5 text-sm border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Guests / Rooms</label>
+                    <select
+                      value={formData.guests}
+                      onChange={(e) => setFormData({ ...formData, guests: e.target.value })}
+                      className="w-full px-3.5 py-2.5 text-sm border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 bg-white"
+                    >
+                      <option value="1 Adult">1 Adult</option>
+                      <option value="2 Adults (1 Room)">2 Adults (1 Room)</option>
+                      <option value="2 Adults + 1 Child">2 Adults + 1 Child</option>
+                      <option value="Family / Group">Family / Group (2+ Rooms)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1">Query / Special Requests</label>
+                    <textarea
+                      rows={3}
+                      value={formData.query}
+                      onChange={(e) => setFormData({ ...formData, query: e.target.value })}
+                      placeholder="Tell us any specific requirements, room preferences or questions..."
+                      className="w-full px-3.5 py-2.5 text-sm border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 resize-none"
+                    />
+                  </div>
+
+                  {bookingError && (
+                    <p className="text-xs text-rose-600 font-medium text-center">{bookingError}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 text-sm cursor-pointer disabled:opacity-60"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" /> Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" /> Submit Booking Enquiry
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

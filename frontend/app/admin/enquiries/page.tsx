@@ -12,9 +12,14 @@ interface Enquiry {
   id: number;
   name: string;
   mobile: string;
-  city: string;
-  age: string;
+  city?: string;
+  age?: string;
   email: string;
+  hotel_name?: string;
+  query?: string;
+  check_in?: string;
+  check_out?: string;
+  guests?: string;
   status: EnquiryStatus;
   created_at: string;
   notes?: string;
@@ -76,9 +81,16 @@ function EnquiryRow({ e, onUpdated }: { e: Enquiry; onUpdated: () => void }) {
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center gap-4 px-4 py-3.5 hover:bg-slate-50 transition-colors text-left"
       >
-        {/* Name + email */}
+        {/* Name + email + hotel */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-slate-800 truncate">{e.name}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-sm font-semibold text-slate-800 truncate">{e.name}</p>
+            {e.hotel_name && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                🏨 {e.hotel_name}
+              </span>
+            )}
+          </div>
           <p className="text-xs text-slate-400 truncate">{e.email}</p>
         </div>
         {/* Mobile */}
@@ -101,15 +113,29 @@ function EnquiryRow({ e, onUpdated }: { e: Enquiry; onUpdated: () => void }) {
           {/* Details grid */}
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Enquiry Details</p>
-            <div className="bg-white border border-slate-200 rounded-xl p-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
               <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Name:</span><span className="text-slate-700 font-medium">{e.name}</span></div>
               <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Mobile:</span><span className="text-slate-700 font-medium">{e.mobile}</span></div>
               <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Email:</span><span className="text-slate-700 font-medium break-all">{e.email}</span></div>
               {e.city && <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">City:</span><span className="text-slate-700 font-medium">{e.city}</span></div>}
               {e.age && <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Age Group:</span><span className="text-slate-700 font-medium">{e.age}</span></div>}
+              {e.hotel_name && <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Hotel:</span><span className="text-indigo-700 font-semibold">{e.hotel_name}</span></div>}
+              {e.check_in && <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Check-In:</span><span className="text-slate-700 font-medium">{e.check_in}</span></div>}
+              {e.check_out && <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Check-Out:</span><span className="text-slate-700 font-medium">{e.check_out}</span></div>}
+              {e.guests && <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Guests:</span><span className="text-slate-700 font-medium">{e.guests}</span></div>}
               <div className="flex gap-1.5 text-xs"><span className="text-slate-400 shrink-0">Submitted:</span><span className="text-slate-700 font-medium">{fmtDate(e.created_at)}</span></div>
             </div>
           </div>
+
+          {/* User Query / Special Instructions */}
+          {e.query && (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">User Query / Requirements</p>
+              <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 font-normal leading-relaxed whitespace-pre-wrap">
+                {e.query}
+              </div>
+            </div>
+          )}
 
           {/* Status changer */}
           <div>
