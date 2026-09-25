@@ -18,38 +18,58 @@ const INDIAN_TESTIMONIALS: Testimonial[] = [
   {
     id: "1",
     quote:
-      "Absoluut unieke service. De gidsen kenden exact de verborgen parels in de woestijn van Dubai. De hele planning klopte tot in de puntjes.",
+      "Absolutely unique service. The guides knew exactly where to find the hidden gems in the Dubai desert. The entire planning was flawless.",
     name: "Aarav Sharma",
     location: "Mumbai, India",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80",
+    avatar: "/client1.jpeg",
   },
   {
     id: "2",
     quote:
-      "Onze reis naar Bali via MANDARIN WORLDWIDE was fenomenaal. Geen stress over hotelboekingen of lokaal vervoer, alles was op een luxueus niveau geregeld.",
+      "Our trip to Bali through MANDARIN WORLDWIDE was phenomenal. No stress over hotel bookings or local transport, everything was arranged at a luxurious level.",
     name: "Ananya Iyer",
     location: "Bangalore, India",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
+    avatar: "/client2.jpeg",
   },
   {
     id: "3",
     quote:
-      "De exclusieve wellness-itinerary in Kerala overtrof al onze verwachtingen. Een absolute aanrader voor wie houdt van comfort en diepgang.",
+      "The exclusive wellness itinerary in Kerala exceeded all our expectations. An absolute must-recommend for anyone who loves comfort and depth.",
     name: "Vikram Malhotra",
     location: "New Delhi, India",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80",
+    avatar: "/client3.jpeg",
   },
   {
     id: "4",
     quote:
-      "Perfecte communicatie en persoonlijke service. Ze wisten precies hoe ze rekening moesten houden met de voorkeuren van onze familie.",
+      "Perfect communication and personalized service. They knew exactly how to accommodate our family's preferences seamlessly.",
     name: "Diya Patel",
     location: "Ahmedabad, India",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80",
+    avatar: "/client4.jpeg",
+  },
+  {
+    id: "5",
+    quote:
+      "A truly magical experience in the Maldives! The resort selected by the team was breathtaking, and the private dinners were unforgettable.",
+    name: "Rohan Kapoor",
+    location: "Pune, India",
+    avatar: "/client5.jpeg",
+  },
+  {
+    id: "6",
+    quote:
+      "From the moment we landed in Switzerland, we were treated like royalty. The customized ski itinerary was thrilling and well-organized.",
+    name: "Neha Singh",
+    location: "Chandigarh, India",
+    avatar: "/client6.jpeg",
+  },
+  {
+    id: "7",
+    quote:
+      "MANDARIN WORLDWIDE redefined luxury travel for us. The attention to detail during our European tour was simply outstanding.",
+    name: "Karan Desai",
+    location: "Surat, India",
+    avatar: "/client7.jpeg",
   },
 ];
 
@@ -146,7 +166,7 @@ export default function Testimonials() {
             {INDIAN_TESTIMONIALS.map((item) => (
               <div
                 key={item.id}
-                className="relative shrink-0 rounded-3xl bg-black p-8 md:p-10 text-white flex flex-col justify-between overflow-hidden shadow-sm h-95 sm:h-87.5"
+                className="relative shrink-0 rounded-3xl bg-black p-8 md:p-10 text-white flex flex-col justify-between shadow-sm min-h-[360px] h-auto"
                 style={{
                   width: `calc((100% - ${(visibleCount - 1) * GAP}px) / ${visibleCount})`,
                   flex: `0 0 calc((100% - ${(visibleCount - 1) * GAP}px) / ${visibleCount})`,
@@ -158,7 +178,7 @@ export default function Testimonials() {
                     “
                   </span>
                   {/* Testimonial Quote Text */}
-                  <p className="text-gray-200 text-base sm:text-lg leading-relaxed font-normal tracking-wide line-clamp-4">
+                  <p className="text-gray-200 text-base sm:text-lg leading-relaxed font-normal tracking-wide">
                     &quot;{item.quote}&quot;
                   </p>
                 </div>
