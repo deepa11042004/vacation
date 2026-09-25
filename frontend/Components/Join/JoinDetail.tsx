@@ -375,6 +375,21 @@ export default function JoinDetail({
   const [activeTab, setActiveTab] = useState<string>(activeTiers[0]);
 
   React.useEffect(() => {
+    if (selectedTier && TIER_ORDER.includes(selectedTier.toLowerCase())) {
+      const slug = selectedTier.toLowerCase();
+      setActiveTab(slug);
+      const timer = setTimeout(() => {
+        const element = document.getElementById(slug);
+        if (element) {
+          const y = element.getBoundingClientRect().top + window.scrollY - 140;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedTier]);
+
+  React.useEffect(() => {
     if (activePlanKey) return; // don't observe scroll if plan detail is active
 
     const observer = new IntersectionObserver(
@@ -449,7 +464,12 @@ export default function JoinDetail({
           {/* 3 Tier Cards Graphic Showcase */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 my-6 w-full max-w-5xl px-4">
             {/* EBONY Card */}
-            <div className="relative w-full sm:w-1/3 h-52 sm:h-56 rounded-2xl bg-gradient-to-br from-[#2a2a2a] via-[#141414] to-[#050505] p-6 text-white shadow-2xl border border-neutral-700 flex flex-col justify-center overflow-hidden group hover:scale-105 transition-transform duration-300">
+            <div
+              onClick={() => handleTabChange("ebony")}
+              className="relative w-full sm:w-1/3 h-52 sm:h-56 rounded-2xl bg-gradient-to-br from-[#2a2a2a] via-[#141414] to-[#050505] p-6 text-white shadow-2xl border border-neutral-700 flex flex-col justify-center overflow-hidden group hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+              role="button"
+              tabIndex={0}
+            >
               <div className="absolute inset-0 opacity-35 mix-blend-overlay pointer-events-none">
                 <Image
                   src="/Img/pattern.png"
@@ -476,7 +496,12 @@ export default function JoinDetail({
             </div>
 
             {/* IVORY Card (Center & Prominent) */}
-            <div className="relative w-full sm:w-1/3 h-56 sm:h-60 rounded-2xl bg-gradient-to-br from-[#ECE0CD] via-[#D8C7B0] to-[#BEAD95] p-6 text-neutral-900 shadow-2xl border border-amber-200/50 flex flex-col justify-center overflow-hidden z-10 sm:-translate-y-3 group hover:scale-105 transition-transform duration-300">
+            <div
+              onClick={() => handleTabChange("ivory")}
+              className="relative w-full sm:w-1/3 h-56 sm:h-60 rounded-2xl bg-gradient-to-br from-[#ECE0CD] via-[#D8C7B0] to-[#BEAD95] p-6 text-neutral-900 shadow-2xl border border-amber-200/50 flex flex-col justify-center overflow-hidden z-10 sm:-translate-y-3 group hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+              role="button"
+              tabIndex={0}
+            >
               <div className="absolute inset-0 opacity-40 mix-blend-overlay pointer-events-none">
                 <Image
                   src="/Img/pattern.png"
@@ -503,7 +528,12 @@ export default function JoinDetail({
             </div>
 
             {/* JADE Card */}
-            <div className="relative w-full sm:w-1/3 h-52 sm:h-56 rounded-2xl bg-gradient-to-br from-[#14574E] via-[#0B3D37] to-[#042420] p-6 text-white shadow-2xl border border-emerald-500/40 flex flex-col justify-center overflow-hidden group hover:scale-105 transition-transform duration-300">
+            <div
+              onClick={() => handleTabChange("jade")}
+              className="relative w-full sm:w-1/3 h-52 sm:h-56 rounded-2xl bg-gradient-to-br from-[#14574E] via-[#0B3D37] to-[#042420] p-6 text-white shadow-2xl border border-emerald-500/40 flex flex-col justify-center overflow-hidden group hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+              role="button"
+              tabIndex={0}
+            >
               <div className="absolute inset-0 opacity-35 mix-blend-overlay pointer-events-none">
                 <Image
                   src="/Img/pattern.png"
