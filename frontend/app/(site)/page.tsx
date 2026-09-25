@@ -13,9 +13,20 @@ import LogoAbout from "@/Components/About/LogoAbout";
 import MembershipForm from "@/Components/Home/MembershipForm";
 import RedeemVoucherSection from "@/Components/Home/RedeemVoucherSection";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Mandarin Worldwide Vacations",
+  "url": "https://mandarinworldwidevacations.com"
+};
+
 function page() {
   return (
     <main className="overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Hero />
       
       {/* Shared Background for LogoAbout and FamilyHolidays */}

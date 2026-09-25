@@ -18,8 +18,20 @@ const marcellus = Marcellus({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mandarinworldwidevacations.com"),
-  title: "Mandarin Worldwide Vacations",
+  title: {
+    default: "Mandarin Worldwide Vacations",
+    template: "%s | Mandarin Worldwide Vacations"
+  },
   description: "Mandarin Worldwide Vacations — holiday membership and timeshare programs.",
+  applicationName: "Mandarin Worldwide Vacations",
+  openGraph: {
+    title: "Mandarin Worldwide Vacations",
+    description: "Mandarin Worldwide Vacations — holiday membership and timeshare programs.",
+    url: "https://mandarinworldwidevacations.com",
+    siteName: "Mandarin Worldwide Vacations",
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
