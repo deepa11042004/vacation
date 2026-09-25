@@ -18,7 +18,7 @@ function Counter({ value }: CounterProps) {
     stiffness: 70,
     damping: 24,
   });
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true });
 
   useEffect(() => {
     if (isInView) {
