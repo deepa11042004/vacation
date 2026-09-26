@@ -44,15 +44,40 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 
 export default function ContactForm() {
   const [values, setValues] = useState<FormValues>(defaultValues);
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (id: keyof FormValues, value: string) => {
     setValues((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `${values.firstName} ${values.lastName}`.trim(),
+          email: values.email,
+          mobile: values.phone,
+          query: `[${values.enquiry || "General Enquiry"}] ${values.message}`,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSubmitted(true);
+      } else {
+        setError(data.error || "Something went wrong. Please try again.");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -176,11 +201,16 @@ export default function ContactForm() {
                 />
               </div>
 
+              {error && (
+                <p className="text-sm text-red-400 font-medium text-center">{error}</p>
+              )}
+
               <button
                 type="submit"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#E8C15B] to-[#b38b40] px-6 py-3.5 text-sm font-bold text-[#141414] shadow-lg shadow-[#b38b40]/25 transition-transform hover:-translate-y-0.5 sm:w-auto"
+                disabled={submitting}
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#E8C15B] to-[#b38b40] px-6 py-3.5 text-sm font-bold text-[#141414] shadow-lg shadow-[#b38b40]/25 transition-transform hover:-translate-y-0.5 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Message
+                {submitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           )}

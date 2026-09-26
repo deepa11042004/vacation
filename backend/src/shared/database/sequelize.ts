@@ -18,6 +18,7 @@ import { KycDocument } from '../../modules/kyc-documents/models/KycDocument.mode
 import { Staff } from '../../modules/staff/models/Staff.model';
 import { TravelQuery } from '../../modules/travel-queries/models/TravelQuery.model';
 import { Voucher } from '../../modules/vouchers/models/Voucher.model';
+import { Enquiry } from '../../modules/enquiries/models/Enquiry.model';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -58,6 +59,7 @@ export const sequelize = new Sequelize({
     Staff,
     TravelQuery,
     Voucher,
+    Enquiry,
   ],
 });
 
@@ -74,6 +76,7 @@ export const connectDB = async () => {
   }
   try {
     await sequelize.authenticate();
+    await sequelize.sync({ alter: true });
     dbConnected = true;
     console.log('Database connected successfully.');
   } catch (error) {

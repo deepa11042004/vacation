@@ -1,115 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
-const DATA_FILE = path.join(process.cwd(), "data", "enquiries.json");
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-function ensureFile() {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2));
-}
-
-function readEnquiries(): Enquiry[] {
-  ensureFile();
-  try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-  } catch {
-    return [];
-  }
-}
-
-function writeEnquiries(data: Enquiry[]) {
-  ensureFile();
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-}
-
-interface Enquiry {
-  id: number;
-  name: string;
-  mobile: string;
-  city?: string;
-  age?: string;
-  email: string;
-  hotel_name?: string;
-  query?: string;
-  check_in?: string;
-  check_out?: string;
-  guests?: string;
-  status: "NEW" | "CONTACTED" | "CONVERTED" | "CLOSED";
-  created_at: string;
-  notes?: string;
-}
-
-// GET /api/enquiries  — list all enquiries (with optional search & status filter)
+// GET /api/enquiries — proxy to backend
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const search = searchParams.get("search")?.toLowerCase() ?? "";
-  const status = searchParams.get("status") ?? "";
-  const page  = parseInt(searchParams.get("page")  ?? "1", 10);
-  const limit = parseInt(searchParams.get("limit") ?? "20", 10);
-
-  let enquiries = readEnquiries();
-
-  if (search) {
-    enquiries = enquiries.filter(
-      (e) =>
-        e.name.toLowerCase().includes(search) ||
-        e.mobile.includes(search) ||
-        e.email.toLowerCase().includes(search) ||
-        (e.city && e.city.toLowerCase().includes(search)) ||
-        (e.hotel_name && e.hotel_name.toLowerCase().includes(search)) ||
-        (e.query && e.query.toLowerCase().includes(search))
-    );
+  try {
+    const { search } = new URL(req.url);
+    const res = await fetch(`${API_BASE}/api/enquiries${search}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
+  } catch {
+    return NextResponse.json({ success: false, error: "Failed to communicate with backend server" }, { status: 500 });
   }
-  if (status) {
-    enquiries = enquiries.filter((e) => e.status === status);
-  }
-
-  const total = enquiries.length;
-  const sorted = enquiries.slice().sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-  const paginated = sorted.slice((page - 1) * limit, page * limit);
-
-  return NextResponse.json({ success: true, data: { enquiries: paginated, total, page, limit } });
 }
 
-// POST /api/enquiries  — create a new enquiry
+// POST /api/enquiries — proxy to backend
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, mobile, city, age, email, hotel_name, query, check_in, check_out, guests } = body;
-
-    if (!name || !mobile || !email) {
-      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
-    }
-
-    const enquiries = readEnquiries();
-    const newId = enquiries.length > 0 ? Math.max(...enquiries.map((e) => e.id)) + 1 : 1;
-
-    const newEnquiry: Enquiry = {
-      id: newId,
-      name: String(name).trim(),
-      mobile: String(mobile).trim(),
-      city: String(city ?? "").trim(),
-      age: String(age ?? "").trim(),
-      email: String(email).trim(),
-      hotel_name: hotel_name ? String(hotel_name).trim() : undefined,
-      query: query ? String(query).trim() : undefined,
-      check_in: check_in ? String(check_in).trim() : undefined,
-      check_out: check_out ? String(check_out).trim() : undefined,
-      guests: guests ? String(guests).trim() : undefined,
-      status: "NEW",
-      created_at: new Date().toISOString(),
-      notes: "",
-    };
-
-    enquiries.push(newEnquiry);
-    writeEnquiries(enquiries);
-
-    return NextResponse.json({ success: true, data: newEnquiry }, { status: 201 });
+    const res = await fetch(`${API_BASE}/api/enquiries`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
   } catch {
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Failed to communicate with backend server" }, { status: 500 });
   }
 }

@@ -1,62 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
-const DATA_FILE = path.join(process.cwd(), "data", "enquiries.json");
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-interface Enquiry {
-  id: number;
-  name: string;
-  mobile: string;
-  city?: string;
-  age?: string;
-  email: string;
-  hotel_name?: string;
-  query?: string;
-  check_in?: string;
-  check_out?: string;
-  guests?: string;
-  status: "NEW" | "CONTACTED" | "CONVERTED" | "CLOSED";
-  created_at: string;
-  notes?: string;
-}
-
-function readEnquiries(): Enquiry[] {
+// GET /api/enquiries/[id] — proxy to backend
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
+    const res = await fetch(`${API_BASE}/api/enquiries/${id}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
   } catch {
-    return [];
+    return NextResponse.json({ success: false, error: "Failed to communicate with backend server" }, { status: 500 });
   }
 }
 
-function writeEnquiries(data: Enquiry[]) {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-}
-
-// PATCH /api/enquiries/[id]  — update status and/or notes
+// PATCH /api/enquiries/[id] — proxy to backend
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id: idStr } = await params;
-  const id = parseInt(idStr, 10);
-  if (isNaN(id)) {
-    return NextResponse.json({ success: false, error: "Invalid ID" }, { status: 400 });
+  const { id } = await params;
+  try {
+    const body = await req.json();
+    const res = await fetch(`${API_BASE}/api/enquiries/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
+  } catch {
+    return NextResponse.json({ success: false, error: "Failed to communicate with backend server" }, { status: 500 });
   }
+}
 
-  const body = await req.json();
-  const enquiries = readEnquiries();
-  const idx = enquiries.findIndex((e) => e.id === id);
-
-  if (idx === -1) {
-    return NextResponse.json({ success: false, error: "Enquiry not found" }, { status: 404 });
+// DELETE /api/enquiries/[id] — proxy to backend
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  try {
+    const res = await fetch(`${API_BASE}/api/enquiries/${id}`, {
+      method: "DELETE",
+    });
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
+  } catch {
+    return NextResponse.json({ success: false, error: "Failed to communicate with backend server" }, { status: 500 });
   }
-
-  if (body.status !== undefined) enquiries[idx].status = body.status;
-  if (body.notes !== undefined) enquiries[idx].notes = body.notes;
-
-  writeEnquiries(enquiries);
-  return NextResponse.json({ success: true, data: enquiries[idx] });
 }
