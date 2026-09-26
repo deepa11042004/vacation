@@ -76,7 +76,7 @@ export const connectDB = async () => {
   }
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
+    await Enquiry.sync();
     dbConnected = true;
     console.log('Database connected successfully.');
   } catch (error) {
