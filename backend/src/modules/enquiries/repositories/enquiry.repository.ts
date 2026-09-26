@@ -49,7 +49,7 @@ export class EnquiryRepository {
     return { rows, count };
   }
 
-  async update(id: number, data: Partial<IEnquiry>): Promise<[number, Enquiry[]]> {
+  async update(id: number, data: Partial<IEnquiry>): Promise<[number]> {
     return await Enquiry.update(data, { where: { id } });
   }
 

@@ -69,7 +69,7 @@ export async function DELETE(
     if (!enquiry) throw new AppError('Enquiry not found', 404);
 
     await repo.delete(id);
-    return NextResponse.json(ResponseUtil.success('Enquiry deleted successfully'));
+    return NextResponse.json(ResponseUtil.success('Enquiry deleted successfully', null));
   } catch (error) {
     return errorHandler(error);
   }
