@@ -25,7 +25,7 @@ interface AllDestinationProps {
 
 type Category = "ALL" | "NATIONAL" | "INTERNATIONAL";
 
-const PAGE_LIMIT = 6;
+const PAGE_LIMIT = 200;
 
 const FALLBACK_LOCATIONS: Location[] = [
   {
