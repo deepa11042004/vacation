@@ -20,7 +20,7 @@ function getSettingsPath() {
 }
 
 const DEFAULTS: CompanySettings = {
-  name: 'Mandarine Worldwide Vacations',
+  name: 'Mandarine Worldwide Vacations Private Limited',
   address: 'D-22 LGF, Pandav Nagar, Near Laxmi Nagar, Delhi - 110092',
   state: 'Delhi',
   gst_number: '',

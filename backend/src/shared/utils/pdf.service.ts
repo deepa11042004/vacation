@@ -76,9 +76,6 @@ export function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     doc.font('Helvetica-Bold').text('Phone: ', ML, y, { continued: true })
       .font('Helvetica').text(co.phone || '011-40129981');
     y += 12;
-    doc.font('Helvetica-Bold').text('Complaint Mail: ', ML, y, { continued: true })
-      .font('Helvetica').text('customercare@mandarinworldwidevacations.com');
-    y += 12;
     doc.font('Helvetica-Bold').text('Official Mail: ', ML, y, { continued: true })
       .font('Helvetica').text(co.email || 'info@mandarinworldwidevacations.com');
 

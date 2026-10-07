@@ -3,10 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import { generateInvoicePDF } from './pdf.service';
 
+const port = Number(process.env.EMAIL_PORT) || 587;
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: Number(process.env.EMAIL_PORT) || 587,
-  secure: false,
+  host: process.env.EMAIL_HOST || 'smtppro.zoho.com',
+  port,
+  secure: port === 465 || process.env.EMAIL_SECURE === 'true',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -113,7 +114,7 @@ export async function sendInvoiceEmail(to: string, data: InvoiceData): Promise<v
   const pdfBuffer = await generateInvoicePDF(data);
 
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Mandarine Worldwide Vacations" <peltowninfra@gmail.com>',
+    from: process.env.EMAIL_FROM || '"Mandarin Worldwide Vacations" <info@mandarinworldwidevacations.com>',
     to,
     subject,
     text: bodyText,
@@ -131,7 +132,7 @@ export async function sendInvoiceEmail(to: string, data: InvoiceData): Promise<v
 export async function sendCustomEmail(to: string, subject: string, bodyText: string): Promise<void> {
   const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Mandarine Worldwide Vacations" <peltowninfra@gmail.com>',
+    from: process.env.EMAIL_FROM || '"Mandarin Worldwide Vacations" <info@mandarinworldwidevacations.com>',
     to,
     subject,
     text: bodyText,
@@ -147,7 +148,7 @@ export async function sendBirthdayEmail(to: string, clientName: string): Promise
   const bodyText = interpolate(tpl.body, vars);
   const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Mandarine Worldwide Vacations" <peltowninfra@gmail.com>',
+    from: process.env.EMAIL_FROM || '"Mandarin Worldwide Vacations" <info@mandarinworldwidevacations.com>',
     to,
     subject,
     text: bodyText,
@@ -166,7 +167,7 @@ export async function sendAnniversaryEmail(to: string, clientName: string, spous
   const bodyText = interpolate(tpl.body, vars);
   const bodyHtml = `<pre style="font-family:Arial,sans-serif;font-size:14px;line-height:1.7;color:#0f172a;white-space:pre-wrap">${bodyText}</pre>`;
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Mandarine Worldwide Vacations" <peltowninfra@gmail.com>',
+    from: process.env.EMAIL_FROM || '"Mandarin Worldwide Vacations" <info@mandarinworldwidevacations.com>',
     to,
     subject,
     text: bodyText,

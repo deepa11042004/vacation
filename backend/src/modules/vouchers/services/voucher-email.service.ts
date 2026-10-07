@@ -4,10 +4,11 @@ import path from 'path';
 import { IVoucher } from '../interfaces/voucher.interface';
 import { VoucherPdfService } from './voucher-pdf.service';
 
+const port = Number(process.env.EMAIL_PORT) || 587;
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: Number(process.env.EMAIL_PORT) || 587,
-  secure: false,
+  host: process.env.EMAIL_HOST || 'smtppro.zoho.com',
+  port,
+  secure: port === 465 || process.env.EMAIL_SECURE === 'true',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -255,7 +256,7 @@ Mandarin Worldwide Vacations
 `;
 
       const info = await transporter.sendMail({
-        from: process.env.EMAIL_FROM || '"Mandarin Worldwide Vacations" <hhd973030@gmail.com>',
+        from: process.env.EMAIL_FROM || '"Mandarin Worldwide Vacations" <info@mandarinworldwidevacations.com>',
         to: voucher.email,
         subject,
         text,
