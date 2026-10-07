@@ -49,7 +49,7 @@ export class VoucherEmailService {
       const isDev = process.env.NODE_ENV !== 'production';
       const frontendUrl = (
         process.env.APP_FRONTEND_URL ||
-        (isDev ? 'http://localhost:3001' : process.env.SERVICE_URL_FRONTEND || process.env.FRONTEND_URL || 'https://mwvpl.com')
+        (isDev ? 'http://localhost:3000' : process.env.SERVICE_URL_FRONTEND || process.env.FRONTEND_URL || 'https://mwvpl.com')
       ).replace(/\/$/, '');
       const redeemUrl = `${frontendUrl}/redeem-voucher`;
       const downloadPdfUrl = `${frontendUrl}/api/vouchers/download/${voucher.voucher_number}`;
