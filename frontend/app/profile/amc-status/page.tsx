@@ -3,9 +3,12 @@
 import { useState, useEffect } from "react";
 import { ShieldCheck, CheckCircle2, AlertCircle, CalendarDays, CreditCard, Loader2 } from "lucide-react";
 import { memberApi, getStoredMemberUser } from "@/lib/member-api";
+import { processRazorpayPayment } from "@/lib/razorpay";
 
 interface AmcPayment {
   amc_payment_id: number;
+  client_id: number;
+  membership_id: number;
   year_number: number;
   is_received: boolean;
   amount?: number | null;
@@ -22,8 +25,9 @@ export default function AmcStatusPage() {
   const [records, setRecords] = useState<AmcPayment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [payingId, setPayingId] = useState<number | null>(null);
 
-  useEffect(() => {
+  const fetchAmcRecords = () => {
     const user = getStoredMemberUser<{ client_id?: number | null }>();
     const clientId = user?.client_id;
     if (!clientId) { setError("No client account linked."); setLoading(false); return; }
@@ -35,7 +39,45 @@ export default function AmcStatusPage() {
       })
       .catch(() => setError("Failed to load AMC records."))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchAmcRecords();
   }, []);
+
+  const handlePayAmc = async (rec: AmcPayment) => {
+    if (!rec.amount || rec.amount <= 0) return;
+    setPayingId(rec.amc_payment_id);
+    const user = getStoredMemberUser<{ first_name?: string; last_name?: string; email?: string; mobile?: string }>();
+
+    try {
+      await processRazorpayPayment({
+        amount: rec.amount,
+        name: "Mandarin Worldwide Vacations",
+        description: `AMC Payment for Year ${rec.year_number}`,
+        paymentType: "AMC",
+        amcPaymentId: rec.amc_payment_id,
+        clientId: rec.client_id,
+        membershipId: rec.membership_id,
+        prefill: {
+          name: `${user?.first_name || ""} ${user?.last_name || ""}`.trim(),
+          email: user?.email || "",
+          contact: user?.mobile || "",
+        },
+        onSuccess: () => {
+          alert("AMC Payment successful!");
+          fetchAmcRecords();
+        },
+        onDismiss: () => {
+          setPayingId(null);
+        },
+      });
+    } catch (err: any) {
+      alert(err.message || "Failed to initiate Razorpay AMC payment.");
+    } finally {
+      setPayingId(null);
+    }
+  };
 
   if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>;
 
@@ -131,6 +173,29 @@ export default function AmcStatusPage() {
                           </div>
                         </div>
                       </div>
+
+                      {!rec.is_received && rec.amount != null && rec.amount > 0 && (
+                        <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
+                          <button
+                            onClick={() => handlePayAmc(rec)}
+                            disabled={payingId === rec.amc_payment_id}
+                            className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                          >
+                            {payingId === rec.amc_payment_id ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Opening Gateway...</span>
+                              </>
+                            ) : (
+                              <>
+                                <CreditCard className="w-3.5 h-3.5" />
+                                <span>Pay ₹{rec.amount.toLocaleString("en-IN")} Online</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+
                     </div>
                   </div>
                 ))}

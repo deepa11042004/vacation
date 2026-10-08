@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, CheckCircle2, Info, ShieldCheck, X } from "lucide-react";
 import { PlanInfo } from "./PlanDetailsView";
+import { processRazorpayPayment } from "@/lib/razorpay";
 
 interface CheckoutPaymentViewProps {
   plan: PlanInfo;
@@ -35,6 +36,7 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
 
   const [modalStep, setModalStep] = useState<"closed" | "details" | "success">("closed");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState<{ paymentId?: string; orderId?: string }>({});
 
   // User details state for the Enter Details form
   const [userDetails, setUserDetails] = useState({
@@ -77,6 +79,7 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      // 1. Submit lead
       await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -96,14 +99,44 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
           monthlyEmi: monthlyEmi,
         }),
       });
-      setModalStep("success");
-    } catch (err) {
-      console.error(err);
-      setModalStep("success"); // Proceed anyway for UX if network fails
+
+      // 2. Open Razorpay Gateway
+      await processRazorpayPayment({
+        amount: downPaymentAmount,
+        name: "Mandarin Worldwide Vacations",
+        description: `${plan.tierName} Membership Down Payment`,
+        paymentType: isFullPayment ? "DOWN_PAYMENT" : "DOWN_PAYMENT",
+        prefill: {
+          name: `${userDetails.firstName} ${userDetails.lastName}`,
+          email: userDetails.email,
+          contact: userDetails.mobile,
+        },
+        notes: {
+          planTier: plan.tierName,
+          planRefCode: plan.refCode,
+        },
+        onSuccess: (res) => {
+          setPaymentDetails({
+            paymentId: res.razorpay_payment_id,
+            orderId: res.razorpay_order_id,
+          });
+          setModalStep("success");
+        },
+        onDismiss: () => {
+          setIsSubmitting(false);
+        },
+      });
+    } catch (err: any) {
+      console.error("Payment initiation error:", err);
+      const errMsg = err?.message === "Failed to fetch"
+        ? "Unable to connect to backend payment service. Please make sure the backend server (http://localhost:4000) is running."
+        : (err?.message || "Something went wrong initiating Razorpay payment.");
+      alert(errMsg);
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-[#1C1608] via-[#2A200B] to-[#0E0B04] text-white pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-12 font-sans select-none relative overflow-hidden">
@@ -439,11 +472,17 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
                   <CheckCircle2 size={36} />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-3">
-                  Thank You!
+                  Payment Successful!
                 </h3>
-                <p className="text-sm text-amber-200/90 font-medium leading-relaxed mb-8">
-                  Your form is submitted. Our sales person will contact you shortly
+                <p className="text-sm text-amber-200/90 font-medium leading-relaxed mb-4">
+                  Thank you! Your payment has been received and verified. Our representative will contact you shortly to activate your membership.
                 </p>
+
+                {paymentDetails.paymentId && (
+                  <div className="bg-[#0D0A04] border border-[#D4AF37]/30 rounded-2xl p-3 mb-6 font-mono text-xs text-amber-200/90">
+                    <p>Payment ID: <span className="text-[#F5D77F] font-bold">{paymentDetails.paymentId}</span></p>
+                  </div>
+                )}
 
                 <button
                   onClick={() => setModalStep("closed")}
