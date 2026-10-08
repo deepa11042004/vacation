@@ -70,6 +70,18 @@ export const PLAN_DATA_MAP: Record<string, PlanInfo> = {
     refCode: "REF: CM-EBO-2026",
   },
   // IVORY PLANS
+  "ivory-test": {
+    tierSlug: "ivory",
+    tierName: "IVORY",
+    roomType: "Studio",
+    tenure: "Test (₹1)",
+    totalCost: "₹1/-",
+    downPayment: "₹1/-",
+    balance: "₹0/-",
+    emiStarts: "₹1/mo",
+    weeksAccess: "1 week",
+    refCode: "REF: TEST-1RE-2026",
+  },
   "ivory-20": {
     tierSlug: "ivory",
     tierName: "IVORY",

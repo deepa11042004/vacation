@@ -48,7 +48,9 @@ export default function CheckoutPaymentView({ plan, onBack }: CheckoutPaymentVie
 
   // Calculations
   const downPaymentAmount = useMemo(() => {
-    return (totalCostNumber * dpPercent) / 100;
+    if (totalCostNumber <= 1) return 1;
+    const calc = (totalCostNumber * dpPercent) / 100;
+    return calc < 1 ? 1 : calc;
   }, [totalCostNumber, dpPercent]);
 
   const remainingBalance = useMemo(() => {
