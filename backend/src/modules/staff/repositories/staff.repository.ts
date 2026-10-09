@@ -6,11 +6,16 @@ export class StaffRepository {
     return Staff.findOne({ where: { email }, paranoid: false });
   }
 
+  async findByEmployeeId(employee_id: string) {
+    return Staff.findOne({ where: { employee_id }, paranoid: false });
+  }
+
   async findById(staff_id: number) {
     return Staff.findByPk(staff_id);
   }
 
-  async create(data: Partial<Staff>, employee_id: string) {
+  async create(data: Partial<Staff>, default_employee_id: string) {
+    const employee_id = data.employee_id || default_employee_id;
     return Staff.create({ ...data, employee_id } as any);
   }
 

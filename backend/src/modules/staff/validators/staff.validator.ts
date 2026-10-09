@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { StaffStatus } from '../models/Staff.model';
 
 export const CreateStaffSchema = z.object({
+  employee_id:  z.string().min(1).max(30).optional().nullable(),
   full_name:    z.string().min(1).max(255),
   email:        z.string().email(),
   phone:        z.string().min(7).max(20),
@@ -12,6 +13,7 @@ export const CreateStaffSchema = z.object({
 });
 
 export const UpdateStaffSchema = z.object({
+  employee_id:  z.string().min(1).max(30).optional().nullable(),
   full_name:    z.string().min(1).max(255).optional(),
   email:        z.string().email().optional(),
   phone:        z.string().min(7).max(20).optional(),

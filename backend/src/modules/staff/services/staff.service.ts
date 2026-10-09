@@ -13,8 +13,14 @@ export class StaffService {
     const existing = await this.repo.findByEmail(data.email);
     if (existing) throw new AppError('A staff member with this email already exists.', 400);
 
-    const lastId    = await this.repo.getLastEmployeeId();
-    const employee_id = generateEmployeeId(lastId);
+    let employee_id = data.employee_id ? String(data.employee_id).trim() : null;
+    if (employee_id) {
+      const existingEmpId = await this.repo.findByEmployeeId(employee_id);
+      if (existingEmpId) throw new AppError('A staff member with this Employee ID already exists.', 400);
+    } else {
+      const lastId = await this.repo.getLastEmployeeId();
+      employee_id = generateEmployeeId(lastId);
+    }
 
     const staff = await this.repo.create(data, employee_id);
     return staff.toJSON();
@@ -32,6 +38,14 @@ export class StaffService {
   }
 
   async updateStaff(staff_id: number, data: any) {
+    if (data.employee_id) {
+      const empIdStr = String(data.employee_id).trim();
+      const existingEmpId = await this.repo.findByEmployeeId(empIdStr);
+      if (existingEmpId && existingEmpId.staff_id !== staff_id) {
+        throw new AppError('A staff member with this Employee ID already exists.', 400);
+      }
+      data.employee_id = empIdStr;
+    }
     const staff = await this.repo.update(staff_id, data);
     if (!staff) throw new AppError('Staff member not found.', 404);
     return staff.toJSON();

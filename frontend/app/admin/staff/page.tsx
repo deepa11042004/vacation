@@ -22,6 +22,7 @@ interface StaffMember {
 }
 
 interface StaffForm {
+  employee_id: string;
   full_name: string;
   email: string;
   phone: string;
@@ -32,7 +33,7 @@ interface StaffForm {
 }
 
 const empty: StaffForm = {
-  full_name: "", email: "", phone: "",
+  employee_id: "", full_name: "", email: "", phone: "",
   designation: "", department: "", joining_date: "", status: "ACTIVE",
 };
 
@@ -82,6 +83,7 @@ export default function StaffPage() {
   function openEdit(m: StaffMember) {
     setEditing(m);
     setForm({
+      employee_id: m.employee_id ?? "",
       full_name: m.full_name, email: m.email, phone: m.phone,
       designation: m.designation ?? "", department: m.department ?? "",
       joining_date: m.joining_date ? m.joining_date.slice(0, 10) : "",
@@ -98,6 +100,7 @@ export default function StaffPage() {
     try {
       const payload = {
         ...form,
+        employee_id:  form.employee_id.trim() || undefined,
         joining_date: form.joining_date || null,
         designation:  form.designation  || null,
         department:   form.department   || null,
@@ -235,9 +238,15 @@ export default function StaffPage() {
         <div className="space-y-4">
           {formErr && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{formErr}</p>}
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Full Name <span className="text-red-500">*</span></label>
-            <input className={inp} value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} placeholder="e.g. Rahul Sharma" />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Employee ID <span className="text-slate-400 font-normal">(Auto if blank)</span></label>
+              <input className={inp} value={form.employee_id} onChange={e => setForm(f => ({ ...f, employee_id: e.target.value }))} placeholder="e.g. EMP-004" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Full Name <span className="text-red-500">*</span></label>
+              <input className={inp} value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} placeholder="e.g. Rahul Sharma" />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
