@@ -95,6 +95,10 @@ export class Voucher extends Model<IVoucher, Partial<IVoucher>> implements IVouc
   @Column(DataType.INTEGER)
   created_by?: number | null;
 
+  @AllowNull(true)
+  @Column(DataType.STRING(255))
+  created_by_name?: string | null;
+
   @CreatedAt
   @Column(DataType.DATE)
   created_at!: Date;

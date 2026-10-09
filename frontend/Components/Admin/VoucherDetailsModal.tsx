@@ -38,6 +38,8 @@ export interface VoucherItem {
   status: "ACTIVE" | "REDEEMED" | "EXPIRED";
   terms_and_conditions: string;
   redeemed_at?: string | null;
+  created_by?: number | null;
+  created_by_name?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -147,6 +149,9 @@ export default function VoucherDetailsModal({
             </div>
             <p className="text-xs text-slate-300">
               Created on {formatDate(voucher.created_at)}
+              {voucher.created_by_name && (
+                <span> • Issued By: <strong className="text-amber-300 font-semibold">{voucher.created_by_name}</strong></span>
+              )}
             </p>
           </div>
 

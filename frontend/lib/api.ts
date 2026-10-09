@@ -3,7 +3,7 @@ const BASE = "/api";
 // ── Storage helpers ────────────────────────────────────────────────────────
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("admin_token");
+  return localStorage.getItem("admin_token") || localStorage.getItem("staff_token");
 }
 
 function getRefreshToken(): string | null {

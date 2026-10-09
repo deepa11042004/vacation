@@ -22,14 +22,17 @@ export class VoucherController {
     try {
       await connectDB();
       const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
+      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER, 'STAFF']);
 
       const body = await req.json();
       const validatedData = CreateVoucherSchema.parse(body);
 
+      const createdByName = body.created_by_name || currentUser.name || currentUser.email;
+
       const result = await voucherService.createVoucher(
         validatedData,
-        currentUser.user_id
+        currentUser.user_id,
+        createdByName
       );
 
       return NextResponse.json(
@@ -45,7 +48,7 @@ export class VoucherController {
     try {
       await connectDB();
       const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
+      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER, 'STAFF']);
 
       const searchParams = req.nextUrl?.searchParams ?? new URL(req.url, 'http://localhost').searchParams;
       const queryObj: Record<string, any> = {};
@@ -74,7 +77,7 @@ export class VoucherController {
     try {
       await connectDB();
       const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
+      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER, 'STAFF']);
 
       const id = this.parseId(idStr);
       const result = await voucherService.getVoucherById(id);
@@ -92,7 +95,7 @@ export class VoucherController {
     try {
       await connectDB();
       const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
+      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER, 'STAFF']);
 
       const id = this.parseId(idStr);
       const result = await voucherService.resendEmail(id);

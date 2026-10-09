@@ -16,6 +16,7 @@ export class StaffAuthService {
       user_id: staff.staff_id,
       email:   staff.email,
       role:    'STAFF',
+      name:    staff.full_name,
     });
 
     const { ...staffData } = staff.toJSON();

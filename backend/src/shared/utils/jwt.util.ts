@@ -7,6 +7,7 @@ export interface TokenPayload {
   user_id: number;
   email: string;
   role: string;
+  name?: string | null;
   client_id?: number | null;
   allowed_sections?: string[] | null;
 }

@@ -60,7 +60,7 @@ export class VoucherService {
     return expiry.toISOString().slice(0, 10);
   }
 
-  async createVoucher(dto: ICreateVoucherDTO, createdBy?: number | null) {
+  async createVoucher(dto: ICreateVoucherDTO, createdBy?: number | null, createdByName?: string | null) {
     let voucherNumber = dto.voucher_number?.trim();
     if (!voucherNumber) {
       voucherNumber = await this.generateUniqueVoucherNumber();
@@ -93,6 +93,7 @@ export class VoucherService {
       status: VoucherStatus.ACTIVE,
       terms_and_conditions: termsAndConditions,
       created_by: createdBy || null,
+      created_by_name: createdByName || dto.created_by_name || null,
     });
 
     // Dispatch voucher email asynchronously in background so API responds instantly without proxy timeouts

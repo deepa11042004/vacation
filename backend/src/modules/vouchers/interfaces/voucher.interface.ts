@@ -17,6 +17,7 @@ export interface IVoucher {
   terms_and_conditions: string;
   redeemed_at?: Date | string | null;
   created_by?: number | null;
+  created_by_name?: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -33,6 +34,7 @@ export interface ICreateVoucherDTO {
   issue_date?: string;
   validity?: string;
   terms_and_conditions?: string;
+  created_by_name?: string | null;
 }
 
 export interface IGetAllVouchersQuery {
