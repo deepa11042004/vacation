@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, User, Phone, Mail, Briefcase, Building2, Calendar, BadgeCheck } from "lucide-react";
+import { staffImageUrl } from "@/lib/imageUrl";
 
 interface StaffProfile {
   staff_id: number;
@@ -10,6 +11,7 @@ interface StaffProfile {
   full_name: string;
   email: string;
   phone: string;
+  photo?: string | null;
   designation?: string | null;
   department?: string | null;
   joining_date?: string | null;
@@ -48,7 +50,20 @@ export default function StaffProfilePage() {
     if (cached) {
       try { setProfile(JSON.parse(cached)); } catch {}
     }
-    setLoading(false);
+
+    // Always fetch fresh profile to reflect any photo or details updated by admin
+    fetch("/api/staff/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res?.data) {
+          setProfile(res.data);
+          localStorage.setItem("staff_user", JSON.stringify(res.data));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [router]);
 
   if (loading) {
@@ -65,11 +80,20 @@ export default function StaffProfilePage() {
     <div className="space-y-6">
       {/* Hero card */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6 flex items-center gap-5">
-        <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center shrink-0">
-          <span className="text-2xl font-bold text-white">
-            {profile.full_name.charAt(0).toUpperCase()}
-          </span>
-        </div>
+        {profile.photo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={staffImageUrl(profile.photo)}
+            alt={profile.full_name}
+            className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-sm"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center shrink-0 shadow-sm">
+            <span className="text-2xl font-bold text-white">
+              {profile.full_name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <h2 className="text-xl font-bold text-slate-800 truncate">{profile.full_name}</h2>
           <p className="text-sm text-slate-500 mt-0.5">
