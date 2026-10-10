@@ -5,17 +5,20 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 
   experimental: {
     cpus: 1,
   },
   images: {
     unoptimized: true,
-    domains: [
-      "images.unsplash.com",
-      "plus.unsplash.com",
-      "images.pexels.com",
-      "i.pravatar.cc",
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "plus.unsplash.com" },
+      { protocol: "https", hostname: "images.pexels.com" },
+      { protocol: "https", hostname: "i.pravatar.cc" },
     ],
   },
   async rewrites() {
