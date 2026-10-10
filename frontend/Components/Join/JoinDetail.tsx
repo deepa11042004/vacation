@@ -87,14 +87,6 @@ const TIER_DATA: Record<string, TierGroup> = {
     btnVariant: "white",
     cards: [
       {
-        id: "i0",
-        duration: "Test (₹1)",
-        roomType: "Studio",
-        emiStarts: "₹1/mo",
-        totalCost: "₹1/-",
-        planKey: "ivory-test",
-      },
-      {
         id: "i1",
         duration: "20 Years",
         roomType: "Studio",
