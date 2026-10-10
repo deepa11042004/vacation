@@ -65,7 +65,7 @@ export class StaffController {
     try {
       await connectDB();
       const user = await authenticateRequest(req);
-      requireRoles(user, [UserRole.ADMIN]);
+      requireRoles(user, [UserRole.ADMIN, UserRole.MANAGER]);
       await staffService.deleteStaff(parseId(idStr));
       return NextResponse.json(ResponseUtil.success('Staff deleted.', null));
     } catch (e) { return errorHandler(e); }

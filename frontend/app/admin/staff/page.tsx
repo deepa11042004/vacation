@@ -182,15 +182,29 @@ export default function StaffPage() {
 
   async function handleDelete() {
     if (!confirm) return;
+    const targetId = confirm.member.staff_id;
     setDeleting(true);
     try {
       if (confirm.type === "permanent") {
-        await api.delete(`/staff/${confirm.member.staff_id}/permanent`);
+        await api.delete(`/staff/${targetId}/permanent`);
       } else {
-        await api.delete(`/staff/${confirm.member.staff_id}`);
+        await api.delete(`/staff/${targetId}`);
       }
-      setConfirm(null); load();
-    } catch { setDeleting(false); }
+      setStaff(prev => prev.filter(s => s.staff_id !== targetId));
+      setTotal(prev => Math.max(0, prev - 1));
+      setConfirm(null);
+      await load();
+    } catch (err: any) {
+      if (err?.message?.toLowerCase().includes("not found")) {
+        setStaff(prev => prev.filter(s => s.staff_id !== targetId));
+        setTotal(prev => Math.max(0, prev - 1));
+        setConfirm(null);
+      } else {
+        alert(err?.message || "Failed to delete staff member.");
+      }
+    } finally {
+      setDeleting(false);
+    }
   }
 
   const totalPages = Math.ceil(total / limit);

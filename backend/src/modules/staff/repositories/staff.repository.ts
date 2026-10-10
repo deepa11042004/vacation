@@ -46,13 +46,17 @@ export class StaffRepository {
 
   async softDelete(staff_id: number) {
     const staff = await Staff.findByPk(staff_id);
-    if (!staff) return null;
+    if (!staff) {
+      const existing = await Staff.findByPk(staff_id, { paranoid: false });
+      if (existing) return existing;
+      return null;
+    }
     return staff.destroy();
   }
 
   async permanentDelete(staff_id: number) {
     const staff = await Staff.findByPk(staff_id, { paranoid: false });
-    if (!staff) return null;
+    if (!staff) return true;
     return staff.destroy({ force: true });
   }
 
