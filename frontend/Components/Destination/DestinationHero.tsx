@@ -69,7 +69,7 @@ export default function DestinationHero() {
       </motion.div>
 
       {/* 4. Fluid Shadow Baseline Mask */}
-      <div className="absolute bottom-0 inset-x-0 h-80 bg-linear-to-t from-black via-black/80 to-transparent z-40 pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-80 bg-linear-to-t from-black via-black/80 to-transparent z-20 pointer-events-none" />
     </section>
   );
 }

@@ -48,14 +48,14 @@ export default function AboutHero() {
       <div className="absolute inset-0 bg-linear-to-b from-[#02101b]/30 via-transparent to-[#01080d]/90" />
 
       {/* Bottom overlay */}
-      <div className="absolute inset-x-0 bottom-0 z-30 h-1/2 bg-linear-to-t from-black via-black/40 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 z-10 h-1/2 bg-linear-to-t from-black via-black/40 to-transparent" />
 
       {/* Content */}
       <motion.div
         variants={foregroundContainer}
         initial="hidden"
         animate="show"
-        className="absolute inset-x-0 bottom-20 z-40 px-6 md:px-40 pb-10 flex flex-col items-start"
+        className="absolute inset-x-0 bottom-20 z-20 px-6 md:px-40 pb-10 flex flex-col items-start"
       >
         <motion.div variants={foregroundItem}>
           <Badge

@@ -71,10 +71,19 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Mobile Menu Backdrop Overlay */}
+      {mobileMenuOpen && (
+        <div
+          onClick={() => setMobileMenuOpen(false)}
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs lg:hidden"
+          aria-hidden="true"
+        />
+      )}
+
       <nav
-        className={`fixed inset-x-0 top-0 z-40 py-2 px-3 sm:px-6 lg:px-8 transition-all duration-500 ease-in-out ${
+        className={`fixed inset-x-0 top-0 z-50 py-2 px-3 sm:px-6 lg:px-8 transition-all duration-300 ease-in-out ${
           isScrolled || mobileMenuOpen
-            ? "bg-[#FDF7EF] backdrop-blur-md border-b border-black/10 rounded-b-4xl shadow-lg"
+            ? "bg-[#FDF7EF] border-b border-black/10 rounded-b-3xl shadow-2xl"
             : "bg-transparent border-b border-transparent shadow-none"
         }`}
       >
@@ -86,7 +95,7 @@ export default function Navbar() {
               alt="Mandarin Worldwide Vacations Logo"
               width={330}
               height={212}
-              className="h-12 sm:h-14 md:h-16 w-auto max-w-none object-contain"
+              className="h-10 sm:h-12 md:h-16 w-auto max-w-[130px] sm:max-w-none object-contain"
               priority
             />
           </Link>
@@ -154,10 +163,10 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Login + Hamburger Toggle */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden shrink-0">
             <Link
               href="/login"
-              className="flex items-center gap-1.5 rounded-full bg-blue-600 px-3.5 py-1.5 text-xs font-bold text-white border border-blue-600 shadow-sm transition-colors hover:bg-blue-700"
+              className="flex items-center gap-1.5 rounded-full bg-blue-600 px-3 py-1.5 text-xs font-bold text-white border border-blue-600 shadow-sm transition-colors hover:bg-blue-700 shrink-0"
             >
               <User className="w-3.5 h-3.5" />
               Login
@@ -165,7 +174,7 @@ export default function Navbar() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-1.5 sm:p-2 rounded-lg transition-colors shrink-0 ${
                 isScrolled || mobileMenuOpen
                   ? "text-black hover:bg-black/10"
                   : "text-white hover:bg-white hover:text-black"
@@ -182,10 +191,10 @@ export default function Navbar() {
 
         {/* Mobile Menu Dropdown */}
         <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out bg-[#FDF7EF] ${
             mobileMenuOpen
-              ? "max-h-[80vh] opacity-100 mt-4 overflow-y-auto scrollbar-hide"
-              : "max-h-0 opacity-0"
+              ? "max-h-[82vh] opacity-100 mt-3 overflow-y-auto scrollbar-hide pb-4"
+              : "max-h-0 opacity-0 pointer-events-none"
           }`}
         >
           <div className="flex flex-col gap-1 py-2 border-t border-gray-100/50">
@@ -272,7 +281,9 @@ export default function Navbar() {
       {/* Floating Travel Desk Button */}
       <Link
         href="/travel-desk"
-        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-4 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300"
+        className={`fixed bottom-6 right-6 md:bottom-8 md:right-8 z-30 flex items-center justify-center gap-2 px-5 py-3 md:px-6 md:py-4 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300 ${
+          mobileMenuOpen ? "hidden" : "flex"
+        }`}
         aria-label="Go to Travel Desk"
       >
         <Plane className="w-5 h-5 md:w-6 md:h-6" />

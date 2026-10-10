@@ -93,14 +93,14 @@ export default function Hero() {
       <div className="absolute inset-0 bg-linear-to-b from-[#02101b]/40 via-[#02101b]/10 to-[#01080d]/90" />
 
       {/* Bottom overlay */}
-      <div className="absolute inset-x-0 bottom-0 z-30 h-1/2 bg-linear-to-t from-black via-black/40 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 z-10 h-1/2 bg-linear-to-t from-black via-black/40 to-transparent" />
 
       {/* Content */}
       <motion.div
         variants={foregroundContainer}
         initial="hidden"
         animate="show"
-        className="absolute inset-x-0 bottom-20 z-40 px-6 md:px-40 pb-10 flex flex-col items-start"
+        className="absolute inset-x-0 bottom-20 z-20 px-6 md:px-40 pb-10 flex flex-col items-start"
       >
         <motion.div variants={foregroundItem}>
           <Badge
@@ -141,7 +141,7 @@ export default function Hero() {
       </motion.div>
 
       {/* Slide indicators */}
-      <div className="absolute bottom-8 right-6 md:right-40 z-40 flex items-center gap-3">
+      <div className="absolute bottom-8 right-6 md:right-40 z-20 flex items-center gap-3">
         {slides.map((slide, index) => (
           <button
             key={slide.src}
