@@ -33,7 +33,7 @@ const nextConfig: NextConfig = {
         },
         {
           source: "/uploads/:path*",
-          destination: `${apiUrl}/uploads/:path*`,
+          destination: `${apiUrl}/api/uploads/:path*`,
         },
       ],
     };

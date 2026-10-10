@@ -9,6 +9,9 @@ const CONTENT_TYPES: Record<string, string> = {
   '.png':  'image/png',
   '.jpg':  'image/jpeg',
   '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.gif':  'image/gif',
+  '.svg':  'image/svg+xml',
 };
 
 export async function GET(
@@ -34,7 +37,8 @@ export async function GET(
     headers: {
       'Content-Type': contentType,
       'Content-Disposition': `inline; filename="${fileName}"`,
-      'Cache-Control': 'private, max-age=3600',
+      'Cache-Control': 'public, max-age=86400',
+      'Access-Control-Allow-Origin': '*',
     },
   });
 }
