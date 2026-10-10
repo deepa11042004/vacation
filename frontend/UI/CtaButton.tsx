@@ -17,6 +17,7 @@ export interface CtaButtonProps {
   type?: "button" | "submit" | "reset";
   target?: React.HTMLAttributeAnchorTarget;
   rel?: string;
+  showIcon?: boolean;
 }
 
 // ── Size Config
@@ -108,18 +109,28 @@ const CtaButton: React.FC<CtaButtonProps> = ({
   className = "",
   disabled = false,
   type = "button",
+  showIcon = true,
   ...rest
 }) => {
   const cfg = sizeConfig[size];
   const vCfg = variantConfig[variant];
 
+  // Symmetrical padding when icon is hidden
+  const paddingClass = showIcon
+    ? cfg.padding
+    : size === "sm"
+    ? "px-5 py-2"
+    : size === "md"
+    ? "px-6 py-2.5"
+    : "px-8 py-3.5";
+
   // Outer pill — background + border swap on hover
   const outerClasses = [
-    "group relative inline-flex items-center rounded-full font-bold",
-    "transition-all duration-500 ease-out cursor-pointer",
-    cfg.padding,
+    "group relative inline-flex items-center justify-center rounded-full font-bold",
+    "transition-all duration-300 ease-out cursor-pointer",
+    paddingClass,
     cfg.fontSize,
-    cfg.gap,
+    showIcon ? cfg.gap : "",
     disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "",
     vCfg.outer,
     className,
@@ -165,16 +176,18 @@ const CtaButton: React.FC<CtaButtonProps> = ({
       <span className="relative z-10 whitespace-nowrap">{text}</span>
 
       {/* Circle area with diagonal swap animation */}
-      <span className={circleViewportClasses}>
-        {/* Rest circle — slides up-right and out */}
-        <span className={restCircleClasses}>
-          <ArrowUpRight className={restIconClasses} />
+      {showIcon && (
+        <span className={circleViewportClasses}>
+          {/* Rest circle — slides up-right and out */}
+          <span className={restCircleClasses}>
+            <ArrowUpRight className={restIconClasses} />
+          </span>
+          {/* Hover circle — slides in from bottom-left */}
+          <span className={hoverCircleClasses}>
+            <ArrowUpRight className={hoverIconClasses} />
+          </span>
         </span>
-        {/* Hover circle — slides in from bottom-left */}
-        <span className={hoverCircleClasses}>
-          <ArrowUpRight className={hoverIconClasses} />
-        </span>
-      </span>
+      )}
     </>
   );
 

@@ -129,19 +129,27 @@ export default function Navbar() {
           </div>
 
           {/* Desktop CTA Buttons */}
-          <div className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 shrink-0">
-            <CtaButton text="Login" variant="blue" href="/login" size="sm" />
+          <div className="hidden lg:flex items-center gap-2 xl:gap-2.5 shrink-0">
+            <CtaButton
+              text="Login"
+              variant="blue"
+              href="/login"
+              size="sm"
+              showIcon={false}
+            />
             <CtaButton
               text="Join Now"
               variant="blue"
               href="/join"
               size="sm"
+              showIcon={false}
             />
             <CtaButton
               text="Pay Now"
               variant="blue"
               href="/pay-now"
               size="sm"
+              showIcon={false}
             />
           </div>
 

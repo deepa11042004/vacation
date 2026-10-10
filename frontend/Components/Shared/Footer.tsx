@@ -192,13 +192,18 @@ export default function Footer() {
               D-22 LGF, Pandav Nagar, Near Laxmi Nagar <br /> Delhi – 110092
             </span>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5 items-start">
             <span className="flex items-center gap-2 hover:text-white transition-colors text-white font-bold uppercase tracking-wider text-xs">
               <CreditCard className="w-4 h-4 shrink-0" />
               Payment
             </span>
-            <Link href="/">Pay Now (PhonePe)</Link>
-            <Link href="/">Pay Now (PayU)</Link>
+            <CtaButton
+              text="Pay Now"
+              variant="blue"
+              href="/pay-now"
+              size="sm"
+              showIcon={false}
+            />
           </div>
         </div>
 
