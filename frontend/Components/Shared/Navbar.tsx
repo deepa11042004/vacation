@@ -72,13 +72,13 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed inset-x-0 top-0 z-40 py-2 px-4 md:px-8 lg:px-10 transition-all duration-500 ease-in-out ${
+        className={`fixed inset-x-0 top-0 z-40 py-2 px-3 sm:px-6 lg:px-8 transition-all duration-500 ease-in-out ${
           isScrolled || mobileMenuOpen
             ? "bg-[#FDF7EF] backdrop-blur-md border-b border-black/10 rounded-b-4xl shadow-lg"
             : "bg-transparent border-b border-transparent shadow-none"
         }`}
       >
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <div className="flex items-center justify-between max-w-[1440px] mx-auto w-full">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <Image
@@ -86,18 +86,18 @@ export default function Navbar() {
               alt="Mandarin Worldwide Vacations Logo"
               width={330}
               height={212}
-              className="h-14 sm:h-16 md:h-18 w-auto max-w-none object-contain"
+              className="h-12 sm:h-14 md:h-16 w-auto max-w-none object-contain"
               priority
             />
           </Link>
 
           {/* Desktop Center Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-0.5 xl:gap-1">
             {navItems.map((item) => (
               <div key={item.label} className="group relative">
                 <Link
                   href={item.url}
-                  className={`flex items-center gap-1 rounded-full px-3 xl:px-4 py-2 text-[13px] xl:text-sm font-medium transition-colors duration-300 ${
+                  className={`flex items-center gap-1 rounded-full px-2.5 xl:px-4 py-2 text-[12.5px] xl:text-sm font-medium transition-colors duration-300 ${
                     isScrolled || mobileMenuOpen
                       ? "text-black hover:bg-black/10"
                       : "text-white hover:bg-white hover:text-black"
@@ -129,12 +129,18 @@ export default function Navbar() {
           </div>
 
           {/* Desktop CTA Buttons */}
-          <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
+          <div className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 shrink-0">
             <CtaButton text="Login" variant="blue" href="/login" size="sm" />
             <CtaButton
               text="Join Now"
               variant="blue"
               href="/join"
+              size="sm"
+            />
+            <CtaButton
+              text="Pay Now"
+              variant="blue"
+              href="/pay-now"
               size="sm"
             />
           </div>
@@ -238,6 +244,12 @@ export default function Navbar() {
 
             {/* Mobile CTA buttons */}
             <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-100/50 px-4">
+              <Link
+                href="/pay-now"
+                className="w-full py-3 px-4 bg-blue-600 text-white rounded-full text-center text-sm font-bold shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700"
+              >
+                Pay Now
+              </Link>
               <Link
                 href="/join"
                 className="w-full py-3 px-4 bg-[#E8C15B] text-[#141414] rounded-full text-center text-sm font-bold shadow-md shadow-[#E8C15B]/20 transition-all hover:bg-[#d8ad46]"
