@@ -83,7 +83,7 @@ export const processRazorpayPayment = async (options: RazorpayCheckoutOptions) =
 
   // 2. Configure Razorpay modal
   const rzpOptions = {
-    key: key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TlJe4izpHVrMg7",
+    key: key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_Tl28yGXjJxdA8s",
     amount: amount,
     currency: currency || "INR",
     name: options.name || "Mandarin Worldwide Vacations",

@@ -83,3 +83,12 @@ export function itineraryImageUrl(
   if (imagePath.startsWith("/")) return imagePath;
   return `/uploads/itineraries/${encodeURIComponent(imagePath)}`;
 }
+
+export function staffImageUrl(imagePath: string | null | undefined): string {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("blob:") || imagePath.startsWith("data:")) return imagePath;
+  if (imagePath.startsWith("http")) return toProxiedPath(imagePath);
+  if (imagePath.startsWith("/")) return imagePath;
+  return `/uploads/staff/${encodeURIComponent(imagePath)}`;
+}
+

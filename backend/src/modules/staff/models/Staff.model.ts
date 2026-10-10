@@ -3,6 +3,7 @@ import {
   PrimaryKey, AutoIncrement, Default,
   AllowNull, Unique, CreatedAt, UpdatedAt, DeletedAt,
 } from 'sequelize-typescript';
+import { resolveUrl } from '../../../shared/utils/media-url.util';
 
 export enum StaffStatus {
   ACTIVE   = 'ACTIVE',
@@ -33,6 +34,19 @@ export class Staff extends Model {
   @AllowNull(false)
   @Column(DataType.STRING(20))
   phone!: string;
+
+  @AllowNull(true)
+  @Column({
+    type: DataType.STRING(500),
+    get(this: Staff) {
+      const val = this.getDataValue('photo' as never) as string | null | undefined;
+      if (!val) return null;
+      if (/^https?:\/\//i.test(val)) return val;
+      if (val.startsWith('/')) return val;
+      return `/uploads/staff/${val}`;
+    },
+  })
+  photo?: string | null;
 
   @AllowNull(true)
   @Column(DataType.STRING(255))

@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { api } from "@/lib/api";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { api, getToken } from "@/lib/api";
+import { staffImageUrl } from "@/lib/imageUrl";
 import {
   Search, Plus, Loader2, Pencil, Trash2, ShieldAlert, RotateCcw, Users,
+  Camera, Upload, X, User,
 } from "lucide-react";
 import Modal from "@/Components/Admin/Modal";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
@@ -14,6 +16,7 @@ interface StaffMember {
   full_name: string;
   email: string;
   phone: string;
+  photo?: string | null;
   designation?: string | null;
   department?: string | null;
   joining_date?: string | null;
@@ -26,6 +29,7 @@ interface StaffForm {
   full_name: string;
   email: string;
   phone: string;
+  photo: string;
   designation: string;
   department: string;
   joining_date: string;
@@ -33,7 +37,7 @@ interface StaffForm {
 }
 
 const empty: StaffForm = {
-  employee_id: "", full_name: "", email: "", phone: "",
+  employee_id: "", full_name: "", email: "", phone: "", photo: "",
   designation: "", department: "", joining_date: "", status: "ACTIVE",
 };
 
@@ -55,6 +59,10 @@ export default function StaffPage() {
   const [showForm,  setShowForm]  = useState(false);
   const [editing,   setEditing]   = useState<StaffMember | null>(null);
   const [form,      setForm]      = useState<StaffForm>(empty);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [saving,    setSaving]    = useState(false);
   const [formErr,   setFormErr]   = useState("");
 
@@ -78,28 +86,83 @@ export default function StaffPage() {
   useEffect(() => { load(); }, [load]);
 
   function openAdd() {
-    setEditing(null); setForm(empty); setFormErr(""); setShowForm(true);
+    setEditing(null);
+    setForm(empty);
+    setPhotoFile(null);
+    setPhotoPreview("");
+    setFormErr("");
+    setShowForm(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
+
   function openEdit(m: StaffMember) {
     setEditing(m);
     setForm({
       employee_id: m.employee_id ?? "",
-      full_name: m.full_name, email: m.email, phone: m.phone,
-      designation: m.designation ?? "", department: m.department ?? "",
+      full_name: m.full_name,
+      email: m.email,
+      phone: m.phone,
+      photo: m.photo ?? "",
+      designation: m.designation ?? "",
+      department: m.department ?? "",
       joining_date: m.joining_date ? m.joining_date.slice(0, 10) : "",
       status: m.status,
     });
-    setFormErr(""); setShowForm(true);
+    setPhotoFile(null);
+    setPhotoPreview(m.photo || "");
+    setFormErr("");
+    setShowForm(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function handlePhotoPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setFormErr("Image size cannot exceed 5MB.");
+      return;
+    }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
+
+  function handleRemovePhoto() {
+    setPhotoFile(null);
+    setPhotoPreview("");
+    setForm(f => ({ ...f, photo: "" }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   async function handleSave() {
     if (!form.full_name || !form.email || !form.phone) {
-      setFormErr("Full name, email and phone are required."); return;
+      setFormErr("Full name, email and phone are required.");
+      return;
     }
-    setSaving(true); setFormErr("");
+    setSaving(true);
+    setFormErr("");
     try {
+      let photoUrl: string | null = form.photo ? form.photo : null;
+
+      // If user selected a new photo file, upload it
+      if (photoFile) {
+        const fd = new FormData();
+        fd.append("file", photoFile);
+        const t = getToken();
+        const uploadRes = await fetch("/api/staff/upload-photo", {
+          method: "POST",
+          headers: t ? { Authorization: `Bearer ${t}` } : {},
+          body: fd,
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) {
+          throw new Error(uploadData?.message || "Failed to upload staff photo.");
+        }
+        photoUrl = uploadData?.data?.photo || uploadData?.data?.url || null;
+      }
+
       const payload = {
         ...form,
+        photo: photoUrl,
         employee_id:  form.employee_id.trim() || undefined,
         joining_date: form.joining_date || null,
         designation:  form.designation  || null,
@@ -110,7 +173,8 @@ export default function StaffPage() {
       } else {
         await api.post("/staff", payload);
       }
-      setShowForm(false); load();
+      setShowForm(false);
+      load();
     } catch (e: any) {
       setFormErr(e?.message ?? "Failed to save.");
     } finally { setSaving(false); }
@@ -174,49 +238,76 @@ export default function StaffPage() {
             <p className="text-sm">No staff members found</p>
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                {["Employee ID", "Name", "Email", "Phone", "Designation", "Department", "Joined", "Status", "Actions"].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {staff.map(m => (
-                <tr key={m.staff_id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs text-slate-500">{m.employee_id}</td>
-                  <td className="px-4 py-3 font-medium text-slate-800">{m.full_name}</td>
-                  <td className="px-4 py-3 text-xs text-slate-600">{m.email}</td>
-                  <td className="px-4 py-3 text-xs text-slate-600">{m.phone}</td>
-                  <td className="px-4 py-3 text-xs text-slate-600">{m.designation || "—"}</td>
-                  <td className="px-4 py-3 text-xs text-slate-600">{m.department || "—"}</td>
-                  <td className="px-4 py-3 text-xs text-slate-400">{fmtDate(m.joining_date)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      m.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
-                    }`}>{m.status}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => openEdit(m)}
-                        className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => setConfirm({ type: "soft", member: m })}
-                        className="p-1.5 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => setConfirm({ type: "permanent", member: m })}
-                        className="p-1.5 rounded-md text-slate-400 hover:text-red-700 hover:bg-red-50 transition-colors">
-                        <ShieldAlert className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[950px]">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">Employee ID</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">Name</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">Email</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">Phone</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">Designation</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">Department</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">Joined</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 whitespace-nowrap">Status</th>
+                  <th className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wide px-4 py-3 pr-6 whitespace-nowrap">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {staff.map(m => (
+                  <tr key={m.staff_id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3 font-mono text-xs text-slate-500 whitespace-nowrap">{m.employee_id}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        {m.photo ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={staffImageUrl(m.photo)}
+                            alt={m.full_name}
+                            className="w-8 h-8 rounded-full object-cover border border-slate-200 shrink-0"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
+                            {m.full_name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="font-medium text-slate-800">{m.full_name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-600 whitespace-nowrap">{m.email}</td>
+                    <td className="px-4 py-3 text-xs text-slate-600 whitespace-nowrap">{m.phone}</td>
+                    <td className="px-4 py-3 text-xs text-slate-600 whitespace-nowrap">{m.designation || "—"}</td>
+                    <td className="px-4 py-3 text-xs text-slate-600 whitespace-nowrap">{m.department || "—"}</td>
+                    <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">{fmtDate(m.joining_date)}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                        m.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
+                      }`}>{m.status}</span>
+                    </td>
+                    <td className="px-4 py-3 pr-6 whitespace-nowrap text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button onClick={() => openEdit(m)}
+                          title="Edit Staff"
+                          className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => setConfirm({ type: "soft", member: m })}
+                          title="Delete Staff"
+                          className="p-1.5 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => setConfirm({ type: "permanent", member: m })}
+                          title="Permanently Delete Staff"
+                          className="p-1.5 rounded-md text-slate-400 hover:text-red-700 hover:bg-red-50 transition-colors">
+                          <ShieldAlert className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -234,9 +325,67 @@ export default function StaffPage() {
       )}
 
       {/* Add / Edit Modal */}
-      <Modal open={showForm} onClose={() => { if (!saving) setShowForm(false); }} title={editing ? "Edit Staff" : "Add Staff"} size="sm">
+      <Modal open={showForm} onClose={() => { if (!saving) setShowForm(false); }} title={editing ? "Edit Staff" : "Add Staff"} size="md">
         <div className="space-y-4">
           {formErr && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{formErr}</p>}
+
+          {/* Staff Photo Picker */}
+          <div className="flex items-center gap-4 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+            <div className="relative group shrink-0">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-200 bg-white flex items-center justify-center shadow-inner">
+                {photoPreview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={staffImageUrl(photoPreview)} alt="Staff preview" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-8 h-8 text-slate-300" />
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 bg-black/40 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                title="Change Photo"
+              >
+                <Camera className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-slate-700">Staff Photo</span>
+                <span className="text-[11px] text-slate-400 font-normal">(Optional)</span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5">JPG, PNG, or WEBP up to 5MB</p>
+              <div className="flex items-center gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg transition-colors cursor-pointer"
+                >
+                  <Upload className="w-3.5 h-3.5 text-blue-600" />
+                  <span>{photoPreview ? "Change Photo" : "Upload Photo"}</span>
+                </button>
+                {photoPreview && (
+                  <button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span>Remove</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={handlePhotoPick}
+            />
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
