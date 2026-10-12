@@ -200,7 +200,9 @@ export default function Footer() {
             <CtaButton
               text="Pay Now"
               variant="blue"
-              href="/pay-now"
+              href="https://razorpay.me/@mandarinworldwidevacations"
+              target="_blank"
+              rel="noopener noreferrer"
               size="sm"
               showIcon={false}
             />

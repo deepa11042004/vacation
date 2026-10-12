@@ -156,7 +156,9 @@ export default function Navbar() {
             <CtaButton
               text="Pay Now"
               variant="blue"
-              href="/pay-now"
+              href="https://razorpay.me/@mandarinworldwidevacations"
+              target="_blank"
+              rel="noopener noreferrer"
               size="sm"
               showIcon={false}
             />
@@ -261,12 +263,14 @@ export default function Navbar() {
 
             {/* Mobile CTA buttons */}
             <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-100/50 px-4">
-              <Link
-                href="/pay-now"
+              <a
+                href="https://razorpay.me/@mandarinworldwidevacations"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-full py-3 px-4 bg-blue-600 text-white rounded-full text-center text-sm font-bold shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700"
               >
                 Pay Now
-              </Link>
+              </a>
               <Link
                 href="/join"
                 className="w-full py-3 px-4 bg-[#E8C15B] text-[#141414] rounded-full text-center text-sm font-bold shadow-md shadow-[#E8C15B]/20 transition-all hover:bg-[#d8ad46]"
