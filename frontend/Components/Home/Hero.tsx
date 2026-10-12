@@ -61,7 +61,7 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative h-screen w-full overflow-hidden bg-black"
+      className="relative min-h-[580px] sm:min-h-[640px] h-screen w-full overflow-hidden bg-black"
     >
       {/* Background Slideshow */}
       <div className="absolute inset-0">
@@ -100,11 +100,11 @@ export default function Hero() {
         variants={foregroundContainer}
         initial="hidden"
         animate="show"
-        className="absolute inset-x-0 bottom-20 z-20 px-6 md:px-40 pb-10 flex flex-col items-start"
+        className="absolute inset-x-0 bottom-36 sm:bottom-28 md:bottom-20 z-20 px-5 sm:px-8 md:px-40 pb-2 sm:pb-6 pt-20 sm:pt-28 flex flex-col items-start"
       >
         <motion.div variants={foregroundItem}>
           <Badge
-            className="my-5"
+            className="mb-3 sm:mb-5 mt-0"
             text="MANDARIN WORLDWIDE"
             variant="white"
             size="lg"
@@ -114,7 +114,7 @@ export default function Hero() {
 
         <motion.h1
           variants={foregroundItem}
-          className="text-4xl md:text-5xl lg:text-7xl font-bold leading-[1.1] text-white"
+          className="text-3xl sm:text-5xl lg:text-7xl font-bold leading-[1.1] text-white"
         >
           Explore beyond the
           <br />
@@ -123,7 +123,7 @@ export default function Hero() {
 
         <motion.div
           variants={foregroundItem}
-          className="my-5 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4"
+          className="my-3 sm:my-5 flex flex-col items-stretch gap-2.5 sm:flex-row sm:items-center sm:gap-4"
         >
           <CtaButton
             text="Explore Properties"

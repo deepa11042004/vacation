@@ -25,7 +25,7 @@ export default function AboutHero() {
   return (
     <section
       ref={containerRef}
-      className="relative h-screen w-full overflow-hidden bg-black"
+      className="relative min-h-[580px] sm:min-h-[640px] h-screen w-full overflow-hidden bg-black"
     >
       {/* Background Video */}
       <motion.video
@@ -55,11 +55,11 @@ export default function AboutHero() {
         variants={foregroundContainer}
         initial="hidden"
         animate="show"
-        className="absolute inset-x-0 bottom-20 z-20 px-6 md:px-40 pb-10 flex flex-col items-start"
+        className="absolute inset-x-0 bottom-16 sm:bottom-20 z-20 px-5 sm:px-8 md:px-40 pb-4 sm:pb-10 pt-20 sm:pt-28 flex flex-col items-start"
       >
         <motion.div variants={foregroundItem}>
           <Badge
-            className="my-5"
+            className="mb-3 sm:mb-5 mt-1 sm:mt-2"
             text="MANDARIN WORLDWIDE"
             variant="white"
             size="lg"
