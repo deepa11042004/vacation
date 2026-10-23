@@ -3,7 +3,9 @@
 import { Fragment, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, getToken } from "@/lib/api";
+import ClientPhoto from "@/Components/ClientPhoto";
+import { uploadClientPhoto, deleteClientPhoto } from "@/lib/client-photo";
 import Modal from "@/Components/Admin/Modal";
 import {
   ArrowLeft, Loader2, User, Pencil,
@@ -22,6 +24,7 @@ interface Client {
   is_welcome_mail_sent?: boolean;
   marriage_anniversary?: string; spouse_name?: string;
   qr_token?: string | null;
+  profile_photo?: string | null;
   created_at: string; updated_at?: string;
 }
 
@@ -263,6 +266,7 @@ export default function ClientDetailPage() {
   const { id } = useParams<{ id: string }>();
 
   const [client,     setClient]     = useState<Client | null>(null);
+  const [photoBusy,  setPhotoBusy]  = useState(false);
   const [address,    setAddress]    = useState<Address | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [loading,    setLoading]    = useState(true);
@@ -432,6 +436,30 @@ export default function ClientDetailPage() {
     } catch (err: unknown) {
       setAmcError(err instanceof Error ? err.message : "Failed to save.");
     } finally { setAmcSaving(false); }
+  }
+
+  async function handlePhotoSelect(file: File) {
+    setPhotoBusy(true);
+    try {
+      const profile_photo = await uploadClientPhoto(Number(id), file, getToken());
+      setClient(prev => (prev ? { ...prev, profile_photo } : prev));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Photo upload failed.");
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
+  async function handlePhotoRemove() {
+    setPhotoBusy(true);
+    try {
+      await deleteClientPhoto(Number(id), getToken());
+      setClient(prev => (prev ? { ...prev, profile_photo: null } : prev));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Could not remove photo.");
+    } finally {
+      setPhotoBusy(false);
+    }
   }
 
   async function openWelcomeMail(kind: 1 | 2) {
@@ -921,9 +949,14 @@ Email: ${company.email}`;
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-              <User className="w-6 h-6 text-blue-600" />
-            </div>
+            <ClientPhoto
+              src={client.profile_photo}
+              name={fullName}
+              size={64}
+              busy={photoBusy}
+              onSelect={handlePhotoSelect}
+              onRemove={handlePhotoRemove}
+            />
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-slate-900 font-bold text-lg leading-tight">{fullName}</h2>

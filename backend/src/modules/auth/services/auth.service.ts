@@ -150,7 +150,7 @@ export class AuthService {
 
     const [client, membership] = await Promise.all([
       Client.findByPk(user.client_id, {
-        attributes: ['client_id', 'first_name', 'middle_name', 'last_name', 'mobile', 'country_code', 'email', 'gender', 'status'],
+        attributes: ['client_id', 'first_name', 'middle_name', 'last_name', 'mobile', 'country_code', 'email', 'gender', 'status', 'profile_photo'],
         include: [{ model: ClientAddress, attributes: ['primary_address', 'primary_state', 'primary_pincode'] }],
       }),
       Membership.findOne({

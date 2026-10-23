@@ -23,6 +23,7 @@ interface MeUser {
   client_id?: number | null;
   membership?: { membership_number: string; status: string } | null;
   client_status?: string | null;
+  clientProfile?: { profile_photo?: string | null } | null;
   support_phone?: string | null;
 }
 
@@ -39,6 +40,16 @@ export default function ProfileLayout({
   const [authChecked, setAuthChecked] = useState(false);
   const [inactiveNoticeDismissed, setInactiveNoticeDismissed] = useState(false);
   const isInactive = user?.client_status === "INACTIVE";
+
+  // The profile page announces photo changes so the sidebar avatar updates without a reload
+  useEffect(() => {
+    const onPhoto = (e: Event) => {
+      const profile_photo = (e as CustomEvent<string | null>).detail ?? null;
+      setUser((prev) => (prev ? { ...prev, clientProfile: { ...(prev.clientProfile ?? {}), profile_photo } } : prev));
+    };
+    window.addEventListener("member-photo-changed", onPhoto);
+    return () => window.removeEventListener("member-photo-changed", onPhoto);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
@@ -153,9 +164,18 @@ export default function ProfileLayout({
         {/* User Profile Summary */}
         <div className="p-4 border-b border-slate-100 flex items-center gap-4 shrink-0 bg-slate-50/50">
           <div className="relative shrink-0">
-            <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl border-2 border-white shadow-sm">
-              {fullName.charAt(0).toUpperCase()}
-            </div>
+            {user?.clientProfile?.profile_photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={user.clientProfile.profile_photo}
+                alt={fullName}
+                className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl border-2 border-white shadow-sm">
+                {fullName.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
           </div>
           <div className="overflow-hidden">

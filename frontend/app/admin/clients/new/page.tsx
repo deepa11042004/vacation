@@ -2,7 +2,9 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, getToken } from "@/lib/api";
+import ClientPhoto from "@/Components/ClientPhoto";
+import { uploadClientPhoto } from "@/lib/client-photo";
 import { z } from "zod";
 import { ArrowLeft, Loader2, User, CreditCard, FileText, Tag, Plus, X, Zap } from "lucide-react";
 import MembershipLookup from "@/Components/Admin/MembershipLookup";
@@ -98,6 +100,15 @@ function NewClientForm() {
   const [saving,       setSaving]       = useState(false);
   const [error,        setError]        = useState("");
   const [fieldErrors,  setFieldErrors]  = useState<Record<string, string>>({});
+  // Photo is chosen here but can only be uploaded once the client exists (after save)
+  const [photoFile,    setPhotoFile]    = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  useEffect(() => {
+    if (!photoFile) { setPhotoPreview(null); return; }
+    const url = URL.createObjectURL(photoFile);
+    setPhotoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photoFile]);
 
   const [personal, setPersonal] = useState({
     first_name: "", middle_name: "", last_name: "",
@@ -271,6 +282,8 @@ function NewClientForm() {
           await api.post(`/clients/${activateClientId}/offers`, offer);
         }
 
+        if (photoFile) await uploadClientPhoto(Number(activateClientId), photoFile, getToken()).catch(() => {});
+
         router.push(`/admin/clients/${activateClientId}`);
       } else {
         const clientPayload: Record<string, string> = {};
@@ -286,6 +299,8 @@ function NewClientForm() {
         if (!res?.success) throw new Error(res?.message ?? "Onboarding failed.");
 
         const newClientId = res.data?.client_id;
+        if (photoFile && newClientId) await uploadClientPhoto(newClientId, photoFile, getToken()).catch(() => {});
+
         router.push(`/admin/clients/${newClientId}`);
       }
     } catch (err: unknown) {
@@ -332,6 +347,20 @@ function NewClientForm() {
       {/* ── Section 1: Personal Details ─────────────────────────── */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <SectionHeader icon={User} title="Personal Details" subtitle="Client's contact and identity information" />
+
+        <div className="flex items-center gap-4 mb-6">
+          <ClientPhoto
+            src={photoPreview}
+            name={personal.first_name}
+            size={88}
+            onSelect={setPhotoFile}
+            onRemove={() => setPhotoFile(null)}
+          />
+          <div className="text-sm">
+            <p className="font-semibold text-slate-700">Client Photo</p>
+            <p className="text-xs text-slate-500">Optional. JPG, PNG or WebP, up to 2 MB. Saved with the client.</p>
+          </div>
+        </div>
         <div className="grid grid-cols-3 gap-4">
           <Field error={fieldErrors["personal.first_name"]} label="First Name" required>
             <input className={inp(fieldErrors["personal.first_name"])} value={personal.first_name} onChange={e => setP("first_name", e.target.value)} placeholder="First name" />

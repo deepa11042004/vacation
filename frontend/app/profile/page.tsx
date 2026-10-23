@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { User, Mail, Phone, MapPin, Loader2 } from "lucide-react";
-import { memberApi } from "@/lib/member-api";
+import { memberApi, getMemberToken, getMemberRefreshToken, saveMemberAuth } from "@/lib/member-api";
+import ClientPhoto from "@/Components/ClientPhoto";
+import { uploadClientPhoto, deleteClientPhoto } from "@/lib/client-photo";
 
 interface ClientProfile {
   first_name?: string | null;
@@ -13,6 +15,7 @@ interface ClientProfile {
   country_code?: string | null;
   gender?: string | null;
   status?: string | null;
+  profile_photo?: string | null;
   ClientAddress?: { primary_address?: string | null; primary_state?: string | null; primary_pincode?: string | null } | null;
 }
 
@@ -29,12 +32,54 @@ interface MeResponse {
 export default function MyProfilePage() {
   const [me, setMe] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoError, setPhotoError] = useState("");
 
   useEffect(() => {
     memberApi.get<{ success: boolean; data: MeResponse }>("/auth/me")
       .then((res) => { if (res?.success) setMe(res.data); })
       .finally(() => setLoading(false));
   }, []);
+
+  // Keep the cached user (used by the sidebar) in step with the new photo
+  function applyPhoto(profile_photo: string | null) {
+    window.dispatchEvent(new CustomEvent("member-photo-changed", { detail: profile_photo }));
+    setMe((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, clientProfile: { ...(prev.clientProfile ?? {}), profile_photo } };
+      const token = getMemberToken();
+      const refresh = getMemberRefreshToken();
+      if (token && refresh) saveMemberAuth(token, refresh, next);
+      return next;
+    });
+  }
+
+  async function handlePhotoSelect(file: File) {
+    if (!me?.client_id) return;
+    setPhotoBusy(true);
+    setPhotoError("");
+    try {
+      applyPhoto(await uploadClientPhoto(me.client_id, file, getMemberToken()));
+    } catch (err) {
+      setPhotoError(err instanceof Error ? err.message : "Photo upload failed.");
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
+  async function handlePhotoRemove() {
+    if (!me?.client_id) return;
+    setPhotoBusy(true);
+    setPhotoError("");
+    try {
+      await deleteClientPhoto(me.client_id, getMemberToken());
+      applyPhoto(null);
+    } catch (err) {
+      setPhotoError(err instanceof Error ? err.message : "Could not remove photo.");
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -74,9 +119,15 @@ export default function MyProfilePage() {
           <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-[0_2px_20px_rgba(0,0,0,0.02)] flex flex-col items-center text-center relative overflow-hidden">
             <div className="absolute top-0 inset-x-0 h-32 bg-linear-to-b from-blue-50 to-white"></div>
             <div className="relative mt-4 mb-6">
-              <div className="w-32 h-32 rounded-full bg-blue-600 flex items-center justify-center text-white text-5xl font-bold shadow-lg border-4 border-white">
-                {fullName.charAt(0).toUpperCase()}
-              </div>
+              <ClientPhoto
+                src={cp?.profile_photo}
+                name={fullName}
+                size={128}
+                busy={photoBusy}
+                onSelect={handlePhotoSelect}
+                onRemove={handlePhotoRemove}
+              />
+              {photoError && <p className="mt-2 text-xs text-red-600 text-center">{photoError}</p>}
             </div>
             <h3 className="text-2xl font-bold text-slate-800 font-marcellus mb-1">{fullName}</h3>
             {memberNo && <p className="text-blue-600 font-medium text-sm mb-1">{memberNo}</p>}

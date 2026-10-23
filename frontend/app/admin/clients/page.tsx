@@ -10,6 +10,7 @@ interface Client {
   client_id: number;
   membership_number?: string | null;
   first_name: string; last_name: string;
+  profile_photo?: string | null;
   email: string; mobile: string; country_code: string;
   status: string; created_at: string; deleted_at?: string | null;
 }
@@ -207,8 +208,20 @@ export default function ClientsPage() {
                   <tr key={c.client_id} className={`transition-colors ${deleted ? "bg-blue-50 hover:bg-blue-100" : "hover:bg-slate-50"}`}>
                     <td className={`px-4 py-3 font-mono text-xs ${deleted ? "text-blue-400" : "text-slate-500"}`}>{c.membership_number ?? "—"}</td>
                     <td className={`px-4 py-3 font-medium ${deleted ? "text-blue-600" : "text-slate-800"}`}>
-                      {c.first_name} {c.last_name}
-                      {deleted && <span className="ml-2 text-[10px] font-semibold bg-blue-100 text-blue-500 px-1.5 py-0.5 rounded-full">Deleted</span>}
+                      <div className="flex items-center gap-3">
+                        {c.profile_photo ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={c.profile_photo} alt="" className="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0" />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 text-sm font-bold flex items-center justify-center shrink-0">
+                            {(c.first_name?.charAt(0) || "?").toUpperCase()}
+                          </div>
+                        )}
+                        <span>
+                          {c.first_name} {c.last_name}
+                          {deleted && <span className="ml-2 text-[10px] font-semibold bg-blue-100 text-blue-500 px-1.5 py-0.5 rounded-full">Deleted</span>}
+                        </span>
+                      </div>
                     </td>
                     <td className={`px-4 py-3 text-xs ${deleted ? "text-blue-400" : "text-slate-600"}`}>{c.email}</td>
                     <td className={`px-4 py-3 text-xs ${deleted ? "text-blue-400" : "text-slate-600"}`}>{c.country_code} {c.mobile}</td>
