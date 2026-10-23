@@ -12,6 +12,7 @@ interface ClientProfile {
   mobile?: string | null;
   country_code?: string | null;
   gender?: string | null;
+  status?: string | null;
   ClientAddress?: { primary_address?: string | null; primary_state?: string | null; primary_pincode?: string | null } | null;
 }
 
@@ -50,6 +51,8 @@ export default function MyProfilePage() {
   const address = cp?.ClientAddress;
   const addressText = [address?.primary_address, address?.primary_state, address?.primary_pincode].filter(Boolean).join(", ");
   const memberNo = me?.membership?.membership_number ?? "";
+  // An admin-deactivated client shows as inactive regardless of the membership record
+  const isInactive = cp?.status === "INACTIVE";
 
   const fields = [
     { icon: User, label: "Full Name", value: fullName },
@@ -80,9 +83,9 @@ export default function MyProfilePage() {
             {me?.membership?.package_name && (
               <p className="text-xs text-slate-400 mb-2">{me.membership.package_name}</p>
             )}
-            {me?.membership?.status && (
-              <span className="mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold uppercase rounded-full">
-                {me.membership.status}
+            {(isInactive || me?.membership?.status) && (
+              <span className={`mt-2 px-3 py-1 text-xs font-bold uppercase rounded-full ${isInactive ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}>
+                {isInactive ? "INACTIVE" : me?.membership?.status}
               </span>
             )}
           </div>

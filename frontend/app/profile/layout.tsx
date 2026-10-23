@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, LogOut, Menu, X, Loader2, ChevronRight } from "lucide-react";
+import { Bell, LogOut, Menu, X, Loader2, ChevronRight, Phone, AlertTriangle } from "lucide-react";
 import Image from "next/image";
 import {
   getMemberToken,
@@ -22,6 +22,8 @@ interface MeUser {
   role: string;
   client_id?: number | null;
   membership?: { membership_number: string; status: string } | null;
+  client_status?: string | null;
+  support_phone?: string | null;
 }
 
 export default function ProfileLayout({
@@ -35,6 +37,8 @@ export default function ProfileLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<MeUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [inactiveNoticeDismissed, setInactiveNoticeDismissed] = useState(false);
+  const isInactive = user?.client_status === "INACTIVE";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
@@ -217,6 +221,35 @@ export default function ProfileLayout({
           {children}
         </div>
       </main>
+
+      {isInactive && !inactiveNoticeDismissed && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+              <AlertTriangle className="h-8 w-8 text-amber-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800 font-marcellus mb-2">Your account is inactive</h3>
+            <p className="text-slate-500 mb-5">
+              Your membership account is currently inactive. Please contact us to get it reactivated.
+            </p>
+            {user?.support_phone && (
+              <a
+                href={`tel:${user.support_phone.replace(/[^+d]/g, "")}`}
+                className="mb-5 inline-flex items-center gap-2 rounded-xl bg-blue-50 px-5 py-3 text-lg font-bold text-blue-700 hover:bg-blue-100 transition-colors"
+              >
+                <Phone className="h-5 w-5" />
+                {user.support_phone}
+              </a>
+            )}
+            <button
+              onClick={() => setInactiveNoticeDismissed(true)}
+              className="block w-full rounded-xl bg-slate-800 py-3 text-sm font-semibold text-white hover:bg-slate-900 transition-colors"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

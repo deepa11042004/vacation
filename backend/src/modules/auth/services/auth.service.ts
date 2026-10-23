@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { getCompanySettings } from '../../../shared/utils/company-settings.service';
 import { AuthRepository } from '../repositories/auth.repository';
 import { UserService } from '../../users/services/user.service';
 import { LoginDTO } from '../dto/auth.dto';
@@ -149,7 +150,7 @@ export class AuthService {
 
     const [client, membership] = await Promise.all([
       Client.findByPk(user.client_id, {
-        attributes: ['client_id', 'first_name', 'middle_name', 'last_name', 'mobile', 'country_code', 'email', 'gender'],
+        attributes: ['client_id', 'first_name', 'middle_name', 'last_name', 'mobile', 'country_code', 'email', 'gender', 'status'],
         include: [{ model: ClientAddress, attributes: ['primary_address', 'primary_state', 'primary_pincode'] }],
       }),
       Membership.findOne({
@@ -161,6 +162,9 @@ export class AuthService {
 
     return {
       ...user,
+      // Admin can mark a client INACTIVE; the member still logs in but is told to contact the company.
+      client_status: client?.status ?? null,
+      support_phone: getCompanySettings().phone,
       clientProfile: client ? client.toJSON() : null,
       membership: membership ? membership.toJSON() : null,
     };
