@@ -44,6 +44,21 @@ export class VoucherController {
     }
   }
 
+  /** Vouchers issued to the logged-in client (member profile). */
+  static async getMine(req: NextRequest) {
+    try {
+      await connectDB();
+      const currentUser = await authenticateRequest(req);
+      if (currentUser.role !== UserRole.CLIENT || !currentUser.client_id) {
+        throw new AppError('Forbidden: No client account', 403);
+      }
+      const vouchers = await voucherService.getVouchersForClient(currentUser.client_id);
+      return NextResponse.json(ResponseUtil.success('Vouchers retrieved', { vouchers }));
+    } catch (error) {
+      return errorHandler(error);
+    }
+  }
+
   static async getAll(req: NextRequest) {
     try {
       await connectDB();

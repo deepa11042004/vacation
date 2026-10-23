@@ -13,6 +13,8 @@ export const CreateVoucherSchema = z.object({
   issue_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)').optional(),
   validity: z.string().trim().min(1).default('1 Year'),
   terms_and_conditions: z.string().trim().optional(),
+  // Set when the voucher is issued to an existing client; omitted for outsiders.
+  client_id: z.number().int().positive().optional().nullable(),
   created_by_name: z.string().trim().optional().nullable(),
 });
 

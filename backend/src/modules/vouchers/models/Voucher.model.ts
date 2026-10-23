@@ -91,6 +91,11 @@ export class Voucher extends Model<IVoucher, Partial<IVoucher>> implements IVouc
   @Column(DataType.DATE)
   redeemed_at?: Date | null;
 
+  @Index('idx_vouchers_client_id')
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  client_id?: number | null;
+
   @AllowNull(true)
   @Column(DataType.INTEGER)
   created_by?: number | null;

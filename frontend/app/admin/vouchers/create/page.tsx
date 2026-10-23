@@ -21,7 +21,25 @@ import {
   ArrowLeft,
   Copy,
   Check,
+  Search,
+  X,
 } from "lucide-react";
+
+interface ClientOption {
+  client_id: number;
+  title?: string | null;
+  first_name: string;
+  middle_name?: string | null;
+  last_name: string;
+  email: string;
+  mobile: string;
+  country_code?: string | null;
+  spouse_name?: string | null;
+  membership_number?: string | null;
+}
+
+const clientFullName = (c: ClientOption) =>
+  [c.title, c.first_name, c.middle_name, c.last_name].filter(Boolean).join(" ");
 
 const INITIAL_LOCATIONS = [
   "Shimla",
@@ -127,6 +145,11 @@ export default function CreateVoucherPage() {
   const [voucherNumber, setVoucherNumber] = useState("");
   const [issueDate, setIssueDate] = useState("");
   const [voucherType, setVoucherType] = useState<"Non Member" | "Member">("Non Member");
+  const [recipientMode, setRecipientMode] = useState<"existing" | "outsider">("outsider");
+  const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
+  const [clientQuery, setClientQuery] = useState("");
+  const [clientResults, setClientResults] = useState<ClientOption[]>([]);
+  const [clientSearching, setClientSearching] = useState(false);
   const [applicant, setApplicant] = useState("");
   const [spouse, setSpouse] = useState("");
   const [email, setEmail] = useState("");
@@ -152,6 +175,49 @@ export default function CreateVoucherPage() {
 
   const calculatedExpiry = calculateExpiry(issueDate, validity);
 
+  // Debounced client lookup for the "Existing Client" recipient
+  useEffect(() => {
+    if (recipientMode !== "existing" || selectedClient || clientQuery.trim().length < 2) {
+      setClientResults([]);
+      return;
+    }
+    setClientSearching(true);
+    const t = setTimeout(() => {
+      api.get<{ data: { clients: ClientOption[] } }>(`/clients?search=${encodeURIComponent(clientQuery.trim())}&limit=8`)
+        .then(res => setClientResults(res.data?.clients ?? []))
+        .catch(() => setClientResults([]))
+        .finally(() => setClientSearching(false));
+    }, 300);
+    return () => clearTimeout(t);
+  }, [clientQuery, recipientMode, selectedClient]);
+
+  function clearRecipient() {
+    setSelectedClient(null);
+    setClientQuery("");
+    setClientResults([]);
+    setApplicant("");
+    setSpouse("");
+    setEmail("");
+    setPhone("");
+  }
+
+  function switchRecipientMode(mode: "existing" | "outsider") {
+    if (mode === recipientMode) return;
+    clearRecipient();
+    setRecipientMode(mode);
+    setVoucherType(mode === "existing" ? "Member" : "Non Member");
+  }
+
+  function pickClient(c: ClientOption) {
+    setSelectedClient(c);
+    setClientResults([]);
+    setApplicant(clientFullName(c));
+    setSpouse(c.spouse_name ?? "");
+    setEmail(c.email);
+    setPhone(`${c.country_code ?? ""} ${c.mobile}`.trim());
+    setVoucherType("Member");
+  }
+
   function handleCopyNumber(num: string) {
     navigator.clipboard.writeText(num);
     setCopied(true);
@@ -162,10 +228,8 @@ export default function CreateVoucherPage() {
     setVoucherNumber(generateVoucherNo());
     setIssueDate(new Date().toISOString().slice(0, 10));
     setVoucherType("Non Member");
-    setApplicant("");
-    setSpouse("");
-    setEmail("");
-    setPhone("");
+    setRecipientMode("outsider");
+    clearRecipient();
     setValidity("1 Year");
     setTerms(DEFAULT_TERMS);
     setErrorMsg("");
@@ -176,6 +240,10 @@ export default function CreateVoucherPage() {
     e.preventDefault();
     setErrorMsg("");
 
+    if (recipientMode === "existing" && !selectedClient) {
+      setErrorMsg("Select an existing client, or switch to Outsider.");
+      return;
+    }
     if (!applicant.trim()) {
       setErrorMsg("Applicant name is required.");
       return;
@@ -195,6 +263,7 @@ export default function CreateVoucherPage() {
       const payload = {
         voucher_number: voucherNumber,
         voucher_type: voucherType,
+        client_id: recipientMode === "existing" ? selectedClient?.client_id : undefined,
         applicant: applicant.trim(),
         spouse: spouse.trim() || null,
         email: email.trim(),
@@ -395,6 +464,7 @@ export default function CreateVoucherPage() {
               <select
                 value={voucherType}
                 onChange={(e) => setVoucherType(e.target.value as "Non Member" | "Member")}
+                disabled={recipientMode === "existing"}
                 className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium text-slate-800"
               >
                 <option value="Non Member">Non Member</option>
@@ -410,6 +480,79 @@ export default function CreateVoucherPage() {
             <User className="w-4 h-4 text-blue-600" />
             2. Beneficiary Information
           </h2>
+
+          {/* Recipient: existing client or outsider */}
+          <div className="space-y-3">
+            <label className="block text-xs font-semibold text-slate-700">
+              Voucher For <span className="text-red-500">*</span>
+            </label>
+            <div className="inline-flex rounded-lg border border-slate-300 overflow-hidden text-sm font-medium">
+              {([["existing", "Existing Client"], ["outsider", "Outsider"]] as const).map(([mode, label]) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => switchRecipientMode(mode)}
+                  className={`px-4 py-2 transition-colors ${recipientMode === mode ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"} ${mode === "outsider" ? "border-l border-slate-300" : ""}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {recipientMode === "existing" && (
+              selectedClient ? (
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3">
+                  <div className="text-sm">
+                    <p className="font-semibold text-slate-800">{clientFullName(selectedClient)}</p>
+                    <p className="text-xs text-slate-500">
+                      {selectedClient.membership_number ? `${selectedClient.membership_number} · ` : ""}{selectedClient.email}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearRecipient}
+                    className="p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-white transition-colors"
+                    title="Choose a different client"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={clientQuery}
+                    onChange={(e) => setClientQuery(e.target.value)}
+                    placeholder="Search client by name, email or mobile"
+                    className="w-full pl-9 pr-9 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  />
+                  {clientSearching && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-slate-400" />}
+                  {clientResults.length > 0 && (
+                    <ul className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg divide-y divide-slate-100">
+                      {clientResults.map(c => (
+                        <li key={c.client_id}>
+                          <button
+                            type="button"
+                            onClick={() => pickClient(c)}
+                            className="w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors"
+                          >
+                            <p className="text-sm font-medium text-slate-800">{clientFullName(c)}</p>
+                            <p className="text-xs text-slate-500">
+                              {c.membership_number ? `${c.membership_number} · ` : ""}{c.email} · {c.mobile}
+                            </p>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {!clientSearching && clientQuery.trim().length >= 2 && clientResults.length === 0 && (
+                    <p className="mt-1.5 text-xs text-slate-500">No matching client. Use Outsider to enter details manually.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Applicant */}

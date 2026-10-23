@@ -15,6 +15,10 @@ export class VoucherRepository {
     });
   }
 
+  async findByClientId(client_id: number): Promise<Voucher[]> {
+    return Voucher.findAll({ where: { client_id }, order: [['created_at', 'DESC']] });
+  }
+
   async findById(voucherId: number): Promise<Voucher | null> {
     return Voucher.findByPk(voucherId);
   }

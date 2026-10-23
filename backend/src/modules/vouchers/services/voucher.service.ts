@@ -5,6 +5,7 @@ import { DEFAULT_TERMS_AND_CONDITIONS, VOUCHER_ERRORS } from '../constants/vouch
 import { VoucherEmailService } from './voucher-email.service';
 import { VoucherPdfService } from './voucher-pdf.service';
 import { AppError } from '../../../shared/middlewares/error.middleware';
+import { Client } from '../../clients/models/Client.model';
 
 export class VoucherService {
   private voucherRepository: VoucherRepository;
@@ -78,9 +79,16 @@ export class VoucherService {
 
     const termsAndConditions = dto.terms_and_conditions?.trim() || DEFAULT_TERMS_AND_CONDITIONS;
 
+    // Vouchers for existing clients are linked to them (so they show in the client profile) and count as Member vouchers.
+    if (dto.client_id) {
+      const client = await Client.findByPk(dto.client_id, { attributes: ['client_id'] });
+      if (!client) throw new AppError('Client not found', 404);
+    }
+
     const voucher = await this.voucherRepository.create({
       voucher_number: voucherNumber,
-      voucher_type: dto.voucher_type || VoucherType.NON_MEMBER,
+      client_id: dto.client_id ?? null,
+      voucher_type: dto.client_id ? VoucherType.MEMBER : dto.voucher_type || VoucherType.NON_MEMBER,
       applicant: dto.applicant,
       spouse: dto.spouse || null,
       email: dto.email,
@@ -119,6 +127,11 @@ export class VoucherService {
       page: query.page || 1,
       limit: query.limit || 10,
     };
+  }
+
+  async getVouchersForClient(client_id: number) {
+    await this.voucherRepository.markExpiredVouchers();
+    return this.voucherRepository.findByClientId(client_id);
   }
 
   async getVoucherById(id: number) {
