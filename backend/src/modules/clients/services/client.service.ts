@@ -181,6 +181,18 @@ export class ClientService {
       await AmcPayment.destroy({ where: { client_id }, force: true, transaction: t });
       await Invoice.destroy({ where: { client_id }, force: true, transaction: t });
       await ClientAddress.destroy({ where: { client_id }, transaction: t });
+      // These tables have a NO ACTION client FK in the live DB, so they must be cleared too.
+      for (const table of ['client_offers', 'call_recordings', 'kyc_documents']) {
+        await sequelize.query(`DELETE FROM \`${table}\` WHERE client_id = :client_id`, {
+          replacements: { client_id },
+          transaction: t,
+        });
+      }
+      // Remove the client's login too; otherwise the orphaned user keeps the email taken.
+      await sequelize.query(`DELETE FROM users WHERE client_id = :client_id AND role = 'CLIENT'`, {
+        replacements: { client_id },
+        transaction: t,
+      });
       await this.clientRepository.permanentDelete(client_id, t);
       await t.commit();
     } catch (err) {

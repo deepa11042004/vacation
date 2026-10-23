@@ -106,7 +106,15 @@ export function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     y += 30;
 
     // ── Buyer & Payment Details Block ─────────────────────
-    const blockH = 120;
+    const valW = (CW / 2) - 120;
+    const rowGap = 2;
+    // Height a row occupies: wrapped values (e.g. a long address) take more than one line.
+    const rowHeight = (val: string) =>
+      Math.max(12, doc.fontSize(10).font('Helvetica').heightOfString(val || '—', { width: valW }) + rowGap);
+    const buyerRows = [data.client_name, data.email, data.address, data.card_number, data.phone, data.state];
+    if (isTax) buyerRows.push(data.client_gst || '—');
+    const buyerH = 10 + 20 + buyerRows.reduce((sum, v) => sum + rowHeight(v), 0) + 10;
+    const blockH = Math.max(120, buyerH);
     doc.rect(ML, y, CW, blockH).fill(LIGHT_GRAY);
     
     const half = ML + CW / 2;
@@ -118,17 +126,21 @@ export function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     
     const drawRow = (lbl: string, val: string, startX: string | number, startY: number) => {
       doc.fontSize(10).font('Helvetica-Bold').text(lbl + ':', startX as number, startY);
-      doc.font('Helvetica').text(val || '—', (startX as number) + 105, startY, { width: (CW/2) - 120 });
+      doc.font('Helvetica').text(val || '—', (startX as number) + 105, startY, { width: valW });
     };
 
-    drawRow('Name', data.client_name, ML + 10, by); by += 12;
-    drawRow('Email ID', data.email, ML + 10, by); by += 12;
-    drawRow('Address', data.address, ML + 10, by); by += 12;
-    drawRow('Customer ID', data.card_number, ML + 10, by); by += 12;
-    drawRow('Mobile No', data.phone, ML + 10, by); by += 12;
-    drawRow('State', data.state, ML + 10, by); by += 12;
-    if (isTax) {
-      drawRow('GST No', data.client_gst || '—', ML + 10, by);
+    const buyerFields: [string, string][] = [
+      ['Name', data.client_name],
+      ['Email ID', data.email],
+      ['Address', data.address],
+      ['Customer ID', data.card_number],
+      ['Mobile No', data.phone],
+      ['State', data.state],
+    ];
+    if (isTax) buyerFields.push(['GST No', data.client_gst || '—']);
+    for (const [lbl, val] of buyerFields) {
+      drawRow(lbl, val, ML + 10, by);
+      by += rowHeight(val);
     }
 
     // Payment Details

@@ -432,6 +432,134 @@ export default function ClientDetailPage() {
     } finally { setAmcSaving(false); }
   }
 
+  async function openWelcomeMail(kind: 1 | 2) {
+    if (!client) return;
+    let company = { name: "Mandarine Worldwide Vacations Private Limited", phone: "011-40129981", email: "info@mandarinworldwidevacations.com" };
+    try {
+      const res: any = await api.get("/settings/company");
+      company = { ...company, ...(res?.data ?? {}) };
+    } catch { /* fall back to defaults */ }
+    const website = "https://mandarinworldwidevacations.com";
+    const years = membership?.validity_years ?? 1;
+    const nights = membership?.nights_per_year ?? 6;
+    const joined = membership?.sale_date
+      ? new Date(membership.sale_date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+      : "";
+    const coApplicant = client.spouse_name ?? "";
+    const memNo = membership?.membership_number ?? "";
+    const yrs = `${years} Year${years !== 1 ? "s" : ""}`;
+
+    const body1 = `Dear ${fullName},
+
+Welcome to ${company.name}, Your Gateway to Exotic Locations.
+
+${company.name} provides you with a wide array of holiday vacations that suit your flexibility and convenience.
+
+Customers are our priority, and we aim to satisfy them with our work.
+
+${company.name} provides an exquisite, sophisticated, and alluring hotel for every individual that gets connected with us.
+
+We would love to have the opportunity to plan your forthcoming holiday. Over the years, not only have we changed the way people travel, but in a relatively short period we are growing to become India's No.1 Holiday company.
+
+Your membership entitles you to a holiday of ${nights} Nights ${nights + 1} Days every year for the next ${years} year${years !== 1 ? "s" : ""} at any of the ${company.name} owned or affiliated properties. To check out our complete property locations visit us at ${website}
+
+We wish you happiness, enjoyment, and fitness all through your life. We wish to assure our best services at all times.
+
+Your Credentials for login:
+MEMBERSHIP NO: ${memNo}
+MAIN APPLICANT: ${fullName}
+CO-APPLICANT: ${coApplicant}
+HOW MANY YEARS OF MEMBERSHIP: ${yrs}
+DATE OF JOINING: ${joined}
+USERNAME: ${client.email}
+PASSWORD: ${client.mobile} (your registered mobile number)
+
+Please visit our website at ${website}
+
+Kindly contact us for any queries, assistance, or reservations at ${company.phone} and you may email us at "${company.email}" for booking requests or at "${company.email}" for general queries.
+
+Thanks and Regards,
+${company.name}`;
+
+    const body2 = `Dear ${fullName},
+
+Greetings from ${company.name}!
+
+We are delighted to welcome you${coApplicant ? " and your family" : ""} to ${company.name}, your gateway to memorable holidays, exceptional hospitality, and enriching travel experiences.
+
+Thank you for choosing ${company.name} as your holiday partner. We sincerely appreciate your trust in us and are pleased to have you as a valued member of our community. Our aim is to make every holiday a special experience by bringing together comfort, relaxation, quality accommodation, and the joy of discovering new destinations.
+
+At ${company.name}, we believe that holidays are more than just a break from everyday life. They are opportunities to create beautiful memories, spend quality time with loved ones, explore new places, and return home refreshed and rejuvenated. With this philosophy at the heart of our services, we strive to offer holiday experiences that suit your preferences, convenience, and travel aspirations.
+
+YOUR MEMBERSHIP BENEFITS
+
+As a valued member of ${company.name}, your membership entitles you to ${nights} Nights and ${nights + 1} Days of holiday accommodation every year for a membership period of ${yrs}, at eligible ${company.name}-owned or affiliated properties, subject to the applicable membership terms and conditions, property availability, and reservation policies.
+
+We aim to provide you with a convenient and enjoyable holiday planning experience, helping you explore a range of destinations and accommodation options through our network of properties.
+
+To explore our property locations and learn more about our offerings, please visit our official website:
+
+Website: ${website}
+
+YOUR MEMBERSHIP DETAILS
+
+- Membership Number: ${memNo}
+- Main Applicant: ${fullName}
+- Co-Applicant: ${coApplicant}
+- Membership Duration: ${yrs}
+- Date of Joining: ${joined}
+- Registered Username: ${client.email}
+
+Please keep your membership number and login credentials secure, as these details may be required when accessing your membership account or communicating with our team regarding reservations and membership-related services.
+
+For your security, we recommend that you do not share your password with anyone. If you need assistance accessing your account, please contact our support team through our official contact channels.
+
+HOW TO EXPLORE YOUR MEMBERSHIP
+
+When planning your holiday, we encourage you to contact our team in advance with your preferred destination, intended travel dates, number of guests, and accommodation requirements. Our team will be happy to assist you with the reservation process and provide information regarding availability, applicable booking procedures, and relevant membership conditions.
+
+Please note that all reservations are subject to availability, applicable membership terms and conditions, and the policies of the respective properties.
+
+OUR COMMITMENT TO YOU
+
+At ${company.name}, customer satisfaction remains one of our highest priorities. We are committed to assisting our members with professionalism, courtesy, and care throughout their membership journey.
+
+We continuously strive to enhance the holiday experience of our members by focusing on hospitality, convenience, and dependable customer assistance. We understand the importance of your holidays and the memories you create with your family, and we look forward to being a part of those special moments.
+
+CONTACT US
+
+Should you require any information regarding your membership, property locations, reservations, or other assistance, please feel free to contact us:
+
+${company.name}
+- Customer Support / Reservations: ${company.phone}
+- Email: ${company.email}
+- Official Website: ${website}
+
+A WARM WELCOME TO YOUR HOLIDAY JOURNEY!
+
+Once again, thank you for becoming a member of ${company.name}. We are delighted to welcome ${coApplicant ? `${fullName} and ${coApplicant}` : fullName} to our membership community.
+
+We wish you and your family happiness, good health, prosperity, and countless wonderful travel memories.
+
+Welcome aboard, and we wish you many memorable holidays ahead!
+
+Warm regards,
+Customer Relations Team
+${company.name}
+Your Gateway to Exotic Locations
+
+Website: ${website}
+Phone: ${company.phone}
+Email: ${company.email}`;
+
+    setWelcomeMailForm({
+      subject: kind === 1 ? `Welcome to ${company.name}!` : `Welcome to ${company.name} - Your Membership Details`,
+      bodyText: kind === 1 ? body1 : body2,
+    });
+    setWelcomeMailError("");
+    setShowWelcomeMailModal(true);
+  }
+
   async function handleSendWelcomeMail() {
     if (!welcomeMailForm.subject.trim() || !welcomeMailForm.bodyText.trim()) {
       setWelcomeMailError("Please provide both subject and body.");
@@ -828,16 +956,15 @@ export default function ClientDetailPage() {
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
-              <button 
-                onClick={() => {
-                  setWelcomeMailForm({ subject: "Welcome to Mandarine Worldwide Vacations!", bodyText: `Dear ${fullName},\n\nWelcome to Mandarine Worldwide Vacations!\n\nBest regards,\nMandarine Worldwide Vacations Team` });
-                  setWelcomeMailError("");
-                  setShowWelcomeMailModal(true);
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
-              >
-                <Mail className="w-3.5 h-3.5" /> Welcome Mail
-              </button>
+              {([1, 2] as const).map(n => (
+                <button
+                  key={n}
+                  onClick={() => openWelcomeMail(n)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                >
+                  <Mail className="w-3.5 h-3.5" /> Welcome Mail {n}
+                </button>
+              ))}
               {client.is_welcome_mail_sent ? (
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 ml-1" />
               ) : (
@@ -1358,7 +1485,7 @@ export default function ClientDetailPage() {
                         <th className="text-left font-bold text-slate-700 px-5 py-4 w-40">Receiving Date</th>
                         <th className="text-left font-bold text-slate-700 px-5 py-4 w-44">Mode Of Payment</th>
                         <th className="text-left font-bold text-slate-700 px-5 py-4 w-36">Amount</th>
-                        <th className="text-left font-bold text-slate-700 px-5 py-4 w-28">Actions</th>
+                        <th className="text-left font-bold text-slate-700 px-5 py-4 w-56">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -1383,12 +1510,20 @@ export default function ClientDetailPage() {
                             </td>
                             <td className="px-5 py-4 text-slate-800 font-medium">{fmtAmcAmt(p.amount)}</td>
                             <td className="px-5 py-4">
-                              <a
-                                href={`/admin/create-invoice/${id}?${invoiceParams.toString()}`}
-                                className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
-                              >
-                                <FileText className="w-3.5 h-3.5" /> Invoice
-                              </a>
+                              <div className="flex items-center gap-2">
+                                <a
+                                  href={`/admin/create-invoice/${id}?${invoiceParams.toString()}`}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                                >
+                                  <FileText className="w-3.5 h-3.5" /> Invoice
+                                </a>
+                                <a
+                                  href={`/admin/create-invoice/${id}?${invoiceParams.toString()}&type=tax`}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap"
+                                >
+                                  <FileText className="w-3.5 h-3.5" /> Tax Invoice
+                                </a>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -1413,12 +1548,20 @@ export default function ClientDetailPage() {
                             </td>
                             <td className="px-5 py-4 text-slate-800 font-medium">{fmtAmcAmt((p.amount ?? membership.amc) || 0)}</td>
                             <td className="px-5 py-4">
-                              <a
-                                href={`/admin/create-invoice/${id}?${amcInvoiceParams.toString()}`}
-                                className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
-                              >
-                                <FileText className="w-3.5 h-3.5" /> Invoice
-                              </a>
+                              <div className="flex items-center gap-2">
+                                <a
+                                  href={`/admin/create-invoice/${id}?${amcInvoiceParams.toString()}`}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                                >
+                                  <FileText className="w-3.5 h-3.5" /> Invoice
+                                </a>
+                                <a
+                                  href={`/admin/create-invoice/${id}?${amcInvoiceParams.toString()}&type=tax`}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap"
+                                >
+                                  <FileText className="w-3.5 h-3.5" /> Tax Invoice
+                                </a>
+                              </div>
                             </td>
                           </tr>
                         );
