@@ -14,6 +14,7 @@ const UpsertSchema = z.object({
   year_number:   z.number().int().positive(),
   amount:        z.number().min(0).optional().nullable(),
   is_received:   z.boolean(),
+  is_waived_off: z.boolean().optional(),
   payment_date:  z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
   payment_mode:  z.string().max(100).optional().nullable(),
 });
@@ -57,6 +58,7 @@ const UpsertSchema = z.object({
  *               membership_id: { type: integer }
  *               year_number:   { type: integer, example: 1 }
  *               is_received:   { type: boolean }
+ *               is_waived_off: { type: boolean, description: "AMC waived off for this year; overrides is_received" }
  *               amount:        { type: number, nullable: true }
  *               payment_date:  { type: string, format: date, nullable: true }
  *               payment_mode:  { type: string, nullable: true }

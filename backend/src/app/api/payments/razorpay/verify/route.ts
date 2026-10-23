@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       if (amcRec) {
         await amcRec.update({
           is_received: true,
+          is_waived_off: false,
           amount: amount || amcRec.amount,
           payment_date: new Date().toISOString().split('T')[0],
           payment_mode: 'ONLINE',

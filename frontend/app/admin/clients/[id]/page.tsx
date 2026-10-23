@@ -53,6 +53,7 @@ interface AmcPayment {
   amc_payment_id: number;
   year_number: number;
   is_received: boolean;
+  is_waived_off?: boolean;
   payment_date?: string | null;
   payment_mode?: string | null;
   amount?: number | null;
@@ -304,7 +305,7 @@ export default function ClientDetailPage() {
   const [amcPaymentsLoading, setAmcPaymentsLoading] = useState(false);
   const [amcPaymentsFetched, setAmcPaymentsFetched] = useState(false);
   const [showAmcModal,       setShowAmcModal]       = useState(false);
-  const [amcForm,            setAmcForm]            = useState({ year_number: "", is_received: false, payment_date: "", payment_mode: "" });
+  const [amcForm,            setAmcForm]            = useState({ year_number: "", is_received: false, is_waived_off: false, payment_date: "", payment_mode: "" });
   const [amcSaving,          setAmcSaving]          = useState(false);
   const [amcError,           setAmcError]           = useState("");
 
@@ -421,11 +422,12 @@ export default function ClientDetailPage() {
         membership_id: membership.membership_id,
         year_number:   Number(amcForm.year_number),
         is_received:   amcForm.is_received,
+        is_waived_off: amcForm.is_waived_off,
         payment_date:  amcForm.is_received ? amcForm.payment_date || null : null,
         payment_mode:  amcForm.is_received ? amcForm.payment_mode || null : null,
       });
       setShowAmcModal(false);
-      setAmcForm({ year_number: "", is_received: false, payment_date: "", payment_mode: "" });
+      setAmcForm({ year_number: "", is_received: false, is_waived_off: false, payment_date: "", payment_mode: "" });
       loadAmcPayments();
     } catch (err: unknown) {
       setAmcError(err instanceof Error ? err.message : "Failed to save.");
@@ -1267,7 +1269,7 @@ Email: ${company.email}`;
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">AMC Chart</p>
                   <button
-                    onClick={() => { setAmcForm({ year_number: "", is_received: false, payment_date: "", payment_mode: "" }); setAmcError(""); setShowAmcModal(true); }}
+                    onClick={() => { setAmcForm({ year_number: "", is_received: false, is_waived_off: false, payment_date: "", payment_mode: "" }); setAmcError(""); setShowAmcModal(true); }}
                     className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
                   >
                     <Plus className="w-4 h-4" /> Update AMC
@@ -1296,12 +1298,15 @@ Email: ${company.email}`;
                       {rows.map(r => {
                         const pmt = amcPayments.find(p => p.year_number === r.year);
                         const received = pmt?.is_received ?? false;
+                        const waived = pmt?.is_waived_off ?? false;
                         return (
                           <tr key={r.year} className="hover:bg-slate-50 transition-colors">
                             <td className="px-4 py-3.5 text-sm font-medium text-slate-700">{fmtAmcDate(r.from)}</td>
                             <td className="px-4 py-3.5 text-sm font-medium text-slate-700">{fmtAmcAmt(pmt?.amount ?? membership.amc)}</td>
                             <td className="px-4 py-3.5">
-                              {received ? (
+                              {waived ? (
+                                <span className="text-sm font-semibold text-violet-600">Waived Off</span>
+                              ) : received ? (
                                 <span className="text-sm font-semibold text-emerald-600">Yes</span>
                               ) : (
                                 <span className="text-sm font-semibold text-red-500">No</span>
@@ -1989,18 +1994,34 @@ Email: ${company.email}`;
             );
           })()}
 
-          {/* Received toggle */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => { setAmcForm(f => ({ ...f, is_received: !f.is_received })); setAmcError(""); }}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${amcForm.is_received ? "bg-emerald-500" : "bg-slate-300"}`}
-            >
-              <span className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${amcForm.is_received ? "translate-x-6" : "translate-x-1"}`} />
-            </button>
-            <label className="text-sm font-medium text-slate-700">
-              {amcForm.is_received ? "Payment Received" : "Not Received"}
-            </label>
+          {/* AMC status: pending / received / waived off */}
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">AMC Status</label>
+            <div className="inline-flex rounded-lg border border-slate-300 overflow-hidden text-sm font-medium">
+              {([
+                ["pending", "Not Received"],
+                ["received", "Payment Received"],
+                ["waived", "AMC Waived Off"],
+              ] as const).map(([key, label], i) => {
+                const active = key === "waived" ? !!amcForm.is_waived_off : key === "received" ? amcForm.is_received && !amcForm.is_waived_off : !amcForm.is_received && !amcForm.is_waived_off;
+                const activeCls = key === "received" ? "bg-emerald-600 text-white" : key === "waived" ? "bg-violet-600 text-white" : "bg-slate-600 text-white";
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => { setAmcForm(f => ({ ...f, is_received: key === "received", is_waived_off: key === "waived" })); setAmcError(""); }}
+                    className={`px-3.5 py-2 transition-colors ${active ? activeCls : "bg-white text-slate-600 hover:bg-slate-50"} ${i > 0 ? "border-l border-slate-300" : ""}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            {amcForm.is_waived_off && (
+              <p className="mt-2 text-xs text-violet-700 bg-violet-50 border border-violet-200 rounded-lg px-3 py-2">
+                This year&apos;s AMC will be marked as waived off: nothing is due and it is left out of payment totals.
+              </p>
+            )}
           </div>
 
           {amcForm.is_received && (

@@ -11,6 +11,7 @@ interface AmcPayment {
   membership_id: number;
   year_number: number;
   is_received: boolean;
+  is_waived_off?: boolean;
   amount?: number | null;
   payment_date?: string | null;
   payment_mode?: string | null;
@@ -126,7 +127,11 @@ export default function AmcStatusPage() {
                       <div className="hidden md:block absolute left-4.5 top-10 -bottom-8 w-px bg-slate-200"></div>
                     )}
                     <div className="shrink-0 relative z-10">
-                      {rec.is_received ? (
+                      {rec.is_waived_off ? (
+                        <div className="w-9 h-9 rounded-full bg-violet-100 border border-violet-200 flex items-center justify-center shadow-sm">
+                          <CheckCircle2 className="w-5 h-5 text-violet-600" />
+                        </div>
+                      ) : rec.is_received ? (
                         <div className="w-9 h-9 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center shadow-sm">
                           <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                         </div>
@@ -138,15 +143,15 @@ export default function AmcStatusPage() {
                     </div>
 
                     <div className={`flex-1 rounded-2xl border p-5 md:p-6 transition-all ${
-                      rec.is_received ? "border-emerald-100 bg-emerald-50/30" : "border-slate-100 bg-white shadow-sm"
+                      rec.is_waived_off ? "border-violet-100 bg-violet-50/30" : rec.is_received ? "border-emerald-100 bg-emerald-50/30" : "border-slate-100 bg-white shadow-sm"
                     }`}>
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-100/50">
                         <div>
                           <h4 className="text-lg font-bold text-slate-800">Year {rec.year_number}</h4>
                           <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                            rec.is_received ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                            rec.is_waived_off ? "bg-violet-100 text-violet-700" : rec.is_received ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                           }`}>
-                            {rec.is_received ? "Received" : "Not Received"}
+                            {rec.is_waived_off ? "Waived Off" : rec.is_received ? "Received" : "Not Received"}
                           </span>
                         </div>
                         {rec.amount != null && (
@@ -174,7 +179,7 @@ export default function AmcStatusPage() {
                         </div>
                       </div>
 
-                      {!rec.is_received && rec.amount != null && rec.amount > 0 && (
+                      {!rec.is_received && !rec.is_waived_off && rec.amount != null && rec.amount > 0 && (
                         <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
                           <button
                             onClick={() => handlePayAmc(rec)}

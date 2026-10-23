@@ -39,6 +39,11 @@ export class AmcPayment extends Model<IAmcPayment, Partial<IAmcPayment>> impleme
   @Column(DataType.BOOLEAN)
   is_received!: boolean;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  is_waived_off!: boolean;
+
   @AllowNull(true)
   @Default(null)
   @Column(DataType.DATEONLY)

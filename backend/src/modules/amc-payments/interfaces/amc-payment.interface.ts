@@ -5,6 +5,7 @@ export interface IAmcPayment {
   year_number: number;
   amount?: number | null;
   is_received: boolean;
+  is_waived_off?: boolean;
   payment_date?: string | null;
   payment_mode?: string | null;
   created_at?: Date;
