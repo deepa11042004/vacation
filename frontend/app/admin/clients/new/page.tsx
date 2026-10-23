@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { z } from "zod";
-import { ArrowLeft, Loader2, User, CreditCard, FileText, Tag, Plus, X, Zap, Mail } from "lucide-react";
+import { ArrowLeft, Loader2, User, CreditCard, FileText, Tag, Plus, X, Zap } from "lucide-react";
 import MembershipLookup from "@/Components/Admin/MembershipLookup";
 
 const inp = (err?: string) => `w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${err ? "border-red-500 bg-red-50 text-red-900" : "border-slate-300 bg-white"}`;
@@ -98,7 +98,6 @@ function NewClientForm() {
   const [saving,       setSaving]       = useState(false);
   const [error,        setError]        = useState("");
   const [fieldErrors,  setFieldErrors]  = useState<Record<string, string>>({});
-  const [sendWelcome,  setSendWelcome]  = useState(true);
 
   const [personal, setPersonal] = useState({
     first_name: "", middle_name: "", last_name: "",
@@ -222,13 +221,6 @@ function NewClientForm() {
     .filter(o => o.offer_name.trim())
     .map(o => ({ offer_name: o.offer_name.trim(), valid_until: o.valid_until || null }));
 
-  async function sendWelcomeMail(clientId: number) {
-    const clientName = [personal.first_name, personal.last_name].filter(Boolean).join(" ");
-    const subject  = `Welcome to Mandarine Worldwide Vacations, ${clientName}!`;
-    const bodyText = `Dear ${clientName},\n\nWelcome to the Mandarine Worldwide Vacations family! We are delighted to have you as a valued member.\n\nYour membership has been successfully activated. Our team is here to assist you in making the most of your vacation experiences.\n\nIf you have any questions or need assistance, please do not hesitate to reach out to us.\n\nWarm regards,\nMandarine Worldwide Vacations Team`;
-    await api.post(`/clients/${clientId}/send-welcome-mail`, { subject, bodyText });
-  }
-
   async function handleSubmit() {
     setSaving(true); setError(""); setFieldErrors({});
     try {
@@ -279,10 +271,6 @@ function NewClientForm() {
           await api.post(`/clients/${activateClientId}/offers`, offer);
         }
 
-        if (sendWelcome && personal.email) {
-          await sendWelcomeMail(clientId).catch(() => {});
-        }
-
         router.push(`/admin/clients/${activateClientId}`);
       } else {
         const clientPayload: Record<string, string> = {};
@@ -298,10 +286,6 @@ function NewClientForm() {
         if (!res?.success) throw new Error(res?.message ?? "Onboarding failed.");
 
         const newClientId = res.data?.client_id;
-        if (sendWelcome && personal.email && newClientId) {
-          await sendWelcomeMail(newClientId).catch(() => {});
-        }
-
         router.push(`/admin/clients/${newClientId}`);
       }
     } catch (err: unknown) {
@@ -570,27 +554,6 @@ function NewClientForm() {
           className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors">
           <Plus className="w-4 h-4" /> Add one more offer
         </button>
-      </div>
-
-      {/* ── Welcome Email ────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <SectionHeader icon={Mail} title="Welcome Email" subtitle="Send a welcome message to the client after onboarding" />
-        <label className="flex items-start gap-3 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={sendWelcome}
-            onChange={e => setSendWelcome(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-          />
-          <div>
-            <span className="text-sm font-medium text-slate-700">Send welcome email to client</span>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {personal.email
-                ? `A welcome message will be sent to ${personal.email} after onboarding.`
-                : "No email address provided — welcome email will be skipped."}
-            </p>
-          </div>
-        </label>
       </div>
 
       {/* ── Section 4: Summary ──────────────────────────────────── */}
