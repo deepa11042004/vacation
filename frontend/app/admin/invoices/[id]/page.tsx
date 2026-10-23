@@ -17,6 +17,7 @@ interface StoredInvoice {
   address: string;
   state: string;
   client_gst: string | null;
+  gst_rate?: number | string | null;
   payment_mode: string;
   payment_type: string;
   transaction_id: string;
@@ -110,6 +111,7 @@ export default function InvoiceViewPage() {
     address:        invoice.address,
     state:          invoice.state,
     client_gst:     invoice.client_gst || "",
+    gst_rate:       invoice.gst_rate != null ? String(Number(invoice.gst_rate)) : "",
     payment_mode:   invoice.payment_mode,
     payment_type:   invoice.payment_type,
     transaction_id: invoice.transaction_id,

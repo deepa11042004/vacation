@@ -1,4 +1,5 @@
 import { UniqueConstraintError } from 'sequelize';
+import { nextMembershipNumber } from '../../../shared/utils/numbering';
 import { Transaction } from 'sequelize';
 import { MembershipRepository } from '../repositories/membership.repository';
 import { CreateMembershipDTO, UpdateMembershipDTO } from '../dto/membership.dto';
@@ -75,7 +76,7 @@ export class MembershipService {
       };
 
       const newMembership = await this.membershipRepository.create(membershipData, t);
-      const membership_number = `${membershipPrefix}-${newMembership.membership_id.toString().padStart(5, '0')}`;
+      const membership_number = await nextMembershipNumber(membershipPrefix);
       await newMembership.update({ membership_number }, { transaction: t });
 
       if (down_payment > 0) {

@@ -9,16 +9,6 @@ import {
 } from "lucide-react";
 import { InvoiceTemplate, CompanySettings, GST_RATE, fmt, calcGst } from "@/Components/InvoiceTemplate";
 
-function genInvoiceNo(clientId: number, seq: number = 1) {
-  const now = new Date();
-  const m = now.getMonth() + 1;
-  const y = now.getFullYear();
-  const fyS = m >= 4 ? y : y - 1;
-  const fy = `${String(fyS).slice(2)}${String(fyS + 1).slice(2)}`;
-  const seqStr = String(seq).padStart(2, "0");
-  return `${fy}/${String(clientId).padStart(3, "0")}/${seqStr}`;
-}
-
 const inp =
   "w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white";
 
@@ -31,28 +21,32 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+interface GstSlot { id: string; label: string; rate: number }
+
 function FormStep({
-  form, setForm, isTax, clientId, co, generating, onGenerate,
+  form, setForm, isTax, clientId, co, gstSlots, generating, onGenerate,
 }: {
   form: Record<string, string>;
   setForm: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   isTax: boolean;
   clientId: string;
   co: CompanySettings;
+  gstSlots: GstSlot[];
   generating?: boolean;
   onGenerate: () => void;
 }) {
   function set(k: string, v: string) { setForm(f => ({ ...f, [k]: v })); }
 
   const amt = parseFloat(form.amount) || 0;
-  const { base, gst, half } = calcGst(amt);
+  const rate = Number(form.gst_rate) || GST_RATE;
+  const { base, gst, half } = calcGst(amt, rate);
   const isInterState = form.state.trim().toLowerCase() !== co.state.toLowerCase();
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <Field label="Invoice No">
-          <input className={inp} value={form.invoice_no} onChange={e => set("invoice_no", e.target.value)} />
+          <input className={`${inp} bg-slate-50 text-slate-500`} value={form.invoice_no} readOnly title="Assigned automatically from Settings → Invoice Settings" />
         </Field>
         <Field label="Issue Date">
           <input type="date" className={inp} value={form.issue_date} onChange={e => set("issue_date", e.target.value)} />
@@ -101,6 +95,11 @@ function FormStep({
         <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
           <Field label="Client GST No.">
             <input className={inp} value={form.client_gst} onChange={e => set("client_gst", e.target.value)} placeholder="Client's GSTIN" />
+          </Field>
+          <Field label="GST Rate">
+            <select className={inp} value={form.gst_rate} onChange={e => set("gst_rate", e.target.value)}>
+              {gstSlots.map(sl => <option key={sl.id} value={String(sl.rate)}>{sl.label} ({sl.rate}%)</option>)}
+            </select>
           </Field>
           <Field label="Company GST No.">
             <input className={inp} value={form.company_gst} onChange={e => set("company_gst", e.target.value)} placeholder="Your company GSTIN" />
@@ -163,10 +162,10 @@ function FormStep({
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-800 space-y-0.5">
           <p><span className="font-semibold">Base amount (excl. GST):</span> {fmt(base)}</p>
           {isInterState
-            ? <p><span className="font-semibold">IGST @{GST_RATE}%:</span> {fmt(gst)}</p>
+            ? <p><span className="font-semibold">IGST @{rate}%:</span> {fmt(gst)}</p>
             : <>
-                <p><span className="font-semibold">CGST @{GST_RATE / 2}%:</span> {fmt(half)}</p>
-                <p><span className="font-semibold">SGST @{GST_RATE / 2}%:</span> {fmt(half)}</p>
+                <p><span className="font-semibold">CGST @{rate / 2}%:</span> {fmt(half)}</p>
+                <p><span className="font-semibold">SGST @{rate / 2}%:</span> {fmt(half)}</p>
               </>
           }
           <p className="font-semibold pt-0.5">
@@ -213,6 +212,7 @@ function PreviewStep({
         ...form,
         email,
         invoice_type: isTax ? "tax" : "invoice",
+        gst_rate: isTax && form.gst_rate ? Number(form.gst_rate) : undefined,
       });
       const invoice_id = res.data?.invoice_id;
       if (invoice_id) {
@@ -329,6 +329,7 @@ function InvoicePageInner() {
   const [generating, setGenerating] = useState(false);
   const [step,       setStep]       = useState<"form" | "preview">("form");
   const [co,         setCo]         = useState<CompanySettings>(CO_DEFAULTS);
+  const [gstSlots,   setGstSlots]   = useState<GstSlot[]>([]);
 
   const [form, setForm] = useState<Record<string, string>>({
     invoice_no: "", issue_date: new Date().toISOString().slice(0, 10),
@@ -340,6 +341,7 @@ function InvoicePageInner() {
     description: "Holiday Package (Sheet Attached For Details)",
     client_gst: "",
     company_gst: "",
+    gst_rate: "",
   });
 
   useEffect(() => { setStep("form"); }, [isTax]);
@@ -374,12 +376,13 @@ function InvoicePageInner() {
       try {
         const safe = <T,>(p: Promise<T>) => p.catch(() => null);
 
-        const [cr, mr, ar, coRes, invRes] = await Promise.all([
+        const [cr, mr, ar, coRes, invRes, gstRes] = await Promise.all([
           safe(api.get<{ data: Client }>(`/clients/${id}`)),
           safe(api.get<{ data: MembershipList }>(`/memberships?client_id=${id}&limit=1`)),
           safe(api.get<{ data: ClientAddress | null }>(`/clients/${id}/address`)),
           safe(api.get<{ data: CompanySettings }>(`/settings/company`)),
-          safe(api.get<{ data: { total: number } }>(`/invoices?client_id=${id}`)),
+          safe(api.get<{ data: { next: string } }>(`/settings/invoice-series`)),
+          safe(api.get<{ data: { slots: GstSlot[]; default_slot_id: string } }>(`/settings/gst`)),
         ]);
 
         if (coRes?.data) setCo(coRes.data);
@@ -387,8 +390,10 @@ function InvoicePageInner() {
         const c        = (cr as { data?: Client } | null)?.data;
         const mem      = (mr as { data?: MembershipList } | null)?.data?.memberships?.[0];
         const addr     = (ar as { data?: ClientAddress | null } | null)?.data;
-        const invTotal = (invRes as { data?: { total: number } } | null)?.data?.total ?? 0;
-        const seq      = invTotal + 1;
+        const nextInvoiceNo = (invRes as { data?: { next: string } } | null)?.data?.next ?? "";
+        const gst      = (gstRes as { data?: { slots: GstSlot[]; default_slot_id: string } } | null)?.data;
+        const defaultSlot = gst?.slots.find(sl => sl.id === gst.default_slot_id) ?? gst?.slots[0];
+        if (gst) setGstSlots(gst.slots);
 
         if (c) {
           const name      = [c.first_name, c.middle_name, c.last_name].filter(Boolean).join(" ");
@@ -396,7 +401,8 @@ function InvoicePageInner() {
 
           setForm(f => ({
             ...f,
-            invoice_no:  genInvoiceNo(c.client_id, seq),
+            invoice_no:  nextInvoiceNo,
+            gst_rate:    defaultSlot ? String(defaultSlot.rate) : "",
             client_name: name,
             card_number: mem?.membership_number ?? "",
             email:       c.email,
@@ -476,6 +482,7 @@ function InvoicePageInner() {
           isTax={isTax}
           clientId={id}
           co={co}
+          gstSlots={gstSlots}
           generating={generating}
           onGenerate={handleGenerateInvoice}
         />

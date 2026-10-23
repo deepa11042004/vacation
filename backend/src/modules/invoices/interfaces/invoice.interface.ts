@@ -10,6 +10,7 @@ export interface IInvoice {
   address: string;
   state: string;
   client_gst: string | null;
+  gst_rate?: number | string | null;
   payment_mode: string;
   payment_type: string;
   transaction_id: string;

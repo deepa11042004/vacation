@@ -7,6 +7,8 @@ import { ResponseUtil } from '@/shared/utils/response.util';
 import { ClientService } from '@/modules/clients/services/client.service';
 import { UserRole } from '@/modules/users/types/user.types';
 import { sendInvoiceEmail } from '@/shared/utils/email.service';
+import { nextInvoiceNumber } from '@/shared/utils/numbering';
+import { resolveGstRate } from '@/shared/utils/app-settings.service';
 import { InvoiceService } from '@/modules/invoices/services/invoice.service';
 
 const clientService = new ClientService();
@@ -30,6 +32,7 @@ const InvoiceSchema = z.object({
   state:          z.string().default(''),
   invoice_type:   z.enum(['invoice', 'tax']).default('invoice'),
   client_gst:     z.string().optional(),
+  gst_rate:       z.number().optional(),
   send_email:     z.boolean().optional().default(true),
 });
 
@@ -96,27 +99,15 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     const body = await request.json();
     const data = InvoiceSchema.parse(body);
 
-    // Ensure invoice_no is unique in DB
-    const { Invoice: InvoiceModel } = await import('@/modules/invoices/models/Invoice.model');
-    let finalInvoiceNo = data.invoice_no;
-    const existing = await InvoiceModel.findOne({ where: { invoice_no: finalInvoiceNo }, paranoid: false });
-    if (existing) {
-      const count = await InvoiceModel.count({ where: { client_id }, paranoid: false });
-      const seqStr = String(count + 1).padStart(2, '0');
-      if (finalInvoiceNo.includes('/')) {
-        const parts = finalInvoiceNo.split('/');
-        parts[parts.length - 1] = seqStr;
-        finalInvoiceNo = parts.join('/');
-      } else {
-        finalInvoiceNo = `${finalInvoiceNo}/${seqStr}`;
-      }
-    }
-    data.invoice_no = finalInvoiceNo;
+    // Number comes from the admin-configured invoice series; GST rate from the configured slots.
+    const invoice_no = await nextInvoiceNumber();
+    const gst_rate = data.invoice_type === 'tax' ? resolveGstRate(data.gst_rate) : null;
+    const invoiceData = { ...data, invoice_no, gst_rate };
 
     let emailSentSuccess = false;
     if (data.send_email !== false) {
       try {
-        await sendInvoiceEmail(data.email, data);
+        await sendInvoiceEmail(data.email, invoiceData);
         emailSentSuccess = true;
       } catch (emailErr) {
         console.error('Failed to send invoice email:', emailErr);
@@ -147,7 +138,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     });
 
     return NextResponse.json(
-      ResponseUtil.success(`Invoice ${data.invoice_no} sent to ${data.email}`, { invoice_id: invoice.invoice_id }),
+      ResponseUtil.success(`Invoice ${invoice_no} sent to ${data.email}`, { invoice_id: invoice.invoice_id, invoice_no }),
       { status: 200 },
     );
   } catch (error) {

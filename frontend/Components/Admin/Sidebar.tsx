@@ -23,6 +23,8 @@ import {
   Menu,
   UserCog,
   MessageSquare,
+  Percent,
+  IdCard,
 } from "lucide-react";
 import { clearAuth, getStoredUser } from "@/lib/api";
 import { hasAccess } from "@/lib/permissions";
@@ -67,6 +69,9 @@ const sections = [
     label: "Settings",
     items: [
       { href: "/admin/settings/email-template",            label: "Email Template",     icon: Mail,        subtitle: null, section: "email_template" },
+      { href: "/admin/settings/invoice",                    label: "Invoice Settings",   icon: FileText,    subtitle: null, section: "billing_settings" },
+      { href: "/admin/settings/gst",                        label: "GST Settings",       icon: Percent,     subtitle: null, section: "billing_settings" },
+      { href: "/admin/settings/membership",                 label: "Membership Settings", icon: IdCard,     subtitle: null, section: "billing_settings" },
       { href: "/admin/settings/panel-users/create",        label: "Create Panel User",  icon: UserPlus,    subtitle: null, section: "panel_users" },
       { href: "/admin/settings/panel-users",               label: "All Panel Users",    icon: ShieldCheck, subtitle: null, section: "panel_users" },
     ],

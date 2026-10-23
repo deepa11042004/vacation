@@ -1,4 +1,5 @@
 import { UniqueConstraintError } from 'sequelize';
+import { nextMembershipNumber } from '../../../shared/utils/numbering';
 import { sequelize } from '../../../shared/database/sequelize';
 import { Client } from '../models/Client.model';
 import { ClientAddress } from '../models/ClientAddress.model';
@@ -144,7 +145,7 @@ export class OnboardService {
         { transaction: t },
       );
 
-      const membership_number = `${membershipPrefix}-${newMembership.membership_id.toString().padStart(5, '0')}`;
+      const membership_number = await nextMembershipNumber(membershipPrefix);
       await newMembership.update({ membership_number }, { transaction: t });
 
       // ── Step 5: Create down payment (if > 0) ──────────────────

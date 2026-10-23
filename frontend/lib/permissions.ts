@@ -18,6 +18,7 @@ export const SECTIONS: SectionDef[] = [
   { key: 'itineraries',      label: 'Itineraries',         href: '/admin/itineraries' },
   { key: 'email_template',   label: 'Email Template',      href: '/admin/settings/email-template' },
   { key: 'panel_users',      label: 'Panel Users',         href: '/admin/settings/panel-users', adminOnly: true },
+  { key: 'billing_settings', label: 'Invoice, GST & Membership Settings', href: '/admin/settings/invoice', adminOnly: true },
   { key: 'staff',            label: 'Staff',               href: '/admin/staff' },
   { key: 'travel_queries',  label: 'Travel Queries',      href: '/admin/travel-queries' },
   { key: 'enquiries',       label: 'Enquiries',            href: '/admin/enquiries' },
@@ -26,6 +27,9 @@ export const SECTIONS: SectionDef[] = [
 
 // More-specific prefixes must come before less-specific ones
 const ROUTE_MAP: { prefix: string; section: string }[] = [
+  { prefix: '/admin/settings/invoice',    section: 'billing_settings' },
+  { prefix: '/admin/settings/gst',        section: 'billing_settings' },
+  { prefix: '/admin/settings/membership', section: 'billing_settings' },
   { prefix: '/admin/settings/panel-users/create', section: 'panel_users' },
   { prefix: '/admin/settings/panel-users',        section: 'panel_users' },
   { prefix: '/admin/settings/email-template', section: 'email_template' },
@@ -63,7 +67,7 @@ export interface PermissionUser {
 export function hasAccess(user: PermissionUser | null, section: string): boolean {
   if (!user) return false;
   if (user.role === 'ADMIN') return true;
-  if (section === 'panel_users') return false;
+  if (section === 'panel_users' || section === 'billing_settings') return false;
   if (!user.allowed_sections || user.allowed_sections.length === 0) return false;
   return user.allowed_sections.includes(section);
 }

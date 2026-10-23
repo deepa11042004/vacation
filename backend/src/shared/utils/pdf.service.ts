@@ -166,7 +166,8 @@ export function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     y += 15;
     
     const amt = parseFloat(data.amount as string) || 0;
-    const GST_RATE = 5;
+    // Rate saved on the invoice; invoices issued before GST slots existed were always 5%.
+    const GST_RATE = data.gst_rate != null ? Number(data.gst_rate) : 5;
     const isInterState = data.state.trim().toLowerCase() !== co.state.trim().toLowerCase();
     const base = isTax ? parseFloat((amt * 100 / (100 + GST_RATE)).toFixed(2)) : amt;
     const gst  = parseFloat((amt - base).toFixed(2));

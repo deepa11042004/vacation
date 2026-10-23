@@ -32,6 +32,7 @@ export interface InvoiceData {
   state: string;
   invoice_type?: string;
   client_gst?: string;
+  gst_rate?: number | string | null;
 }
 
 interface EmailTemplate {

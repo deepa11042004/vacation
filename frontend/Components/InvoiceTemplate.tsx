@@ -1,3 +1,4 @@
+/** Fallback rate: invoices issued before GST slots existed were always 5%. */
 export const GST_RATE = 5;
 
 export interface CompanySettings {
@@ -13,8 +14,8 @@ export function fmt(n: number) {
   return `₹${n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-export function calcGst(total: number) {
-  const base = parseFloat((total * 100 / (100 + GST_RATE)).toFixed(2));
+export function calcGst(total: number, rate: number = GST_RATE) {
+  const base = parseFloat((total * 100 / (100 + rate)).toFixed(2));
   const gst  = parseFloat((total - base).toFixed(2));
   const half = parseFloat((gst / 2).toFixed(2));
   return { base, gst, half };
@@ -39,7 +40,8 @@ export function InvoiceTemplate({
   co: CompanySettings;
 }) {
   const amt = parseFloat(form.amount) || 0;
-  const { base, gst, half } = calcGst(amt);
+  const rate = form.gst_rate ? Number(form.gst_rate) : GST_RATE;
+  const { base, gst, half } = calcGst(amt, rate);
   const isInterState = form.state.trim().toLowerCase() !== co.state.toLowerCase();
   const tableAmount = isTax ? base : amt;
 
@@ -139,19 +141,19 @@ export function InvoiceTemplate({
             isInterState ? (
               <div className="flex justify-between py-1.5">
                 <span className="w-1/2 font-bold text-right pr-4">Add :</span>
-                <span className="w-1/4 font-bold text-center">IGST @{GST_RATE}%</span>
+                <span className="w-1/4 font-bold text-center">IGST @{rate}%</span>
                 <span className="w-1/4 text-right font-bold">{fmt(gst)}</span>
               </div>
             ) : (
               <>
                 <div className="flex justify-between py-1.5">
                   <span className="w-1/2 font-bold text-right pr-4">Add :</span>
-                  <span className="w-1/4 font-bold text-center">CGST @{GST_RATE / 2}%</span>
+                  <span className="w-1/4 font-bold text-center">CGST @{rate / 2}%</span>
                   <span className="w-1/4 text-right font-bold">{fmt(half)}</span>
                 </div>
                 <div className="flex justify-between py-1.5">
                   <span className="w-1/2"></span>
-                  <span className="w-1/4 font-bold text-center">SGST @{GST_RATE / 2}%</span>
+                  <span className="w-1/4 font-bold text-center">SGST @{rate / 2}%</span>
                   <span className="w-1/4 text-right font-bold">{fmt(half)}</span>
                 </div>
               </>
