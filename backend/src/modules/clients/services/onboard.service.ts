@@ -1,5 +1,5 @@
 import { UniqueConstraintError } from 'sequelize';
-import { nextMembershipNumber } from '../../../shared/utils/numbering';
+import { resolveMembershipNumber } from '../../../shared/utils/numbering';
 import { sequelize } from '../../../shared/database/sequelize';
 import { Client } from '../models/Client.model';
 import { ClientAddress } from '../models/ClientAddress.model';
@@ -18,6 +18,8 @@ import { round2, uniqueTemp } from '../../../shared/utils/math.util';
 
 export interface OnboardMembershipInput {
   package_name: string;
+  /** Optional admin-entered number; the next number in the series is used when omitted. */
+  membership_number?: string | null;
   validity_years: number;
   nights_per_year: number;
   sale_date: string;
@@ -145,7 +147,7 @@ export class OnboardService {
         { transaction: t },
       );
 
-      const membership_number = await nextMembershipNumber(membershipPrefix);
+      const membership_number = await resolveMembershipNumber(memData.membership_number, membershipPrefix);
       await newMembership.update({ membership_number }, { transaction: t });
 
       // ── Step 5: Create down payment (if > 0) ──────────────────

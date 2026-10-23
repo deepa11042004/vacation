@@ -12,6 +12,7 @@ import { MembershipDSA } from '@/modules/memberships/types/membership.types';
 
 const MembershipSchema = z.object({
   package_name:      z.string().min(1, 'Package name is required'),
+  membership_number: z.string().trim().max(30).optional().nullable(),
   validity_years:    z.number().int().positive().optional().default(1),
   nights_per_year:   z.number().int().min(0).optional().default(0),
   sale_date:         z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Sale date must be YYYY-MM-DD'),

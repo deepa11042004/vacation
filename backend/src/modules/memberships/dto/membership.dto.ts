@@ -2,6 +2,7 @@ import { MembershipDSA, MembershipStatus, PaymentMode } from '../types/membershi
 
 export interface CreateMembershipDTO {
   client_id: number;
+  membership_number?: string | null;
   package_name?: string | null;
   validity_years?: number | null;
   nights_per_year?: number | null;

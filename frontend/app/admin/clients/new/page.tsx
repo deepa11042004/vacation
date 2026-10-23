@@ -103,6 +103,11 @@ function NewClientForm() {
   // Photo is chosen here but can only be uploaded once the client exists (after save)
   const [photoFile,    setPhotoFile]    = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  // Membership ID: pre-filled with the next free number from Settings -> Membership Settings, editable by the admin
+  const [membershipNo, setMembershipNo] = useState("");
+  const [membershipNoEdited, setMembershipNoEdited] = useState(false);
+  const [membershipNoTaken, setMembershipNoTaken] = useState(false);
   useEffect(() => {
     if (!photoFile) { setPhotoPreview(null); return; }
     const url = URL.createObjectURL(photoFile);
@@ -208,7 +213,32 @@ function NewClientForm() {
 
   const amcAmount = Number(mem.amc || 0);
 
+  // Fetch the next free number (already skips numbers in use). It depends on the package prefix when no fixed prefix is set.
+  useEffect(() => {
+    if (membershipNoEdited) return;
+    const t = setTimeout(() => {
+      api.get<{ data: { next: string } }>(`/settings/membership-series?package=${encodeURIComponent(mem.package_name ?? "")}`)
+        .then(res => setMembershipNo(res.data?.next ?? ""))
+        .catch(() => setMembershipNo(""));
+    }, 300);
+    return () => clearTimeout(t);
+  }, [mem.package_name, membershipNoEdited]);
+
+  // When the admin types their own number, check live whether it is already in use
+  useEffect(() => {
+    const value = membershipNo.trim();
+    if (!membershipNoEdited || !value) { setMembershipNoTaken(false); return; }
+    const t = setTimeout(() => {
+      api.get<{ data: { taken?: boolean } }>(`/settings/membership-series?check=${encodeURIComponent(value)}`)
+        .then(res => setMembershipNoTaken(!!res.data?.taken))
+        .catch(() => setMembershipNoTaken(false));
+    }, 300);
+    return () => clearTimeout(t);
+  }, [membershipNo, membershipNoEdited]);
+
   const memPayload = {
+    // Only an admin-entered number is sent; otherwise the server hands out the next free one at save time
+    membership_number: membershipNoEdited && membershipNo.trim() ? membershipNo.trim() : undefined,
     package_name:      mem.package_name,
     validity_years:    Number(mem.validity_years || 1),
     nights_per_year:   Number(mem.nights_per_year || 0),
@@ -235,6 +265,11 @@ function NewClientForm() {
   async function handleSubmit() {
     setSaving(true); setError(""); setFieldErrors({});
     try {
+      if (membershipNoEdited && membershipNoTaken) {
+        setError(`Membership ID ${membershipNo.trim()} is already in use. Enter a different one or reset to the next available number.`);
+        setSaving(false);
+        return;
+      }
       // Schema validation
       const parsed = FormSchema.safeParse({ personal, addr, mem, offers });
       if (!parsed.success) {
@@ -359,6 +394,29 @@ function NewClientForm() {
           <div className="text-sm">
             <p className="font-semibold text-slate-700">Client Photo</p>
             <p className="text-xs text-slate-500">Optional. JPG, PNG or WebP, up to 2 MB. Saved with the client.</p>
+          </div>
+
+          <div className="ml-auto w-72">
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Membership ID</label>
+            <input
+              className={`${inp(membershipNoTaken ? "taken" : undefined)} font-mono`}
+              value={membershipNo}
+              maxLength={30}
+              onChange={e => { setMembershipNo(e.target.value); setMembershipNoEdited(true); }}
+              placeholder="Auto-assigned"
+            />
+            {membershipNoTaken ? (
+              <p className="mt-1 text-xs text-red-600">This Membership ID is already in use.</p>
+            ) : membershipNoEdited ? (
+              <p className="mt-1 text-xs text-slate-500">
+                Custom number.{" "}
+                <button type="button" className="text-blue-600 hover:underline" onClick={() => { setMembershipNoEdited(false); setMembershipNoTaken(false); }}>
+                  Reset to next available
+                </button>
+              </p>
+            ) : (
+              <p className="mt-1 text-xs text-slate-500">Next number in your series. Edit to use a different one.</p>
+            )}
           </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
@@ -602,6 +660,10 @@ function NewClientForm() {
           <div className="flex justify-between py-1 border-b border-slate-100">
             <span className="text-slate-500">Email</span>
             <span className="font-medium text-slate-800">{personal.email || "—"}</span>
+          </div>
+          <div className="flex justify-between py-1 border-b border-slate-100">
+            <span className="text-slate-500">Membership ID</span>
+            <span className="font-mono font-medium text-blue-600">{membershipNo || "—"}</span>
           </div>
           <div className="flex justify-between py-1 border-b border-slate-100">
             <span className="text-slate-500">Package</span>

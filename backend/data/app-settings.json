@@ -1,0 +1,24 @@
+{
+  "invoice": {
+    "prefix": "INV-",
+    "start_number": 1,
+    "next_number": 1,
+    "padding": 4
+  },
+  "membership": {
+    "prefix": "WWE",
+    "start_number": 1,
+    "padding": 5,
+    "next_number": 1
+  },
+  "gst": {
+    "slots": [
+      {
+        "id": "gst-5",
+        "label": "GST 5%",
+        "rate": 5
+      }
+    ],
+    "default_slot_id": "gst-5"
+  }
+}

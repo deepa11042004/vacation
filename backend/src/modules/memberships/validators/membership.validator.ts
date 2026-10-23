@@ -4,6 +4,7 @@ import { MembershipDSA, PaymentMode } from '../types/membership.types';
 export const CreateMembershipSchema = z.object({
   client_id:           z.number().int().positive('Client ID is required'),
   package_name:        z.string().min(1).max(255),
+  membership_number:   z.string().trim().max(30).optional().nullable(),
   validity_years:      z.number().int().min(1).optional().nullable(),
   nights_per_year:     z.number().int().min(0).optional().nullable(),
   sale_date:           z.coerce.date(),

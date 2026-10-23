@@ -5,7 +5,7 @@ import { authenticateRequest, requireRoles } from '@/shared/middlewares/auth.mid
 import { errorHandler } from '@/shared/middlewares/error.middleware';
 import { ResponseUtil } from '@/shared/utils/response.util';
 import { getAppSettings, saveAppSettings } from '@/shared/utils/app-settings.service';
-import { previewInvoiceNumber, previewMembershipNumber } from '@/shared/utils/numbering';
+import { previewInvoiceNumber, previewMembershipNumber, isMembershipNumberTaken } from '@/shared/utils/numbering';
 import { UserRole } from '@/modules/users/types/user.types';
 
 export const dynamic = 'force-dynamic';
@@ -46,8 +46,11 @@ export async function GET(request: NextRequest) {
     const currentUser = await authenticateRequest(request);
     requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
     const series = getAppSettings()[KIND];
+    // ?check=<number> reports whether that number is already used by a membership
+    const check = request.nextUrl.searchParams.get('check')?.trim();
+    const taken = check ? await isMembershipNumberTaken(check) : undefined;
     return NextResponse.json(
-      ResponseUtil.success('Series retrieved', { ...series, next: await previewMembershipNumber(packagePrefix(request)) }),
+      ResponseUtil.success('Series retrieved', { ...series, next: await previewMembershipNumber(packagePrefix(request)), taken }),
     );
   } catch (error) {
     return errorHandler(error);
