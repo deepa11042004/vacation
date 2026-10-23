@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Loader2, Search, Eye, Trash2, FileText, RotateCcw, ShieldAlert, Send, RefreshCw } from "lucide-react";
+import { Loader2, Search, Eye, FileText, Send, RefreshCw, Ban } from "lucide-react";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 
 interface Invoice {
@@ -18,7 +18,7 @@ interface Invoice {
   issue_date: string;
   is_email_sent?: boolean;
   created_at: string;
-  deleted_at: string | null;
+  cancelled_at?: string | null;
 }
 
 function fmtDate(iso: string) {
@@ -40,8 +40,8 @@ export default function InvoicesPage() {
   const [search,   setSearch]   = useState("");
   const [query,    setQuery]    = useState("");
   const [loading,  setLoading]  = useState(true);
-  const [deleting, setDeleting] = useState<number | null>(null);
-  const [confirmModal, setConfirmModal] = useState<{ type: "soft" | "permanent" | "restore"; invoice: Invoice } | null>(null);
+  const [cancelling, setCancelling] = useState<number | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<Invoice | null>(null);
 
   const limit = 20;
 
@@ -70,8 +70,6 @@ export default function InvoicesPage() {
     setQuery(search);
   }
 
-  const [restoring,      setRestoring]      = useState<number | null>(null);
-  const [permDeleting,   setPermDeleting]   = useState<number | null>(null);
   const [sendingEmailId, setSendingEmailId] = useState<number | null>(null);
 
   async function handleSendInvoiceEmail(inv: Invoice) {
@@ -87,42 +85,16 @@ export default function InvoicesPage() {
     }
   }
 
-  async function handleDelete(invoice_id: number) {
-    setDeleting(invoice_id);
+  async function handleCancel(inv: Invoice) {
+    setCancelling(inv.invoice_id);
     try {
-      await api.delete(`/invoices/${invoice_id}`);
-      setConfirmModal(null);
+      await api.post(`/invoices/${inv.invoice_id}/cancel`, {});
+      setCancelTarget(null);
       await load();
-    } catch {
-      alert("Failed to delete invoice.");
+    } catch (e: any) {
+      alert(e?.message || "Failed to cancel invoice.");
     } finally {
-      setDeleting(null);
-    }
-  }
-
-  async function handleRestore(invoice_id: number) {
-    setRestoring(invoice_id);
-    try {
-      await api.post(`/invoices/${invoice_id}/restore`, {});
-      setConfirmModal(null);
-      await load();
-    } catch {
-      alert("Failed to restore invoice.");
-    } finally {
-      setRestoring(null);
-    }
-  }
-
-  async function handlePermanentDelete(invoice_id: number) {
-    setPermDeleting(invoice_id);
-    try {
-      await api.delete(`/invoices/${invoice_id}/permanent`);
-      setConfirmModal(null);
-      await load();
-    } catch {
-      alert("Failed to permanently delete invoice.");
-    } finally {
-      setPermDeleting(null);
+      setCancelling(null);
     }
   }
 
@@ -192,16 +164,16 @@ export default function InvoicesPage() {
                   <th className="text-right px-4 py-3 font-semibold text-slate-600">Amount</th>
                   <th className="text-center px-4 py-3 font-semibold text-slate-600">Email Action</th>
                   <th className="text-center px-4 py-3 font-semibold text-slate-600">Open</th>
-                  <th className="text-center px-4 py-3 font-semibold text-slate-600">Delete</th>
+                  <th className="text-center px-4 py-3 font-semibold text-slate-600">Cancel</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {invoices.map((inv, idx) => {
-                  const isDeleted = !!inv.deleted_at;
+                  const isCancelled = !!inv.cancelled_at;
                   return (
                     <tr
                       key={inv.invoice_id}
-                      className={isDeleted ? "bg-red-50 opacity-70" : "hover:bg-slate-50 transition-colors"}
+                      className={isCancelled ? "bg-red-50/60 text-slate-500" : "hover:bg-slate-50 transition-colors"}
                     >
                       <td className="px-4 py-3 text-slate-500">
                         {(page - 1) * limit + idx + 1}
@@ -211,9 +183,9 @@ export default function InvoicesPage() {
                       </td>
                       <td className="px-4 py-3 font-medium text-slate-800">
                         {inv.invoice_no}
-                        {isDeleted && (
+                        {isCancelled && (
                           <span className="ml-2 text-[10px] font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded">
-                            DELETED
+                            CANCELLED
                           </span>
                         )}
                       </td>
@@ -234,7 +206,7 @@ export default function InvoicesPage() {
                         {fmtAmt(inv.amount)}
                       </td>
                       <td className="px-4 py-3 text-center whitespace-nowrap">
-                        {!isDeleted && (
+                        {!isCancelled && (
                           inv.is_email_sent ? (
                             <button
                               onClick={() => handleSendInvoiceEmail(inv)}
@@ -276,36 +248,15 @@ export default function InvoicesPage() {
                         </button>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        {!isDeleted ? (
+                        {isCancelled ? (
+                          <span className="text-xs text-slate-400">Cancelled</span>
+                        ) : (
                           <button
-                            onClick={() => setConfirmModal({ type: "soft", invoice: inv })}
+                            onClick={() => setCancelTarget(inv)}
                             className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 text-xs font-medium transition-colors"
                           >
-                            <Trash2 className="w-3.5 h-3.5" /> Delete
+                            <Ban className="w-3.5 h-3.5" /> Cancel
                           </button>
-                        ) : (
-                          <div className="flex items-center gap-2 justify-center">
-                            <button
-                              onClick={() => setConfirmModal({ type: "restore", invoice: inv })}
-                              disabled={restoring === inv.invoice_id || permDeleting === inv.invoice_id}
-                              className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-800 text-xs font-medium transition-colors disabled:opacity-50"
-                            >
-                              {restoring === inv.invoice_id
-                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                : <RotateCcw className="w-3.5 h-3.5" />}
-                              Restore
-                            </button>
-                            <button
-                              onClick={() => setConfirmModal({ type: "permanent", invoice: inv })}
-                              disabled={restoring === inv.invoice_id || permDeleting === inv.invoice_id}
-                              className="inline-flex items-center gap-1 text-xs font-medium text-red-400 hover:text-red-700 transition-colors disabled:opacity-50"
-                            >
-                              {permDeleting === inv.invoice_id
-                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                : <ShieldAlert className="w-3.5 h-3.5" />}
-                              Delete Forever
-                            </button>
-                          </div>
                         )}
                       </td>
                     </tr>
@@ -317,36 +268,15 @@ export default function InvoicesPage() {
         )}
       </div>
 
-      {/* Confirm modals */}
       <ConfirmModal
-        open={confirmModal?.type === "soft"}
-        title="Delete Invoice"
-        message={`Delete invoice "${confirmModal?.invoice.invoice_no}"? It will be marked as deleted and can be restored later.`}
-        confirmLabel="Delete"
+        open={!!cancelTarget}
+        title="Cancel Invoice"
+        message={`Cancel invoice "${cancelTarget?.invoice_no}"? It stays on record marked as cancelled and cannot be edited, restored or emailed afterwards.`}
+        confirmLabel="Cancel Invoice"
         variant="danger"
-        loading={deleting === confirmModal?.invoice.invoice_id}
-        onConfirm={() => confirmModal && handleDelete(confirmModal.invoice.invoice_id)}
-        onClose={() => { if (!deleting) setConfirmModal(null); }}
-      />
-      <ConfirmModal
-        open={confirmModal?.type === "restore"}
-        title="Restore Invoice"
-        message={`Restore invoice "${confirmModal?.invoice.invoice_no}"? It will become active again.`}
-        confirmLabel="Restore"
-        variant="safe"
-        loading={restoring === confirmModal?.invoice.invoice_id}
-        onConfirm={() => confirmModal && handleRestore(confirmModal.invoice.invoice_id)}
-        onClose={() => { if (!restoring) setConfirmModal(null); }}
-      />
-      <ConfirmModal
-        open={confirmModal?.type === "permanent"}
-        title="Permanently Delete Invoice"
-        message={`Permanently delete invoice "${confirmModal?.invoice.invoice_no}"? This cannot be undone.`}
-        confirmLabel="Delete Forever"
-        variant="permanent"
-        loading={permDeleting === confirmModal?.invoice.invoice_id}
-        onConfirm={() => confirmModal && handlePermanentDelete(confirmModal.invoice.invoice_id)}
-        onClose={() => { if (!permDeleting) setConfirmModal(null); }}
+        loading={cancelling === cancelTarget?.invoice_id}
+        onConfirm={() => cancelTarget && handleCancel(cancelTarget)}
+        onClose={() => { if (!cancelling) setCancelTarget(null); }}
       />
 
       {/* Pagination */}

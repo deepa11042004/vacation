@@ -35,24 +35,11 @@ export class InvoiceService {
     await this.invoiceRepository.update(invoice_id, { is_email_sent: true });
   }
 
-  async deleteInvoice(invoice_id: number) {
+  /** Invoices are never edited or deleted; cancelling is the only way to void one. */
+  async cancelInvoice(invoice_id: number, cancelled_by: number | null) {
     const invoice = await this.invoiceRepository.findById(invoice_id);
     if (!invoice) throw new AppError('Invoice not found', 404);
-    if (invoice.deleted_at) throw new AppError('Invoice already deleted', 400);
-    await this.invoiceRepository.softDelete(invoice_id);
-  }
-
-  async restoreInvoice(invoice_id: number) {
-    const invoice = await this.invoiceRepository.findById(invoice_id);
-    if (!invoice) throw new AppError('Invoice not found', 404);
-    if (!invoice.deleted_at) throw new AppError('Invoice is not deleted', 400);
-    await this.invoiceRepository.restore(invoice_id);
-  }
-
-  async permanentDeleteInvoice(invoice_id: number) {
-    const invoice = await this.invoiceRepository.findById(invoice_id);
-    if (!invoice) throw new AppError('Invoice not found', 404);
-    if (!invoice.deleted_at) throw new AppError('Invoice must be soft-deleted before permanent deletion', 400);
-    await this.invoiceRepository.permanentDelete(invoice_id);
+    if (invoice.cancelled_at) throw new AppError('Invoice is already cancelled', 400);
+    await this.invoiceRepository.update(invoice_id, { cancelled_at: new Date(), cancelled_by });
   }
 }

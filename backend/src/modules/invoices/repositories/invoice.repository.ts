@@ -44,15 +44,4 @@ export class InvoiceRepository {
     return affected;
   }
 
-  async softDelete(invoice_id: number): Promise<number> {
-    return await Invoice.destroy({ where: { invoice_id } });
-  }
-
-  async restore(invoice_id: number): Promise<void> {
-    await Invoice.restore({ where: { invoice_id } });
-  }
-
-  async permanentDelete(invoice_id: number): Promise<void> {
-    await Invoice.destroy({ where: { invoice_id }, force: true });
-  }
 }

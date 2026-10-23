@@ -76,6 +76,12 @@ export class Invoice extends Model<IInvoice, Partial<IInvoice>> implements IInvo
   @AllowNull(false) @Default(false) @Column(DataType.BOOLEAN)
   is_email_sent!: boolean;
 
+  @AllowNull(true) @Default(null) @Column(DataType.DATE)
+  cancelled_at!: Date | null;
+
+  @AllowNull(true) @Default(null) @Column(DataType.INTEGER)
+  cancelled_by!: number | null;
+
   @CreatedAt @Column(DataType.DATE) created_at!: Date;
   @UpdatedAt @Column(DataType.DATE) updated_at!: Date;
   @DeletedAt @Column(DataType.DATE) deleted_at!: Date | null;

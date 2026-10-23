@@ -26,7 +26,7 @@ interface StoredInvoice {
   amount: string;
   description: string;
   issue_date: string;
-  deleted_at: string | null;
+  cancelled_at?: string | null;
 }
 
 const CO_DEFAULTS: CompanySettings = {
@@ -137,16 +137,16 @@ export default function InvoiceViewPage() {
           <h1 className="text-xl font-bold text-slate-800">
             {isTax ? "Tax Invoice" : "Invoice"} — {invoice.invoice_no}
           </h1>
-          {invoice.deleted_at && (
+          {invoice.cancelled_at && (
             <span className="text-xs font-semibold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
-              DELETED
+              CANCELLED
             </span>
           )}
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleResend}
-            disabled={resending}
+            disabled={resending || !!invoice.cancelled_at}
             className="flex items-center gap-2 bg-blue-50 text-blue-600 text-sm font-medium px-5 py-2 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
           >
             {resending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}

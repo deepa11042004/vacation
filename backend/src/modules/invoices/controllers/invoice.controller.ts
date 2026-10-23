@@ -59,20 +59,6 @@ export class InvoiceController {
     }
   }
 
-  static async delete(req: NextRequest, idStr: string) {
-    try {
-      await connectDB();
-      const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN]);
-
-      const invoice_id = InvoiceController.parseId(idStr);
-      await invoiceService.deleteInvoice(invoice_id);
-      return NextResponse.json(ResponseUtil.success('Invoice deleted', null));
-    } catch (error) {
-      return errorHandler(error);
-    }
-  }
-
   static async resendEmail(req: NextRequest, idStr: string) {
     try {
       await connectDB();
@@ -86,6 +72,7 @@ export class InvoiceController {
         throw new AppError('Invoice has no email associated with it', 400);
       }
       
+      if (invoice.cancelled_at) throw new AppError('A cancelled invoice cannot be emailed', 400);
       await sendInvoiceEmail(invoice.email, invoice as any);
       await invoiceService.markEmailSent(invoice_id);
       return NextResponse.json(ResponseUtil.success('Invoice email sent successfully', null));
@@ -94,29 +81,15 @@ export class InvoiceController {
     }
   }
 
-  static async restore(req: NextRequest, idStr: string) {
+  static async cancel(req: NextRequest, idStr: string) {
     try {
       await connectDB();
       const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN]);
+      requireRoles(currentUser, [UserRole.ADMIN, UserRole.MANAGER]);
 
       const invoice_id = InvoiceController.parseId(idStr);
-      await invoiceService.restoreInvoice(invoice_id);
-      return NextResponse.json(ResponseUtil.success('Invoice restored', null));
-    } catch (error) {
-      return errorHandler(error);
-    }
-  }
-
-  static async permanentDelete(req: NextRequest, idStr: string) {
-    try {
-      await connectDB();
-      const currentUser = await authenticateRequest(req);
-      requireRoles(currentUser, [UserRole.ADMIN]);
-
-      const invoice_id = InvoiceController.parseId(idStr);
-      await invoiceService.permanentDeleteInvoice(invoice_id);
-      return NextResponse.json(ResponseUtil.success('Invoice permanently deleted', null));
+      await invoiceService.cancelInvoice(invoice_id, currentUser.user_id ?? null);
+      return NextResponse.json(ResponseUtil.success('Invoice cancelled', null));
     } catch (error) {
       return errorHandler(error);
     }

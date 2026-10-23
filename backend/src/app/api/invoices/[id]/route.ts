@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
  * /api/invoices/{id}:
  *   get:
  *     summary: Get invoice by ID
+ *     description: Invoices are immutable. They cannot be edited or deleted, only cancelled via POST /api/invoices/{id}/cancel.
  *     tags: [Invoices]
  *     security:
  *       - BearerAuth: []
@@ -21,28 +22,8 @@ export const dynamic = 'force-dynamic';
  *         description: Invoice retrieved successfully
  *       404:
  *         description: Invoice not found
- *   delete:
- *     summary: Soft delete an invoice
- *     tags: [Invoices]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: integer }
- *     responses:
- *       200:
- *         description: Invoice soft deleted successfully
- *       404:
- *         description: Invoice not found
  */
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
   return InvoiceController.getById(request, id);
-}
-
-export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const { id } = await props.params;
-  return InvoiceController.delete(request, id);
 }

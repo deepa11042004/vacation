@@ -20,6 +20,8 @@ export interface IInvoice {
   description: string;
   issue_date: string;
   is_email_sent?: boolean;
+  cancelled_at?: Date | null;
+  cancelled_by?: number | null;
   created_by: number | null;
   created_at: Date;
   updated_at: Date;
