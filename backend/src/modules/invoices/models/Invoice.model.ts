@@ -46,6 +46,9 @@ export class Invoice extends Model<IInvoice, Partial<IInvoice>> implements IInvo
   @AllowNull(true) @Default(null) @Column(DataType.DECIMAL(5, 2))
   gst_rate!: number | string | null;
 
+  @AllowNull(true) @Default(null) @Column(DataType.STRING(40))
+  payment_ref!: string | null;
+
   @AllowNull(false) @Default('CASH') @Column(DataType.STRING(30))
   payment_mode!: string;
 

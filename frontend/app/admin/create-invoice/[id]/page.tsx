@@ -192,8 +192,9 @@ function FormStep({
 }
 
 function PreviewStep({
-  form, isTax, clientId, co, onBack,
+  form, isTax, clientId, co, paymentRef, onBack,
 }: {
+  paymentRef?: string;
   form: Record<string, string>;
   isTax: boolean;
   clientId: string;
@@ -213,6 +214,7 @@ function PreviewStep({
         email,
         invoice_type: isTax ? "tax" : "invoice",
         gst_rate: isTax && form.gst_rate ? Number(form.gst_rate) : undefined,
+        payment_ref: paymentRef || undefined,
       });
       const invoice_id = res.data?.invoice_id;
       if (invoice_id) {
@@ -492,6 +494,7 @@ function InvoicePageInner() {
           isTax={isTax}
           clientId={id}
           co={co}
+          paymentRef={searchParams.get("payment_ref") ?? undefined}
           onBack={() => setStep("form")}
         />
       )}

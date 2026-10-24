@@ -114,6 +114,16 @@ interface Booking {
   created_at: string;
 }
 
+interface ClientInvoice {
+  invoice_id: number;
+  invoice_no: string;
+  invoice_type: "invoice" | "tax";
+  issue_date: string;
+  amount: string;
+  payment_ref?: string | null;
+  cancelled_at?: string | null;
+}
+
 interface Membership {
   membership_id: number;
   membership_number: string;
@@ -321,6 +331,8 @@ export default function ClientDetailPage() {
   const [paymentRecords,      setPaymentRecords]      = useState<PaymentRecord[]>([]);
   const [paymentsLoading,     setPaymentsLoading]     = useState(false);
   const [paymentsFetched,     setPaymentsFetched]     = useState(false);
+  const [clientInvoices,      setClientInvoices]      = useState<ClientInvoice[]>([]);
+  const [invoicesLoading,     setInvoicesLoading]     = useState(false);
   const [showPaymentModal,    setShowPaymentModal]    = useState(false);
   const [paymentForm,         setPaymentForm]         = useState(emptyPaymentForm);
   const [paymentSaving,       setPaymentSaving]       = useState(false);
@@ -620,6 +632,32 @@ Email: ${company.email}`;
       .then(res => { setPaymentRecords(res?.data?.payments ?? []); setPaymentsFetched(true); setPaymentsLoading(false); })
       .catch(() => { setPaymentRecords([]); setPaymentsFetched(true); setPaymentsLoading(false); });
   }
+
+  // Active invoice already issued for a payment (cancelled ones free the payment up again).
+  // Older invoices without a payment link are matched on amount + date.
+  function invoiceForPayment(ref: string, amount: number | string, date?: string | null): ClientInvoice | undefined {
+    const day = date ? String(date).slice(0, 10) : "";
+    return clientInvoices.find(inv =>
+      !inv.cancelled_at && (
+        inv.payment_ref === ref ||
+        (!inv.payment_ref && Number(inv.amount) === Number(amount) && String(inv.issue_date).slice(0, 10) === day)
+      ),
+    );
+  }
+
+  // All invoices issued to this client, shown under the payment chart
+  function loadClientInvoices() {
+    setInvoicesLoading(true);
+    api.get<{ data: { invoices: ClientInvoice[] } }>(`/invoices?client_id=${id}&limit=100`)
+      .then(res => setClientInvoices(res?.data?.invoices ?? []))
+      .catch(() => setClientInvoices([]))
+      .finally(() => setInvoicesLoading(false));
+  }
+
+  useEffect(() => {
+    if (tab === "payment-chart") loadClientInvoices();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, id]);
 
   useEffect(() => {
     if (tab === "payment-chart" && !paymentsFetched) loadPayments();
@@ -1519,7 +1557,9 @@ Email: ${company.email}`;
                           bank:         p.bank_name ?? "",
                           transaction_id: p.transaction_ref ?? "",
                           description:  p.remarks || paymentTypeLabel(p.payment_type),
+                          payment_ref:  `payment:${p.payment_id}`,
                         });
+                        const issued = invoiceForPayment(`payment:${p.payment_id}`, p.amount, p.payment_date as string);
                         return (
                           <tr key={p.payment_id} className="hover:bg-slate-50/60 transition-colors">
                             <td className="px-5 py-4 text-teal-600 font-medium">
@@ -1531,20 +1571,30 @@ Email: ${company.email}`;
                             </td>
                             <td className="px-5 py-4 text-slate-800 font-medium">{fmtAmcAmt(p.amount)}</td>
                             <td className="px-5 py-4">
-                              <div className="flex items-center gap-2">
+                              {issued ? (
                                 <a
-                                  href={`/admin/create-invoice/${id}?${invoiceParams.toString()}`}
-                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                                  href={`/admin/invoices/${issued.invoice_id}`}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors whitespace-nowrap"
+                                  title="An invoice has already been issued for this payment. Cancel it to issue a new one."
                                 >
-                                  <FileText className="w-3.5 h-3.5" /> Invoice
+                                  <FileText className="w-3.5 h-3.5" /> Invoiced: {issued.invoice_no}
                                 </a>
-                                <a
-                                  href={`/admin/create-invoice/${id}?${invoiceParams.toString()}&type=tax`}
-                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap"
-                                >
-                                  <FileText className="w-3.5 h-3.5" /> Tax Invoice
-                                </a>
-                              </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <a
+                                    href={`/admin/create-invoice/${id}?${invoiceParams.toString()}`}
+                                    className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                                  >
+                                    <FileText className="w-3.5 h-3.5" /> Invoice
+                                  </a>
+                                  <a
+                                    href={`/admin/create-invoice/${id}?${invoiceParams.toString()}&type=tax`}
+                                    className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap"
+                                  >
+                                    <FileText className="w-3.5 h-3.5" /> Tax Invoice
+                                  </a>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );
@@ -1559,7 +1609,9 @@ Email: ${company.email}`;
                           transaction_id: "",
                           bank:           "",
                           description:    label,
+                          payment_ref:    `amc:${p.amc_payment_id}`,
                         });
+                        const amcIssued = invoiceForPayment(`amc:${p.amc_payment_id}`, (p.amount ?? membership.amc) || 0, p.payment_date);
                         return (
                           <tr key={`amc-${p.amc_payment_id}`} className="hover:bg-slate-50/60 transition-colors">
                             <td className="px-5 py-4 text-teal-600 font-medium">{label}</td>
@@ -1569,20 +1621,30 @@ Email: ${company.email}`;
                             </td>
                             <td className="px-5 py-4 text-slate-800 font-medium">{fmtAmcAmt((p.amount ?? membership.amc) || 0)}</td>
                             <td className="px-5 py-4">
-                              <div className="flex items-center gap-2">
+                              {amcIssued ? (
                                 <a
-                                  href={`/admin/create-invoice/${id}?${amcInvoiceParams.toString()}`}
-                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                                  href={`/admin/invoices/${amcIssued.invoice_id}`}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors whitespace-nowrap"
+                                  title="An invoice has already been issued for this payment. Cancel it to issue a new one."
                                 >
-                                  <FileText className="w-3.5 h-3.5" /> Invoice
+                                  <FileText className="w-3.5 h-3.5" /> Invoiced: {amcIssued.invoice_no}
                                 </a>
-                                <a
-                                  href={`/admin/create-invoice/${id}?${amcInvoiceParams.toString()}&type=tax`}
-                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap"
-                                >
-                                  <FileText className="w-3.5 h-3.5" /> Tax Invoice
-                                </a>
-                              </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <a
+                                    href={`/admin/create-invoice/${id}?${amcInvoiceParams.toString()}`}
+                                    className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                                  >
+                                    <FileText className="w-3.5 h-3.5" /> Invoice
+                                  </a>
+                                  <a
+                                    href={`/admin/create-invoice/${id}?${amcInvoiceParams.toString()}&type=tax`}
+                                    className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors whitespace-nowrap"
+                                  >
+                                    <FileText className="w-3.5 h-3.5" /> Tax Invoice
+                                  </a>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );
@@ -1602,6 +1664,66 @@ Email: ${company.email}`;
                   </table>
                 </div>
               )}
+
+              {/* All invoices of this client */}
+              <div className="pt-6 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-slate-800">
+                    Invoices
+                    {clientInvoices.length > 0 && (
+                      <span className="ml-2 text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{clientInvoices.length}</span>
+                    )}
+                  </h3>
+                </div>
+                {invoicesLoading ? (
+                  <div className="flex items-center justify-center h-20"><Loader2 className="w-5 h-5 animate-spin text-blue-600" /></div>
+                ) : clientInvoices.length === 0 ? (
+                  <p className="text-sm text-slate-400 bg-slate-50 border border-slate-200 rounded-xl px-5 py-6 text-center">No invoices issued to this client yet.</p>
+                ) : (
+                  <div className="rounded-xl border border-slate-200 overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="text-left font-semibold text-slate-600 px-5 py-3">Invoice No</th>
+                          <th className="text-left font-semibold text-slate-600 px-5 py-3">Type</th>
+                          <th className="text-left font-semibold text-slate-600 px-5 py-3">Date</th>
+                          <th className="text-right font-semibold text-slate-600 px-5 py-3">Amount</th>
+                          <th className="text-center font-semibold text-slate-600 px-5 py-3">Status</th>
+                          <th className="text-center font-semibold text-slate-600 px-5 py-3">Open</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {clientInvoices.map(inv => (
+                          <tr key={inv.invoice_id} className={inv.cancelled_at ? "bg-red-50/60 text-slate-500" : "hover:bg-slate-50/60 transition-colors"}>
+                            <td className="px-5 py-3 font-medium text-slate-800">{inv.invoice_no}</td>
+                            <td className="px-5 py-3">
+                              {inv.invoice_type === "tax" ? (
+                                <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">TAX</span>
+                              ) : (
+                                <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">INV</span>
+                              )}
+                            </td>
+                            <td className="px-5 py-3 text-slate-600">{fmtPayDate(inv.issue_date)}</td>
+                            <td className="px-5 py-3 text-right font-medium text-slate-800">{fmtAmcAmt(Number(inv.amount))}</td>
+                            <td className="px-5 py-3 text-center">
+                              {inv.cancelled_at ? (
+                                <span className="text-[10px] font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded">CANCELLED</span>
+                              ) : (
+                                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">ISSUED</span>
+                              )}
+                            </td>
+                            <td className="px-5 py-3 text-center">
+                              <a href={`/admin/invoices/${inv.invoice_id}`} className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-800">
+                                <FileText className="w-3.5 h-3.5" /> Open
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           {tab === "call-recordings" && (

@@ -33,6 +33,8 @@ const InvoiceSchema = z.object({
   invoice_type:   z.enum(['invoice', 'tax']).default('invoice'),
   client_gst:     z.string().optional(),
   gst_rate:       z.number().optional(),
+  // Payment this invoice is for ("payment:<id>" / "amc:<id>"); only one active invoice is allowed per payment.
+  payment_ref:    z.string().max(40).optional(),
   send_email:     z.boolean().optional().default(true),
 });
 
@@ -99,6 +101,27 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     const body = await request.json();
     const data = InvoiceSchema.parse(body);
 
+    // One active invoice per payment: reject a second one unless the first was cancelled.
+    // Invoices issued before payments were linked are matched on client + amount + payment date.
+    if (data.payment_ref) {
+      const { Op } = await import('sequelize');
+      const { Invoice: InvoiceModel } = await import('@/modules/invoices/models/Invoice.model');
+      const existing = await InvoiceModel.findOne({
+        where: {
+          client_id,
+          cancelled_at: null,
+          [Op.or]: [
+            { payment_ref: data.payment_ref },
+            { payment_ref: null, amount: data.amount, issue_date: data.issue_date },
+          ],
+        },
+        paranoid: false,
+      });
+      if (existing) {
+        throw new AppError(`An invoice (${existing.invoice_no}) has already been issued for this payment. Cancel it first to issue a new one.`, 409);
+      }
+    }
+
     // Number comes from the admin-configured invoice series; GST rate from the configured slots.
     const invoice_no = await nextInvoiceNumber();
     const gst_rate = data.invoice_type === 'tax' ? resolveGstRate(data.gst_rate) : null;
@@ -115,7 +138,9 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     }
 
     const invoice = await invoiceService.createInvoice({
-      invoice_no:     data.invoice_no,
+      invoice_no,
+      gst_rate,
+      payment_ref:    data.payment_ref ?? null,
       invoice_type:   data.invoice_type,
       client_id,
       client_name:    data.client_name,
