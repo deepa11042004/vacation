@@ -10,7 +10,7 @@ export interface StatItem {
 const STATS: StatItem[] = [
   { value: "140+", label: "Countries & Destinations" },
   { value: "50+", label: "Unique Experiences" },
-  { value: "15K+", label: "Happy Guests" },
+  { value: "5K+", label: "Happy Guests" },
   { value: "4.9", label: "Average Rating" },
 ];
 
