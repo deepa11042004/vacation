@@ -14,6 +14,24 @@ const repo = new BookingRepository();
 /** Booking ID shown to staff and on the PDF: generated from the system id, e.g. BK-000012. */
 export const formatBookingId = (booking_id: number) => `BK-${String(booking_id).padStart(6, '0')}`;
 
+const TERMS_INTRO = 'Complimentary stay for a child below 6 years (without extra bed).';
+
+const RESERVATION_POLICIES = [
+  'Reservation can be done via email but confirmation will be provided only after full payment.',
+  'Confirmation of rooms will be subject to availability at the time of payment.',
+  'Check-in time: 14:00 & Check-out time: 11:00.',
+  "The booking can't be cancelled/altered once done.",
+  'No refund will be provided if the cancellation is not made at least 15 days prior to check-in.',
+];
+
+const TERMS_NOTES = [
+  'If the booking is cancelled due to FORCE MAJOR (Occurrence of any circumstance beyond the control of either party such as act of GOD, War, Government regulation, disasters, civil disorder to extent that such circumstance) make it illegal or impossible to provide or use the resort facilities, guest can re-book in the future (With-in 06 Month) as per availability in the resort.',
+  'No refund or claim for "No Show" will be entertained.',
+  "No refund will be made and no claim for 'NO SHOW' for stay and un-availed facilities.",
+];
+
+const ROMAN = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii'];
+
 const BLACK = '#000000';
 const MUTED = '#555555';
 const LIGHT = '#f4f4f4';
@@ -94,7 +112,17 @@ function buildPdf(booking: Booking, clientName: string, membershipNo: string): P
     idBox(ML + boxW + 16, 'Hotel Confirmation No', booking.confirmation_number?.trim() || 'Pending');
     y += 72;
 
+    const PAGE_BOTTOM = 790;
+    // Starts a new page when the next block would run off the bottom
+    const ensureSpace = (needed: number) => {
+      if (y + needed > PAGE_BOTTOM) {
+        doc.addPage({ size: 'A4', margin: 0 });
+        y = 40;
+      }
+    };
+
     const section = (title: string, rows: [string, string][]) => {
+      ensureSpace(60);
       doc.fillColor(BLACK).font('Helvetica-Bold').fontSize(12).text(title, ML, y);
       y += 18;
       doc.moveTo(ML, y).lineTo(ML + CW, y).strokeColor(BORDER).lineWidth(0.5).stroke();
@@ -131,8 +159,39 @@ function buildPdf(booking: Booking, clientName: string, membershipNo: string): P
 
     if (booking.remark) section('Remarks', [['Remark', booking.remark]]);
 
-    doc.fillColor(MUTED).font('Helvetica').fontSize(8)
-      .text(`Please carry a valid photo ID and quote the hotel confirmation number at check-in. For any assistance contact ${co.phone} or ${co.email}.`, ML, 790, { width: CW, align: 'center' });
+    // ── Terms and conditions ──────────────────────────────
+    const TW = CW - 16;
+    const paragraph = (text: string, x: number, width: number, size = 8.5, bold = false) => {
+      doc.font(bold ? 'Helvetica-Bold' : 'Helvetica').fontSize(size);
+      const h = doc.heightOfString(text, { width });
+      ensureSpace(h + 4);
+      doc.fillColor(BLACK).font(bold ? 'Helvetica-Bold' : 'Helvetica').fontSize(size).text(text, x, y, { width });
+      y += h + 4;
+    };
+
+    ensureSpace(80);
+    doc.fillColor(BLACK).font('Helvetica-Bold').fontSize(12).text('Terms and Conditions', ML, y);
+    y += 18;
+    doc.moveTo(ML, y).lineTo(ML + CW, y).strokeColor(BORDER).lineWidth(0.5).stroke();
+    y += 8;
+
+    paragraph(`- ${TERMS_INTRO}`, ML, CW);
+    y += 4;
+    paragraph('Reservation & Cancellation Policies:', ML, CW, 9, true);
+    RESERVATION_POLICIES.forEach((text, i) => paragraph(`${ROMAN[i]}.  ${text}`, ML + 12, TW));
+    y += 4;
+    paragraph('Notes:', ML, CW, 9, true);
+    TERMS_NOTES.forEach(text => paragraph(`-  ${text}`, ML + 12, TW));
+    y += 6;
+    paragraph('Please let us know if you require anything else.', ML, CW);
+    paragraph(`Thank you for choosing ${co.name}.`, ML, CW, 9, true);
+    y += 6;
+
+    doc.font('Helvetica').fontSize(8);
+    const note = `Please carry a valid photo ID and quote the hotel confirmation number at check-in. For any assistance contact ${co.phone} or ${co.email}.`;
+    const noteH = doc.heightOfString(note, { width: CW });
+    ensureSpace(noteH + 4);
+    doc.fillColor(MUTED).font('Helvetica').fontSize(8).text(note, ML, y, { width: CW, align: 'center' });
 
     doc.end();
   });

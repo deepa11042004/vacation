@@ -25,6 +25,7 @@ import {
   MessageSquare,
   Percent,
   IdCard,
+  ClipboardList,
 } from "lucide-react";
 import { clearAuth, getStoredUser } from "@/lib/api";
 import { hasAccess } from "@/lib/permissions";
@@ -41,6 +42,7 @@ const sections = [
     items: [
 
       { href: "/admin/clients",                   label: "All Clients", icon: Users,          subtitle: null,                    section: "clients" },
+      { href: "/admin/bookings",                  label: "Booking Sheet",      icon: ClipboardList,   subtitle: "All client bookings",    section: "bookings" },
       { href: "/admin/staff",                     label: "Staff",              icon: UserCog,         subtitle: null,                    section: "staff" },
       { href: "/admin/travel-queries",             label: "Travel Queries",     icon: Plane,           subtitle: null,                    section: "travel_queries" },
       { href: "/admin/enquiries",                  label: "Enquiries",          icon: MessageSquare,   subtitle: null,                    section: "enquiries" },
