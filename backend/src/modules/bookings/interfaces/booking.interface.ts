@@ -35,6 +35,7 @@ export interface IBooking {
   amount_paid_by_client: number;
   note?: string | null;
   status: BookingStatus;
+  email_sent_at?: Date | null;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date | null;

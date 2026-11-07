@@ -111,8 +111,11 @@ interface Booking {
   amount_paid_by_client: number;
   note?: string | null;
   status: string;
+  email_sent_at?: string | null;
   created_at: string;
 }
+
+const formatBookingId = (id: number) => `BK-${String(id).padStart(6, "0")}`;
 
 interface ClientInvoice {
   invoice_id: number;
@@ -308,6 +311,13 @@ export default function ClientDetailPage() {
   const [selectedOfferIds, setSelectedOfferIds] = useState<number[]>([]);
   const [bookingSaving,    setBookingSaving]    = useState(false);
   const [bookingError,     setBookingError]     = useState("");
+  // Booking details dialog (opened by clicking a booking row in the holiday chart)
+  const [openBookingId,    setOpenBookingId]    = useState<number | null>(null);
+  const [bookingMode,      setBookingMode]      = useState<"view" | "edit">("view");
+  const [bookingEdit,      setBookingEdit]      = useState<Record<string, string>>({});
+  const [bookingBusy,      setBookingBusy]      = useState<"save" | "email" | "pdf" | null>(null);
+  const [bookingMsg,       setBookingMsg]       = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const openBooking = bookings.find(b => b.booking_id === openBookingId) ?? null;
   const [cancellingId,     setCancellingId]     = useState<number | null>(null);
   const [selectedYearIdx,  setSelectedYearIdx]  = useState<number | null>(null);
 
@@ -472,6 +482,98 @@ export default function ClientDetailPage() {
     } finally {
       setPhotoBusy(false);
     }
+  }
+
+  function startBookingEdit(b: Booking) {
+    setBookingEdit({
+      hotel_name: b.hotel_name ?? "",
+      hotel_address: b.hotel_address ?? "",
+      hotel_contact: b.hotel_contact ?? "",
+      confirmation_number: b.confirmation_number ?? "",
+      room_category: b.room_category ?? "",
+      booking_type: b.booking_type ?? "",
+      no_of_rooms: String(b.no_of_rooms ?? 1),
+      no_of_adults: String(b.no_of_adults ?? 1),
+      children: String(b.children ?? 0),
+      assist_by: b.assist_by ?? "",
+      contact_number: b.contact_number ?? "",
+      booking_amount: b.booking_amount != null ? String(b.booking_amount) : "",
+      amount_paid_by_client: String(b.amount_paid_by_client ?? 0),
+      remark: b.remark ?? "",
+      note: b.note ?? "",
+    });
+    setBookingMsg(null);
+    setBookingMode("edit");
+  }
+
+  function openBookingDialog(b: Booking) {
+    setOpenBookingId(b.booking_id);
+    setBookingMode("view");
+    setBookingMsg(null);
+  }
+
+  async function handleSaveBooking() {
+    if (!openBooking) return;
+    if (!bookingEdit.hotel_name?.trim()) { setBookingMsg({ type: "error", text: "Hotel name is required." }); return; }
+    setBookingBusy("save"); setBookingMsg(null);
+    try {
+      await api.put(`/clients/${id}/bookings/${openBooking.booking_id}`, {
+        hotel_name: bookingEdit.hotel_name.trim(),
+        hotel_address: bookingEdit.hotel_address.trim() || null,
+        hotel_contact: bookingEdit.hotel_contact.trim() || null,
+        confirmation_number: bookingEdit.confirmation_number.trim() || null,
+        room_category: bookingEdit.room_category.trim() || null,
+        booking_type: bookingEdit.booking_type.trim() || null,
+        no_of_rooms: Math.max(1, Number(bookingEdit.no_of_rooms) || 1),
+        no_of_adults: Math.max(1, Number(bookingEdit.no_of_adults) || 1),
+        children: Math.max(0, Number(bookingEdit.children) || 0),
+        assist_by: bookingEdit.assist_by.trim() || null,
+        contact_number: bookingEdit.contact_number.trim() || null,
+        booking_amount: bookingEdit.booking_amount ? Number(bookingEdit.booking_amount) : null,
+        amount_paid_by_client: Number(bookingEdit.amount_paid_by_client) || 0,
+        remark: bookingEdit.remark.trim() || null,
+        note: bookingEdit.note.trim() || null,
+      });
+      setBookingMode("view");
+      setBookingMsg({ type: "success", text: "Booking updated." });
+      loadBookings();
+    } catch (err) {
+      setBookingMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to save booking." });
+    } finally { setBookingBusy(null); }
+  }
+
+  async function handleEmailBooking() {
+    if (!openBooking) return;
+    setBookingBusy("email"); setBookingMsg(null);
+    try {
+      const res = await api.post<{ message?: string }>(`/clients/${id}/bookings/${openBooking.booking_id}/email`, {});
+      setBookingMsg({ type: "success", text: res?.message ?? "Booking emailed to the client." });
+      loadBookings();
+    } catch (err) {
+      setBookingMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to send email." });
+    } finally { setBookingBusy(null); }
+  }
+
+  async function handleDownloadBookingPdf() {
+    if (!openBooking) return;
+    setBookingBusy("pdf"); setBookingMsg(null);
+    try {
+      const res = await fetch(`/api/clients/${id}/bookings/${openBooking.booking_id}/pdf`, {
+        headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => null);
+        throw new Error(j?.message ?? "Could not generate the PDF.");
+      }
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Booking-${formatBookingId(openBooking.booking_id)}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setBookingMsg({ type: "error", text: err instanceof Error ? err.message : "PDF download failed." });
+    } finally { setBookingBusy(null); }
   }
 
   async function openWelcomeMail(kind: 1 | 2) {
@@ -1277,7 +1379,7 @@ Email: ${company.email}`;
                               <td className="px-4 py-3.5"><YearBadge status={r.status} /></td>
                             </tr>
                             {yearBookings.map(b => (
-                              <tr key={b.booking_id} className={`border-b border-slate-100 border-l-4 transition-colors ${
+                              <tr key={b.booking_id} onClick={() => openBookingDialog(b)} title="Click to view or edit this booking" className={`cursor-pointer border-b border-slate-100 border-l-4 transition-colors ${
                                 b.status === "CANCELLED" ? "border-l-red-200 bg-slate-50/50 opacity-50" :
                                 b.status === "CONFIRMED" ? "border-l-orange-500 bg-orange-100 hover:bg-orange-200" :
                                 "border-l-orange-300 bg-orange-50/20 hover:bg-orange-50/40"
@@ -1842,6 +1944,140 @@ Email: ${company.email}`;
       </div>
 
       {/* Booking Modal */}
+      {/* ── Booking details (view / edit / email / PDF) ───────────── */}
+      <Modal
+        open={!!openBooking}
+        onClose={() => { if (!bookingBusy) setOpenBookingId(null); }}
+        title="Booking Details"
+        size="lg"
+      >
+        {openBooking && (() => {
+          const b = openBooking;
+          const field = (label: string, value?: string | number | null) => (
+            <div>
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">{label}</p>
+              <p className="text-sm text-slate-800 mt-0.5 break-words">{value === null || value === undefined || value === "" ? "—" : value}</p>
+            </div>
+          );
+          const editField = (label: string, key: string, type: "text" | "number" = "text", wide = false) => (
+            <div className={wide ? "col-span-2" : ""}>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
+              <input type={type} min={type === "number" ? 0 : undefined} className={inp} value={bookingEdit[key] ?? ""}
+                onChange={e => setBookingEdit(f => ({ ...f, [key]: e.target.value }))} />
+            </div>
+          );
+          const editing = bookingMode === "edit";
+          return (
+            <div className="space-y-4 max-h-[72vh] overflow-y-auto pr-1">
+              {/* IDs */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3">
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Booking ID <span className="normal-case font-normal">(auto-generated)</span></p>
+                  <p className="font-mono text-lg font-bold text-slate-800 mt-0.5">{formatBookingId(b.booking_id)}</p>
+                </div>
+                <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
+                  <p className="text-[11px] font-semibold text-amber-700 uppercase tracking-wide">Hotel Confirmation No</p>
+                  {editing ? (
+                    <input className={`${inp} mt-1 font-mono`} placeholder="Enter the confirmation no. given by the hotel"
+                      value={bookingEdit.confirmation_number ?? ""}
+                      onChange={e => setBookingEdit(f => ({ ...f, confirmation_number: e.target.value }))} />
+                  ) : (
+                    <p className="font-mono text-lg font-bold text-slate-800 mt-0.5">{b.confirmation_number || <span className="text-sm font-normal text-amber-600">Not entered yet</span>}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-wrap items-center gap-2 border-y border-slate-100 py-3">
+                <button onClick={() => { setBookingMode("view"); setBookingMsg(null); }} disabled={!!bookingBusy}
+                  className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${!editing ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-300 hover:bg-slate-50"}`}>
+                  <FileText className="w-3.5 h-3.5" /> View
+                </button>
+                <button onClick={() => startBookingEdit(b)} disabled={!!bookingBusy || b.status === "CANCELLED"}
+                  className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors disabled:opacity-40 ${editing ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-600 border-slate-300 hover:bg-slate-50"}`}>
+                  <Pencil className="w-3.5 h-3.5" /> Edit
+                </button>
+                <div className="flex-1" />
+                <button onClick={handleEmailBooking} disabled={!!bookingBusy || editing || b.status === "CANCELLED"}
+                  title={editing ? "Save your changes first" : "Email the booking confirmation PDF to the client"}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors disabled:opacity-40">
+                  {bookingBusy === "email" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5" />}
+                  {b.email_sent_at ? "Resend Email" : "Send Email"}
+                </button>
+                <button onClick={handleDownloadBookingPdf} disabled={!!bookingBusy || editing}
+                  title={editing ? "Save your changes first" : "Download the booking confirmation PDF"}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-40">
+                  {bookingBusy === "pdf" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                  Download PDF
+                </button>
+              </div>
+
+              {b.email_sent_at ? (
+                <p className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Email sent {new Date(b.email_sent_at).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                </p>
+              ) : (
+                <p className="text-xs text-slate-400">Email not sent yet. Enter the hotel confirmation number, then use Send Email.</p>
+              )}
+
+              {bookingMsg && (
+                <p className={`text-sm rounded-lg px-3 py-2 ${bookingMsg.type === "success" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>{bookingMsg.text}</p>
+              )}
+
+              {editing ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    {editField("Hotel Name *", "hotel_name", "text", true)}
+                    {editField("Hotel Address", "hotel_address", "text", true)}
+                    {editField("Hotel Contact", "hotel_contact")}
+                    {editField("Room Category", "room_category")}
+                    {editField("Booking Type", "booking_type")}
+                    {editField("Rooms", "no_of_rooms", "number")}
+                    {editField("Adults", "no_of_adults", "number")}
+                    {editField("Children", "children", "number")}
+                    {editField("Assisted By", "assist_by")}
+                    {editField("Contact Number", "contact_number")}
+                    {editField("Booking Amount", "booking_amount", "number")}
+                    {editField("Amount Paid By Client", "amount_paid_by_client", "number")}
+                    {editField("Remark", "remark", "text", true)}
+                    {editField("Note", "note", "text", true)}
+                  </div>
+                  <p className="text-xs text-slate-400">Dates and nights can&apos;t be changed here because they affect the member&apos;s night balance.</p>
+                  <div className="flex justify-end gap-2">
+                    <button onClick={() => { setBookingMode("view"); setBookingMsg(null); }} disabled={bookingBusy === "save"}
+                      className="px-4 py-2 text-sm text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50">Cancel</button>
+                    <button onClick={handleSaveBooking} disabled={bookingBusy === "save"}
+                      className="px-5 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60 flex items-center gap-2">
+                      {bookingBusy === "save" && <Loader2 className="w-4 h-4 animate-spin" />} Save Changes
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
+                  {field("Hotel", b.hotel_name)}
+                  {field("Hotel Address", b.hotel_address)}
+                  {field("Hotel Contact", b.hotel_contact)}
+                  {field("Check-in", fmtDate(b.check_in))}
+                  {field("Check-out", fmtDate(b.check_out))}
+                  {field("Nights", `${b.nights} (${b.night_type.toLowerCase()})`)}
+                  {field("Rooms", b.no_of_rooms)}
+                  {field("Guests", `${b.no_of_adults} adult${b.no_of_adults !== 1 ? "s" : ""}${b.children ? `, ${b.children} child${b.children !== 1 ? "ren" : ""}` : ""}`)}
+                  {field("Room Category", b.room_category)}
+                  {field("Booking Type", b.booking_type)}
+                  {field("Assisted By", b.assist_by)}
+                  {field("Contact Number", b.contact_number)}
+                  {field("Booking Amount", b.booking_amount != null ? fmtAmcAmt(b.booking_amount) : null)}
+                  {field("Paid By Client", fmtAmcAmt(b.amount_paid_by_client))}
+                  {field("Status", b.status)}
+                  <div className="col-span-2 sm:col-span-3">{field("Remark", b.remark)}</div>
+                  <div className="col-span-2 sm:col-span-3">{field("Note", b.note)}</div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+      </Modal>
+
       <Modal open={showBookingModal} onClose={() => setShowBookingModal(false)} title="Create Booking" size="lg">
         <div className="space-y-5 max-h-[70vh] overflow-y-auto pr-1">
           {/* Client info (read-only) */}

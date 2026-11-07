@@ -127,6 +127,11 @@ export class Booking extends Model<IBooking, Partial<IBooking>> implements IBook
   @Column(DataType.ENUM(...Object.values(BookingStatus)))
   status!: BookingStatus;
 
+  @AllowNull(true)
+  @Default(null)
+  @Column(DataType.DATE)
+  email_sent_at?: Date | null;
+
   @CreatedAt
   @Column(DataType.DATE)
   created_at!: Date;
