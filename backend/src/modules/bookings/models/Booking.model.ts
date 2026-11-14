@@ -15,6 +15,11 @@ export class Booking extends Model<IBooking, Partial<IBooking>> implements IBook
   @Column(DataType.INTEGER)
   booking_id!: number;
 
+  @AllowNull(true)
+  @Default(null)
+  @Column(DataType.STRING(40))
+  booking_number?: string | null;
+
   @ForeignKey(() => Client)
   @AllowNull(false)
   @Column(DataType.INTEGER)

@@ -5,6 +5,7 @@ import { IBooking, NightType, BookingStatus } from '../interfaces/booking.interf
 import { Membership } from '../../memberships/models/Membership.model';
 import { ClientOffer } from '../../client-offers/models/ClientOffer.model';
 import { AppError } from '../../../shared/middlewares/error.middleware';
+import { isBookingNumberTaken, nextFreeBookingNumber, validateBookingNumber } from './booking-number.util';
 
 export interface CreateBookingInput {
   membership_id: number;
@@ -31,6 +32,7 @@ export interface CreateBookingInput {
 }
 
 export interface UpdateBookingInput {
+  booking_number?: string;
   assist_by?: string | null;
   contact_number?: string | null;
   check_in?: string;
@@ -88,6 +90,10 @@ export class BookingService {
         t,
       );
 
+      // Auto-generated booking number (admin can change it later)
+      booking.booking_number = await nextFreeBookingNumber(booking.booking_id);
+      await booking.update({ booking_number: booking.booking_number }, { transaction: t });
+
       await t.commit();
       return booking;
     } catch (err) {
@@ -97,7 +103,15 @@ export class BookingService {
   }
 
   async updateBooking(booking_id: number, input: UpdateBookingInput): Promise<void> {
-    await repo.update(booking_id, input as Partial<IBooking>);
+    const data: UpdateBookingInput = { ...input };
+    if (data.booking_number !== undefined) {
+      const number = validateBookingNumber(data.booking_number);
+      if (await isBookingNumberTaken(number, booking_id)) {
+        throw new AppError(`Booking ID ${number} is already in use`, 409);
+      }
+      data.booking_number = number;
+    }
+    await repo.update(booking_id, data as Partial<IBooking>);
   }
 
   async cancelBooking(booking_id: number): Promise<void> {

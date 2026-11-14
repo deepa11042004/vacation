@@ -4,7 +4,7 @@ import { Booking } from '@/modules/bookings/models/Booking.model';
 import { Client } from '@/modules/clients/models/Client.model';
 import { Membership } from '@/modules/memberships/models/Membership.model';
 import { BookingStatus } from '@/modules/bookings/interfaces/booking.interface';
-import { formatBookingId } from '@/modules/bookings/services/booking-document.service';
+import { bookingNumberOf } from '@/modules/bookings/services/booking-number.util';
 import { ResponseUtil } from '@/shared/utils/response.util';
 import { errorHandler } from '@/shared/middlewares/error.middleware';
 import { authenticateRequest, requireRoles } from '@/shared/middlewares/auth.middleware';
@@ -70,6 +70,7 @@ export async function GET(request: NextRequest) {
       const idMatch = search.replace(/^bk-?/i, '');
       const or: WhereOptions[] = [
         { hotel_name: like },
+        { booking_number: like },
         { confirmation_number: like },
         { '$client.first_name$': like },
         { '$client.last_name$': like },
@@ -95,7 +96,7 @@ export async function GET(request: NextRequest) {
       const j = b.toJSON() as unknown as Record<string, any>;
       return {
         booking_id: j.booking_id,
-        booking_ref: formatBookingId(j.booking_id),
+        booking_ref: bookingNumberOf(j as { booking_id: number; booking_number?: string | null }),
         confirmation_number: j.confirmation_number,
         client_id: j.client_id,
         client_name: [j.client?.first_name, j.client?.last_name].filter(Boolean).join(' '),

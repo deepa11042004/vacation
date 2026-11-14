@@ -12,6 +12,7 @@ export enum BookingStatus {
 
 export interface IBooking {
   booking_id: number;
+  booking_number?: string | null;
   client_id: number;
   membership_id: number;
   assist_by?: string | null;

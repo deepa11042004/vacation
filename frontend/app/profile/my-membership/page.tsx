@@ -69,9 +69,13 @@ export default function MyMembershipPage() {
   }
 
   const m = memberships[0];
+  // nights_remaining counts down across the whole membership, so compare it with the whole-membership
+  // entitlement (nights per year x validity years), not with a single year.
   const nightsPerYear = m.nights_per_year ?? 0;
-  const nightsRemaining = m.nights_remaining ?? 0;
-  const nightsUsed = nightsPerYear - nightsRemaining;
+  const validityYears = m.validity_years ?? 1;
+  const totalEntitled = nightsPerYear * validityYears;
+  const nightsRemaining = Math.min(Math.max(m.nights_remaining ?? 0, 0), totalEntitled);
+  const nightsUsed = totalEntitled - nightsRemaining;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
@@ -119,17 +123,18 @@ export default function MyMembershipPage() {
               <div className="space-y-6">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-slate-500 font-medium">Nights Remaining this year</span>
-                    <span className="text-slate-800 font-bold">{nightsRemaining} / {nightsPerYear}</span>
+                    <span className="text-slate-500 font-medium">Nights Remaining</span>
+                    <span className="text-slate-800 font-bold">{nightsRemaining} / {totalEntitled}</span>
                   </div>
                   <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-600 rounded-full" style={{ width: `${nightsPerYear > 0 ? (nightsRemaining / nightsPerYear) * 100 : 0}%` }}></div>
+                    <div className="h-full bg-blue-600 rounded-full" style={{ width: `${totalEntitled > 0 ? (nightsRemaining / totalEntitled) * 100 : 0}%` }}></div>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total Entitled</p>
-                    <p className="text-xl font-bold text-slate-800">{nightsPerYear}</p>
+                    <p className="text-xl font-bold text-slate-800">{totalEntitled}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">{nightsPerYear} nights x {validityYears} year{validityYears !== 1 ? "s" : ""}</p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Used</p>

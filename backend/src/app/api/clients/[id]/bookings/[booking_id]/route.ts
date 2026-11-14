@@ -11,6 +11,7 @@ import { connectDB } from '@/shared/database/sequelize';
 const service = new BookingService();
 
 const UpdateBookingSchema = z.object({
+  booking_number:        z.string().max(40).optional(),
   assist_by:             z.string().max(100).optional().nullable(),
   contact_number:        z.string().max(20).optional().nullable(),
   check_in:              z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),

@@ -88,6 +88,7 @@ interface Offer {
 
 interface Booking {
   booking_id: number;
+  booking_number?: string | null;
   client_id: number;
   membership_id: number;
   assist_by?: string | null;
@@ -116,6 +117,7 @@ interface Booking {
 }
 
 const formatBookingId = (id: number) => `BK-${String(id).padStart(6, "0")}`;
+const bookingNumberOf = (b: { booking_id: number; booking_number?: string | null }) => b.booking_number || formatBookingId(b.booking_id);
 
 interface ClientInvoice {
   invoice_id: number;
@@ -318,6 +320,22 @@ export default function ClientDetailPage() {
   const [bookingBusy,      setBookingBusy]      = useState<"save" | "email" | "pdf" | null>(null);
   const [bookingMsg,       setBookingMsg]       = useState<{ type: "success" | "error"; text: string } | null>(null);
   const openBooking = bookings.find(b => b.booking_id === openBookingId) ?? null;
+  const [bookingNoTaken, setBookingNoTaken] = useState(false);
+
+  // While editing, check live whether the typed booking ID is already used by another booking
+  useEffect(() => {
+    const value = (bookingEdit.booking_number ?? "").trim();
+    if (bookingMode !== "edit" || !openBooking || !value || value === bookingNumberOf(openBooking)) {
+      setBookingNoTaken(false);
+      return;
+    }
+    const t = setTimeout(() => {
+      api.get<{ data: { taken: boolean } }>(`/bookings/number-check?number=${encodeURIComponent(value)}&exclude=${openBooking.booking_id}`)
+        .then(res => setBookingNoTaken(!!res.data?.taken))
+        .catch(() => setBookingNoTaken(false));
+    }, 300);
+    return () => clearTimeout(t);
+  }, [bookingEdit.booking_number, bookingMode, openBooking]);
   const [cancellingId,     setCancellingId]     = useState<number | null>(null);
   const [selectedYearIdx,  setSelectedYearIdx]  = useState<number | null>(null);
 
@@ -486,6 +504,7 @@ export default function ClientDetailPage() {
 
   function startBookingEdit(b: Booking) {
     setBookingEdit({
+      booking_number: bookingNumberOf(b),
       hotel_name: b.hotel_name ?? "",
       hotel_address: b.hotel_address ?? "",
       hotel_contact: b.hotel_contact ?? "",
@@ -515,9 +534,12 @@ export default function ClientDetailPage() {
   async function handleSaveBooking() {
     if (!openBooking) return;
     if (!bookingEdit.hotel_name?.trim()) { setBookingMsg({ type: "error", text: "Hotel name is required." }); return; }
+    if (!bookingEdit.booking_number?.trim()) { setBookingMsg({ type: "error", text: "Booking ID cannot be empty." }); return; }
+    if (bookingNoTaken) { setBookingMsg({ type: "error", text: `Booking ID ${bookingEdit.booking_number.trim()} is already in use.` }); return; }
     setBookingBusy("save"); setBookingMsg(null);
     try {
       await api.put(`/clients/${id}/bookings/${openBooking.booking_id}`, {
+        booking_number: bookingEdit.booking_number.trim(),
         hotel_name: bookingEdit.hotel_name.trim(),
         hotel_address: bookingEdit.hotel_address.trim() || null,
         hotel_contact: bookingEdit.hotel_contact.trim() || null,
@@ -568,7 +590,7 @@ export default function ClientDetailPage() {
       const url = URL.createObjectURL(await res.blob());
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Booking-${formatBookingId(openBooking.booking_id)}.pdf`;
+      a.download = `Booking-${bookingNumberOf(openBooking).replace(/[^A-Za-z0-9._-]+/g, "-")}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -1972,8 +1994,27 @@ Email: ${company.email}`;
               {/* IDs */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3">
-                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Booking ID <span className="normal-case font-normal">(auto-generated)</span></p>
-                  <p className="font-mono text-lg font-bold text-slate-800 mt-0.5">{formatBookingId(b.booking_id)}</p>
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Booking ID <span className="normal-case font-normal">(auto-generated, editable)</span></p>
+                  {editing ? (
+                    <>
+                      <input
+                        className={`${inp} mt-1 font-mono ${bookingNoTaken ? "border-red-500 bg-red-50" : ""}`}
+                        maxLength={40}
+                        value={bookingEdit.booking_number ?? ""}
+                        onChange={e => setBookingEdit(f => ({ ...f, booking_number: e.target.value }))}
+                      />
+                      {bookingNoTaken ? (
+                        <p className="mt-1 text-xs text-red-600">This Booking ID is already used by another booking.</p>
+                      ) : (
+                        <button type="button" className="mt-1 text-xs text-blue-600 hover:underline"
+                          onClick={() => setBookingEdit(f => ({ ...f, booking_number: formatBookingId(b.booking_id) }))}>
+                          Reset to auto-generated ({formatBookingId(b.booking_id)})
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <p className="font-mono text-lg font-bold text-slate-800 mt-0.5">{bookingNumberOf(b)}</p>
+                  )}
                 </div>
                 <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
                   <p className="text-[11px] font-semibold text-amber-700 uppercase tracking-wide">Hotel Confirmation No</p>

@@ -8,11 +8,14 @@ import { Client } from '../../clients/models/Client.model';
 import { Membership } from '../../memberships/models/Membership.model';
 import { getCompanySettings } from '../../../shared/utils/company-settings.service';
 import { AppError } from '../../../shared/middlewares/error.middleware';
+import { bookingNumberOf, formatBookingId } from './booking-number.util';
 
 const repo = new BookingRepository();
 
-/** Booking ID shown to staff and on the PDF: generated from the system id, e.g. BK-000012. */
-export const formatBookingId = (booking_id: number) => `BK-${String(booking_id).padStart(6, '0')}`;
+export { formatBookingId };
+
+// Booking numbers can contain / which is not valid in file names
+const safeFilePart = (s: string) => s.replace(/[^A-Za-z0-9._-]+/g, '-');
 
 const TERMS_INTRO = 'Complimentary stay for a child below 6 years (without extra bed).';
 
@@ -60,7 +63,7 @@ function buildPdf(booking: Booking, clientName: string, membershipNo: string): P
     const doc = new PDFDocument({
       size: 'A4',
       margin: 0,
-      info: { Title: `Booking ${formatBookingId(booking.booking_id)}`, Author: co.name },
+      info: { Title: `Booking ${bookingNumberOf(booking)}`, Author: co.name },
     });
     const chunks: Buffer[] = [];
     doc.on('data', (c: Buffer) => chunks.push(c));
@@ -108,7 +111,7 @@ function buildPdf(booking: Booking, clientName: string, membershipNo: string): P
       doc.fillColor(MUTED).font('Helvetica-Bold').fontSize(8).text(label.toUpperCase(), x + 14, y + 10);
       doc.fillColor(BLACK).font('Helvetica-Bold').fontSize(17).text(value, x + 14, y + 25, { width: boxW - 28 });
     };
-    idBox(ML, 'Booking ID', formatBookingId(booking.booking_id));
+    idBox(ML, 'Booking ID', bookingNumberOf(booking));
     idBox(ML + boxW + 16, 'Hotel Confirmation No', booking.confirmation_number?.trim() || 'Pending');
     y += 72;
 
@@ -202,7 +205,7 @@ export class BookingDocumentService {
     const { booking, client, membership } = await loadContext(booking_id, client_id);
     const name = [client.first_name, client.last_name].filter(Boolean).join(' ');
     const buffer = await buildPdf(booking, name, membership?.membership_number ?? '-');
-    return { buffer, fileName: `Booking-${formatBookingId(booking.booking_id)}.pdf` };
+    return { buffer, fileName: `Booking-${safeFilePart(bookingNumberOf(booking))}.pdf` };
   }
 
   /** Emails the booking confirmation PDF to the client and records when it was sent. */
@@ -229,7 +232,7 @@ export class BookingDocumentService {
       '',
       `Your stay at ${booking.hotel_name} is confirmed.`,
       '',
-      `Booking ID: ${formatBookingId(booking.booking_id)}`,
+      `Booking ID: ${bookingNumberOf(booking)}`,
       `Hotel Confirmation No: ${booking.confirmation_number}`,
       `Check-in: ${fmtDate(booking.check_in)}`,
       `Check-out: ${fmtDate(booking.check_out)} (${booking.nights} night${booking.nights !== 1 ? 's' : ''})`,
@@ -245,7 +248,7 @@ export class BookingDocumentService {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM || `"${co.name}" <${co.email}>`,
       to: client.email,
-      subject: `Booking Confirmation ${formatBookingId(booking.booking_id)} - ${booking.hotel_name}`,
+      subject: `Booking Confirmation ${bookingNumberOf(booking)} - ${booking.hotel_name}`,
       text,
       attachments: [{ filename: fileName, content: buffer, contentType: 'application/pdf' }],
     });
